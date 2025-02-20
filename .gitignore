@@ -1,0 +1,51 @@
+# Byte-compiled / cached files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.so
+*.dylib
+
+# Virtual environment
+venv/
+.env
+.envrc
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Data and results
+data/
+results/
+*.csv
+*.tsv
+*.json
+*.xlsx
+*.h5
+*.pickle
+*.pkl
+*.npy
+*.npz
+
+# Logs and debug files
+logs/
+*.log
+*.out
+*.err
+*.prof
+*.trace
+
+# VS Code settings
+.vscode/
+*.code-workspace
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Git and dependency files
+.git/
+.gitignore
+requirements.lock
+pip-wheel-metadata/
