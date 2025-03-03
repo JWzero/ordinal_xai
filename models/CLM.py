@@ -1,41 +1,100 @@
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
+from sklearn.base import BaseEstimator
 from sklearn.preprocessing import StandardScaler
-from scipy.special import expit  # Sigmoid function
-from .base_model import BaseOrdinalModel
+from sklearn.utils.validation import check_X_y, check_is_fitted, validate_data
+from statsmodels.miscmodels.ordinal_model import OrderedModel
+from sklearn.preprocessing import OneHotEncoder
+from models.base_model import BaseOrdinalModel
+class CLM(BaseEstimator,BaseOrdinalModel):
+    def __init__(self, link="logit"):
+        self.link = link  # Hyperparameter
 
-class CLM(BaseOrdinalModel):
-    """Cumulative Logit Model for Ordinal Regression."""
-    
-    def __init__(self):
-        self.models = []  # One logistic regression per threshold
-        self.thresholds = None
-        self.scaler = StandardScaler()
+    def get_params(self, deep=True):
+        return {"link": self.link}
 
-    def fit(self, X: np.ndarray, y: np.ndarray):
-        """Fit the cumulative logit model."""
-        X = self.scaler.fit_transform(X)
-        unique_classes = np.sort(np.unique(y))
-        self.thresholds = unique_classes[:-1]  # Thresholds for cumulative logits
+    def set_params(self, **params):
+        for key, value in params.items():
+            setattr(self, key, value)
+        return self  
 
-        for threshold in self.thresholds:
-            binary_y = (y > threshold).astype(int)  # Convert to binary task
-            model = LogisticRegression()
-            model.fit(X, binary_y)
-            self.models.append(model)
+    def fit(self, X: pd.DataFrame, y: pd.Series) -> "CLM":
+        """Fit the ordered logistic regression model, handling categorical variables."""
 
-    def predict_proba(self, X: np.ndarray) -> np.ndarray:
-        """Predict probability distribution over ordinal classes."""
-        X = self.scaler.transform(X)
-        cumulative_probs = np.array([model.predict_proba(X)[:, 1] for model in self.models]).T
-        cumulative_probs = np.hstack([np.zeros((X.shape[0], 1)), cumulative_probs, np.ones((X.shape[0], 1))])
+        # Store feature names for consistency during prediction
+        self.feature_names_ = X.columns.tolist()
+        self.n_features_in_ = X.shape[1]
+        self.ranks_ = np.unique(y)
+
+        X_transformed = self.transform(X, fit = True)
+
+        # Run scikit-learn's check
+        X, y = check_X_y(X_transformed, y, ensure_2d=True)
+
+        # Fit Ordered Model
+        link_functions = {"logit": "logit", "probit": "probit"}
+        if self.link not in link_functions:
+            raise ValueError(f"Invalid link function '{self.link}'. Choose from {list(link_functions.keys())}.")
+
+        self._model = OrderedModel(y, X, distr=link_functions[self.link])
+        self._result = self._model.fit(method='bfgs', disp=False)
+        self.params_ = self._result.params
+
+        return self
+
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        """Predict the ordinal class labels."""
+
+        return self.predict_proba(X).argmax(axis=1)
+
+
+    def predict_proba(self, X: pd.DataFrame) -> np.ndarray:
+        """Predict class probabilities."""
         
-        # Convert cumulative probabilities to class probabilities
-        class_probs = np.diff(cumulative_probs, axis=1)
-        return class_probs
+        # Check if fit has been called
+        check_is_fitted(self)
+        
+        X_transformed = self.transform(X, fit = False)
 
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        """Predict ordinal class labels."""
-        class_probs = self.predict_proba(X)
-        return np.argmax(class_probs, axis=1)
+        # Compute probabilities
+    
+        return self._result.predict(X_transformed.values)
+
+        
+    def transform(self, X: pd.DataFrame, fit=False) -> pd.DataFrame:
+        """Transform input data into the format expected by the model."""
+        
+        # Identify categorical columns
+        categorical_columns = X.select_dtypes(include=["object"]).columns
+        
+        if fit:
+            # Initialize and fit the encoder on categorical data
+            self._encoder = OneHotEncoder(drop="first", handle_unknown="ignore", sparse_output=False)
+            categorical_features = self._encoder.fit_transform(X[categorical_columns])
+        else:
+            # Transform categorical data using stored encoder
+            categorical_features = self._encoder.transform(X[categorical_columns])
+
+        # Convert to DataFrame with proper column names
+        categorical_features = pd.DataFrame(categorical_features, 
+                                            columns=self._encoder.get_feature_names_out(categorical_columns),
+                                            index=X.index)
+
+        # Scale numerical features
+        if fit:
+            self._scaler = StandardScaler()
+            numerical_features = self._scaler.fit_transform(X.drop(columns=categorical_columns, axis=1))
+        else:
+            numerical_features = self._scaler.transform(X.drop(columns=categorical_columns, axis=1))
+
+        # Combine numerical and categorical features
+        numerical_df = pd.DataFrame(numerical_features, 
+                                    columns=X.drop(columns=categorical_columns, axis=1).columns,
+                                    index=X.index)
+        
+        X_transformed = pd.concat([numerical_df, categorical_features], axis=1)
+
+        return X_transformed
+
+

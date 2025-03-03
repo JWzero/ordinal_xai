@@ -18,3 +18,9 @@ class BaseOrdinalModel(ABC):
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
         """Predict probability distributions over ordinal classes."""
         pass
+
+    @abstractmethod
+    def get_params(self, deep=True):
+        """Return model parameters for scikit-learn compatibility."""
+        pass
+
