@@ -7,6 +7,8 @@ from sklearn.metrics import accuracy_score, mean_absolute_error
 
 def load_data(dataset_name):
     """Load dataset from the data/ folder."""
+    if  not dataset_name.endswith(".csv"):
+        dataset_name = dataset_name + ".csv"
     data_path = os.path.join("data", dataset_name)
     if not os.path.exists(data_path):
         raise FileNotFoundError(f"Dataset {dataset_name} not found in 'data/' folder.")
@@ -77,8 +79,8 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run ordinal regression with interpretability.")
     
-    parser.add_argument("--dataset", type=str, default="winequality-red.csv",
-                        help="Dataset filename in 'data/' folder (default: 'winequality-red.csv').")
+    parser.add_argument("--dataset", type=str, default="dummy.csv",
+                        help="Dataset filename in 'data/' folder (default: 'dummy.csv').")
     parser.add_argument("--model", type=str, default="CLM",
                         help="Model filename (without .py) in 'models/' folder (default: 'CLM').")
     parser.add_argument("--interpretation", type=str, default="DummyInterpretation",
