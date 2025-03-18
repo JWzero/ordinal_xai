@@ -49,3 +49,5 @@ Thumbs.db
 .gitignore
 requirements.lock
 pip-wheel-metadata/
+
+models/__pycache__/

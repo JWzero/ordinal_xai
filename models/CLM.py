@@ -81,19 +81,23 @@ class CLM(BaseEstimator,BaseOrdinalModel):
                                             columns=self._encoder.get_feature_names_out(categorical_columns),
                                             index=X.index)
 
-        # Scale numerical features
-        if fit:
-            self._scaler = StandardScaler()
-            numerical_features = self._scaler.fit_transform(X.drop(columns=categorical_columns, axis=1))
-        else:
-            numerical_features = self._scaler.transform(X.drop(columns=categorical_columns, axis=1))
+        # Handle numerical features if they exist
+        numerical_columns = X.drop(columns=categorical_columns, axis=1).columns
+        if len(numerical_columns) > 0:
+            if fit:
+                self._scaler = StandardScaler()
+                numerical_features = self._scaler.fit_transform(X[numerical_columns])
+            else:
+                numerical_features = self._scaler.transform(X[numerical_columns])
 
-        # Combine numerical and categorical features
-        numerical_df = pd.DataFrame(numerical_features, 
-                                    columns=X.drop(columns=categorical_columns, axis=1).columns,
-                                    index=X.index)
-        
-        X_transformed = pd.concat([numerical_df, categorical_features], axis=1)
+            # Combine numerical and categorical features
+            numerical_df = pd.DataFrame(numerical_features, 
+                                        columns=numerical_columns,
+                                        index=X.index)
+            X_transformed = pd.concat([numerical_df, categorical_features], axis=1)
+        else:
+            # If no numerical columns, just use categorical features
+            X_transformed = categorical_features
 
         return X_transformed
 
