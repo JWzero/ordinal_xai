@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from interpretation.base_interpretation import BaseInterpretation
 from utils import pdp_modified
+import matplotlib.cm as cm
+from matplotlib.patches import Patch
 
 class ICEProbability(BaseInterpretation):
     """Individual Conditional Expectation (ICE) Plot interpretation method for probabilities."""
@@ -63,35 +65,73 @@ class ICEProbability(BaseInterpretation):
             
             # Plot curves based on whether observation_idx is specified
             if observation_idx is not None:
-                # Only plot the specified instance and average
-                for rank in range(num_ranks):
-                    # Plot the specified instance
-                    ax.plot(x_values, individual_predictions[rank, observation_idx, :], 
-                           color=f'C{rank}', linewidth=2, 
-                           label=f'Instance {observation_idx} Rank {rank}')
-                    # Plot the average
-                    ax.plot(x_values, averaged_predictions[rank], 
-                           color=f'C{rank}', linestyle='--', linewidth=2, 
-                           label=f'Average Rank {rank}')
+                # Create a stacked area plot for the specified instance
+                instance_probs = individual_predictions[:, observation_idx, :]
                 
-                # Plot original value marker if observation is specified
-                original_value = self.X.iloc[observation_idx][feature]
+                # We need to stack the probabilities from bottom to top
+                # First, create a colormap for the different ranks
+                cmap = cm.get_cmap('viridis', num_ranks)
+                colors = [cmap(i) for i in range(num_ranks)]
+                
+                # Create a custom legend
+                legend_elements = []
+                
+                # Plot stacked areas for instance
+                ax.stackplot(x_values, instance_probs, colors=colors, alpha=0.7, zorder=2)
+                
+                # Plot the stacked area for the average probabilities with dashed edges between areas
+                # First, create an array to hold the baseline for each layer
+                baseline = np.zeros(len(x_values), dtype=np.float64)
+                
                 for rank in range(num_ranks):
-                    # Find the closest grid point to the original value
-                    if isinstance(original_value, (int, float)):
-                        closest_idx = np.argmin(np.abs(x_values - original_value))
-                    else:
-                        # For categorical features, find the exact match
-                        closest_idx = np.where(x_values == original_value)[0][0]
-                    ax.scatter(original_value, individual_predictions[rank, observation_idx, closest_idx],
-                             color=f'C{rank}', s=100, zorder=5)
+                    # Create stacked area for this rank
+                    ax.fill_between(x_values, baseline, baseline + averaged_predictions[rank], 
+                                   color=colors[rank], alpha=0.15, zorder=1)
+                    
+                    # Add dashed line at the top edge of this rank's area
+                    ax.plot(x_values, baseline + averaged_predictions[rank], 
+                           color=colors[rank], linestyle='--', linewidth=1.5, zorder=3)
+                    
+                    # Update baseline for next rank - explicitly convert if needed
+                    baseline = baseline + averaged_predictions[rank]
+                    
+                    # Add to legend
+                    legend_elements.append(Patch(facecolor=colors[rank], alpha=0.7, 
+                                               label=f'Instance - Rank {rank}'))
+                    legend_elements.append(Patch(facecolor=colors[rank], alpha=0.15, 
+                                               label=f'Average - Rank {rank}', hatch='//'))
+                
+                # Plot original value marker and vertical line
+                original_value = self.X.iloc[observation_idx][feature]
                 
                 # Add vertical line at original feature value
-                ymin, ymax = ax.get_ylim()
+                ymin, ymax = 0, 1  # Probability bounds
                 ax.vlines(x=original_value, ymin=ymin, ymax=ymax, 
-                         colors='black', linestyles='dashed', linewidth=1.5, zorder=1)
+                        colors='black', linestyles='dashed', linewidth=1.5, zorder=5)
+                
+                # Find the probabilities at the original value
+                if isinstance(original_value, (int, float)):
+                    closest_idx = np.argmin(np.abs(x_values - original_value))
+                else:
+                    # For categorical features, find the exact match
+                    closest_idx = np.where(x_values == original_value)[0][0]
+                
+                # Add text annotation for probabilities at the original value
+                probs_at_orig = instance_probs[:, closest_idx]
+                prob_str = ", ".join([f"Rank {i}: {p:.2f}" for i, p in enumerate(probs_at_orig)])
+                ax.annotate(f"Probabilities at {feature}={original_value}:\n{prob_str}", 
+                           xy=(original_value, 0.5), xytext=(10, 0),
+                           textcoords="offset points", bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
+                           ha='left', va='center', zorder=6)
+                
+                # Set y-axis limits for the plot
+                ax.set_ylim(0, 1)
+                
+                # Add custom legend
+                ax.legend(handles=legend_elements, loc='upper left', fontsize=9)
+                
             else:
-                # Plot all instances and average
+                # Plot all instances and average (standard line plot)
                 for i in range(len(self.X)):
                     for rank in range(num_ranks):
                         ax.plot(x_values, individual_predictions[rank, i, :], 
@@ -102,12 +142,14 @@ class ICEProbability(BaseInterpretation):
                     ax.plot(x_values, averaged_predictions[rank], 
                            color=f'C{rank}', linestyle='--', linewidth=2, 
                            label=f'Average Rank {rank}')
+                
+                # Add a legend
+                ax.legend()
             
             ax.set_xlabel(feature, fontsize=12, labelpad=10)
             ax.set_ylabel("Probability", fontsize=12, labelpad=10)
-            ax.set_title(f"ICE Plot for {feature}", fontsize=14, pad=15)
-            ax.grid()
-            ax.legend()
+            ax.set_title(f"ICE Probability Plot for {feature}", fontsize=14, pad=15)
+            ax.grid(alpha=0.3)
 
         # Hide empty subplots
         for idx in range(num_features, num_rows * num_cols):

@@ -68,11 +68,11 @@ class ICEPlot(BaseInterpretation):
                     # Plot the specified instance
                     ax.plot(x_values, individual_predictions[rank, observation_idx, :], 
                            color=f'C{rank}', linewidth=2, 
-                           label=f'Instance {observation_idx} Rank {rank}')
+                           label=f'Instance {observation_idx} Rank')
                     # Plot the average
                     ax.plot(x_values, averaged_predictions[rank], 
                            color=f'C{rank}', linestyle='--', linewidth=2, 
-                           label=f'Average Rank {rank}')
+                           label=f'Average Rank (PDP)')
                 
                 # Add marker for original feature value
                 original_value = self.X.iloc[observation_idx][feature]
@@ -101,7 +101,7 @@ class ICEPlot(BaseInterpretation):
                 for rank in range(num_ranks):
                     ax.plot(x_values, averaged_predictions[rank], 
                            color=f'C{rank}', linestyle='--', linewidth=2, 
-                           label=f'Average Rank {rank}')
+                           label=f'Average Rank (PDP)')
             
             ax.set_xlabel(feature, fontsize=12, labelpad=10)
             ax.set_ylabel("Prediction", fontsize=12, labelpad=10)
