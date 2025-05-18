@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>utils.evaluation_metrics &#8212; Ordinal XAI 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for utils.evaluation_metrics</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">mean_absolute_error</span><span class="p">,</span> <span class="n">mean_squared_error</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">spearmanr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">cohen_kappa_score</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">kendalltau</span>
+
+<div class="viewcode-block" id="accuracy">
+<a class="viewcode-back" href="../../api/utils.html#utils.evaluation_metrics.accuracy">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate accuracy for ordinal regression.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    y_true : array-like</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    float</span>
+<span class="sd">        Accuracy score</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mze">
+<a class="viewcode-back" href="../../api/utils.html#utils.evaluation_metrics.mze">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">mze</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Mean Zero-One Error (MZE) for ordinal regression.</span>
+<span class="sd">    MZE = 1 - accuracy</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    y_true : array-like</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    float</span>
+<span class="sd">        Mean Zero-One Error</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mae">
+<a class="viewcode-back" href="../../api/utils.html#utils.evaluation_metrics.mae">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">mae</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Mean Absolute Error (MAE) for ordinal regression.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    y_true : array-like</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    float</span>
+<span class="sd">        Mean Absolute Error</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">mean_absolute_error</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mse">
+<a class="viewcode-back" href="../../api/utils.html#utils.evaluation_metrics.mse">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">mse</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Mean Squared Error (MSE) for ordinal regression.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    y_true : array-like</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    float</span>
+<span class="sd">        Mean Squared Error</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="weighted_kappa">
+<a class="viewcode-back" href="../../api/utils.html#utils.evaluation_metrics.weighted_kappa">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">weighted_kappa</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="s1">&#39;quadratic&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate weighted kappa for ordinal regression.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    y_true : array-like</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">    weights : str, optional</span>
+<span class="sd">        Weighting scheme for the confusion matrix. Options: &#39;linear&#39;, &#39;quadratic&#39;, &#39;none&#39;</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    float</span>
+<span class="sd">        Weighted kappa score</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">cohen_kappa_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span></div>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_class_counts</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the count of items per class.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    y : array-like</span>
+<span class="sd">        Array of class labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary mapping class labels to their counts</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">unique_labels</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">unique_labels</span><span class="p">,</span> <span class="n">counts</span><span class="p">))</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_calculate_proximity</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">class_counts</span><span class="p">,</span> <span class="n">total_items</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate proximity between two classes.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    c1 : int</span>
+<span class="sd">        First class label</span>
+<span class="sd">    c2 : int</span>
+<span class="sd">        Second class label</span>
+<span class="sd">    class_counts : dict</span>
+<span class="sd">        Dictionary mapping class labels to their counts</span>
+<span class="sd">    total_items : int</span>
+<span class="sd">        Total number of items</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    float</span>
+<span class="sd">        Proximity value between the two classes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">c1</span> <span class="o">==</span> <span class="n">c2</span><span class="p">:</span>
+        <span class="c1"># For correct predictions, use the same formula but with c1=c2</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">class_counts</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">total_items</span><span class="p">))</span>
+    
+    <span class="c1"># Ensure c1 &lt; c2</span>
+    <span class="k">if</span> <span class="n">c1</span> <span class="o">&gt;</span> <span class="n">c2</span><span class="p">:</span>
+        <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c1</span>
+    
+    <span class="c1"># Calculate sum of counts between c1 and c2 (excluding c1)</span>
+    <span class="n">sum_counts</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">c1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">sum_counts</span> <span class="o">+=</span> <span class="n">class_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    
+    <span class="c1"># Calculate proximity</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="n">class_counts</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">sum_counts</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_items</span><span class="p">)</span>
+
+<div class="viewcode-block" id="cem">
+<a class="viewcode-back" href="../../api/utils.html#utils.evaluation_metrics.cem">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">cem</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Closeness Evaluation Measure (CEM) for ordinal classification.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    y_true : array-like</span>
+<span class="sd">        True ordinal labels (gold standard)</span>
+<span class="sd">    y_pred : array-like</span>
+<span class="sd">        Predicted ordinal labels (system predictions)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    float</span>
+<span class="sd">        CEM score between 0 and 1, where lower values indicate better performance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span>
+    
+    <span class="c1"># Get class counts and total number of items</span>
+    <span class="n">class_counts</span> <span class="o">=</span> <span class="n">_get_class_counts</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">total_items</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    
+    <span class="c1"># Calculate sum of proximities for predictions</span>
+    <span class="n">sum_pred_proximities</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">sum_true_proximities</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">for</span> <span class="n">true_label</span><span class="p">,</span> <span class="n">pred_label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+        <span class="c1"># Calculate proximity for prediction</span>
+        <span class="n">pred_prox</span> <span class="o">=</span> <span class="n">_calculate_proximity</span><span class="p">(</span><span class="n">pred_label</span><span class="p">,</span> <span class="n">true_label</span><span class="p">,</span> <span class="n">class_counts</span><span class="p">,</span> <span class="n">total_items</span><span class="p">)</span>
+        <span class="n">sum_pred_proximities</span> <span class="o">+=</span> <span class="n">pred_prox</span>
+        
+        <span class="c1"># Calculate proximity for correct prediction (for normalization)</span>
+        <span class="n">true_prox</span> <span class="o">=</span> <span class="n">_calculate_proximity</span><span class="p">(</span><span class="n">true_label</span><span class="p">,</span> <span class="n">true_label</span><span class="p">,</span> <span class="n">class_counts</span><span class="p">,</span> <span class="n">total_items</span><span class="p">)</span>
+        <span class="n">sum_true_proximities</span> <span class="o">+=</span> <span class="n">true_prox</span>
+    
+    <span class="c1"># Calculate final CEM score</span>
+    <span class="k">if</span> <span class="n">sum_true_proximities</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+    
+    <span class="k">return</span> <span class="n">sum_pred_proximities</span> <span class="o">/</span> <span class="n">sum_true_proximities</span></div>
+
+
+<div class="viewcode-block" id="spearman_correlation">
+<a class="viewcode-back" href="../../api/utils.html#utils.evaluation_metrics.spearman_correlation">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">spearman_correlation</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Spearman rank correlation for ordinal regression.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    y_true : array-like</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    float</span>
+<span class="sd">        Spearman rank correlation coefficient</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">correlation</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">spearmanr</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">correlation</span></div>
+
+
+<div class="viewcode-block" id="kendall_tau">
+<a class="viewcode-back" href="../../api/utils.html#utils.evaluation_metrics.kendall_tau">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">kendall_tau</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Kendall&#39;s Tau correlation coefficient for ordinal data.</span>
+<span class="sd">    This measures the ordinal association between two rankings.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    y_true : array-like</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    float</span>
+<span class="sd">        Kendall&#39;s Tau correlation coefficient between -1 and 1</span>
+<span class="sd">        where 1 indicates perfect agreement and -1 indicates perfect disagreement</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">correlation</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">kendalltau</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">correlation</span></div>
+
+
+<div class="viewcode-block" id="ordinal_classification_index">
+<a class="viewcode-back" href="../../api/utils.html#utils.evaluation_metrics.ordinal_classification_index">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ordinal_classification_index</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Ordinal Classification Index (OCI) for ordinal regression.</span>
+<span class="sd">    OCI = 1 - (sum(|y_true - y_pred|) / (n * (max_class - min_class)))</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    y_true : array-like</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    float</span>
+<span class="sd">        Ordinal Classification Index</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span>
+    
+    <span class="n">max_class</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">min_class</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">class_range</span> <span class="o">=</span> <span class="n">max_class</span> <span class="o">-</span> <span class="n">min_class</span>
+    
+    <span class="k">if</span> <span class="n">class_range</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">1.0</span>
+    
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_true</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">class_range</span><span class="p">))</span></div>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_create_one_hot_encoding</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create one-hot encoding for ordinal labels with arbitrary label range.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    y_true : array-like</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    n_classes : int, optional</span>
+<span class="sd">        Number of classes. If None, inferred from unique labels.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        (one_hot_matrix, min_label, n_classes)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">unique_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">min_label</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">unique_labels</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">n_classes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_labels</span><span class="p">)</span>
+    
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">y_true_one_hot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">))</span>
+    
+    <span class="c1"># Shift labels to 0-based indexing for one-hot encoding</span>
+    <span class="n">shifted_labels</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">-</span> <span class="n">min_label</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">shifted_labels</span><span class="p">):</span>
+        <span class="n">y_true_one_hot</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">label</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+    
+    <span class="k">return</span> <span class="n">y_true_one_hot</span><span class="p">,</span> <span class="n">min_label</span><span class="p">,</span> <span class="n">n_classes</span>
+
+<div class="viewcode-block" id="ranked_probability_score">
+<a class="viewcode-back" href="../../api/utils.html#utils.evaluation_metrics.ranked_probability_score">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ranked_probability_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred_proba</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Ranked Probability Score (RPS) for ordinal regression.</span>
+<span class="sd">    RPS = sum((F_i - O_i)^2) where F_i is the cumulative predicted probability</span>
+<span class="sd">    and O_i is the cumulative observed probability.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    y_true : array-like</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred_proba : array-like of shape (n_samples, n_classes)</span>
+<span class="sd">        Predicted probabilities for each class</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    float</span>
+<span class="sd">        Ranked Probability Score</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">y_pred_proba</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_pred_proba</span><span class="p">)</span>
+    
+    <span class="c1"># Create one-hot encoding with proper label range</span>
+    <span class="n">y_true_one_hot</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_create_one_hot_encoding</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="n">y_pred_proba</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    
+    <span class="c1"># Calculate cumulative probabilities</span>
+    <span class="n">y_pred_cumsum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">y_pred_proba</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">y_true_cumsum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">y_true_one_hot</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="c1"># Calculate RPS</span>
+    <span class="n">rps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">y_pred_cumsum</span> <span class="o">-</span> <span class="n">y_true_cumsum</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">rps</span></div>
+
+
+<div class="viewcode-block" id="ordinal_weighted_ce">
+<a class="viewcode-back" href="../../api/utils.html#utils.evaluation_metrics.ordinal_weighted_ce">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ordinal_weighted_ce</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred_proba</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Ordinal Weighted Cross-Entropy (OWCE) for ordinal regression.</span>
+<span class="sd">    OWCE = sum(w_ij * log(y_pred_ij)) where w_ij is the normalized weight</span>
+<span class="sd">    based on the distance between classes.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    y_true : array-like</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred_proba : array-like of shape (n_samples, n_classes)</span>
+<span class="sd">        Predicted probabilities for each class</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    float</span>
+<span class="sd">        Ordinal Weighted Cross-Entropy</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">y_pred_proba</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_pred_proba</span><span class="p">)</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-15</span>  <span class="c1"># Small value to avoid log(0)</span>
+    
+    <span class="c1"># Create one-hot encoding with proper label range</span>
+    <span class="n">y_true_one_hot</span><span class="p">,</span> <span class="n">min_label</span><span class="p">,</span> <span class="n">n_classes</span> <span class="o">=</span> <span class="n">_create_one_hot_encoding</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="n">y_pred_proba</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    
+    <span class="c1"># Create normalized weight matrix based on class distances</span>
+    <span class="n">weight_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_classes</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">))</span>
+    <span class="n">max_distance</span> <span class="o">=</span> <span class="n">n_classes</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_classes</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_classes</span><span class="p">):</span>
+            <span class="n">weight_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="n">j</span><span class="p">)</span> <span class="o">/</span> <span class="n">max_distance</span>
+    
+    <span class="c1"># Calculate weighted cross-entropy</span>
+    <span class="n">owce</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">)):</span>
+        <span class="n">true_class</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">y_true</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">min_label</span><span class="p">)</span>  <span class="c1"># Shift to 0-based index</span>
+        <span class="c1"># Clip probabilities to avoid log(0)</span>
+        <span class="n">probs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">y_pred_proba</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">eps</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span><span class="p">)</span>
+        <span class="c1"># Calculate weighted sum for each prediction</span>
+        <span class="n">class_loss</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_classes</span><span class="p">):</span>
+            <span class="n">class_loss</span> <span class="o">+=</span> <span class="n">weight_matrix</span><span class="p">[</span><span class="n">true_class</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">probs</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+        <span class="n">owce</span> <span class="o">+=</span> <span class="n">class_loss</span>
+    
+    <span class="k">return</span> <span class="n">owce</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ordinal_log_loss">
+<a class="viewcode-back" href="../../api/utils.html#utils.evaluation_metrics.ordinal_log_loss">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ordinal_log_loss</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred_proba</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Ordinal Log Loss for ordinal regression.</span>
+<span class="sd">    OLL = -sum(y_true_ij * log(y_pred_ij))</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    y_true : array-like</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred_proba : array-like of shape (n_samples, n_classes)</span>
+<span class="sd">        Predicted probabilities for each class</span>
+<span class="sd">    eps : float, optional</span>
+<span class="sd">        Small value to avoid log(0)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    float</span>
+<span class="sd">        Ordinal Log Loss</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">y_pred_proba</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_pred_proba</span><span class="p">)</span>
+    
+    <span class="c1"># Create one-hot encoding with proper label range</span>
+    <span class="n">y_true_one_hot</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_create_one_hot_encoding</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="n">y_pred_proba</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    
+    <span class="c1"># Clip probabilities to avoid log(0)</span>
+    <span class="n">y_pred_proba</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">y_pred_proba</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span><span class="p">)</span>
+    
+    <span class="c1"># Calculate log loss</span>
+    <span class="n">log_loss</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y_true_one_hot</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">y_pred_proba</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">log_loss</span></div>
+
+
+<div class="viewcode-block" id="adjacent_accuracy">
+<a class="viewcode-back" href="../../api/utils.html#utils.evaluation_metrics.adjacent_accuracy">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">adjacent_accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Adjacent Accuracy for ordinal regression.</span>
+<span class="sd">    This measures the proportion of predictions that are either correct or off by one class.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    y_true : array-like</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    float</span>
+<span class="sd">        Adjacent Accuracy score between 0 and 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span>
+    
+    <span class="c1"># Count predictions that are either correct or off by one class</span>
+    <span class="n">correct_or_adjacent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_true</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">correct_or_adjacent</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="evaluate_ordinal_model">
+<a class="viewcode-back" href="../../api/utils.html#utils.evaluation_metrics.evaluate_ordinal_model">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">evaluate_ordinal_model</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_pred_proba</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evaluate an ordinal regression model using multiple metrics.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    y_true : array-like</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">    y_pred_proba : array-like of shape (n_samples, n_classes), optional</span>
+<span class="sd">        Predicted probabilities for each class</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary containing all evaluation metrics</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="n">accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+        <span class="s1">&#39;adjacent_accuracy&#39;</span><span class="p">:</span> <span class="n">adjacent_accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+        <span class="s1">&#39;mze&#39;</span><span class="p">:</span> <span class="n">mze</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+        <span class="s1">&#39;mae&#39;</span><span class="p">:</span> <span class="n">mae</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+        <span class="s1">&#39;mse&#39;</span><span class="p">:</span> <span class="n">mse</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+        <span class="s1">&#39;weighted_kappa&#39;</span><span class="p">:</span> <span class="n">weighted_kappa</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+        <span class="s1">&#39;cem&#39;</span><span class="p">:</span> <span class="n">cem</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+        <span class="s1">&#39;spearman_correlation&#39;</span><span class="p">:</span> <span class="n">spearman_correlation</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">),</span>
+        <span class="s1">&#39;kendall_tau&#39;</span><span class="p">:</span> <span class="n">kendall_tau</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+    <span class="p">}</span>
+    
+    <span class="c1"># Add probability-based metrics if probabilities are provided</span>
+    <span class="k">if</span> <span class="n">y_pred_proba</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Check if the probabilities are in the correct format</span>
+            <span class="n">y_pred_proba</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_pred_proba</span><span class="p">)</span>
+            
+            <span class="c1"># If the probabilities are not in the expected shape (n_samples, n_classes),</span>
+            <span class="c1"># try to reshape or convert them</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_pred_proba</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># If it&#39;s a 1D array, assume it&#39;s the probability of the predicted class</span>
+                <span class="n">y_true_one_hot</span><span class="p">,</span> <span class="n">min_label</span><span class="p">,</span> <span class="n">n_classes</span> <span class="o">=</span> <span class="n">_create_one_hot_encoding</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+                <span class="n">one_hot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">y_pred</span><span class="p">),</span> <span class="n">n_classes</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pred</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">y_pred</span><span class="p">):</span>
+                    <span class="n">one_hot</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">pred</span> <span class="o">-</span> <span class="n">min_label</span><span class="p">)]</span> <span class="o">=</span> <span class="n">y_pred_proba</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>  <span class="c1"># Shift to 0-based index</span>
+                <span class="n">y_pred_proba</span> <span class="o">=</span> <span class="n">one_hot</span>
+            
+            <span class="c1"># Check if the probabilities sum to 1 for each sample</span>
+            <span class="n">row_sums</span> <span class="o">=</span> <span class="n">y_pred_proba</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">row_sums</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">):</span>
+                <span class="c1"># Normalize the probabilities</span>
+                <span class="n">y_pred_proba</span> <span class="o">=</span> <span class="n">y_pred_proba</span> <span class="o">/</span> <span class="n">row_sums</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+            
+            <span class="c1"># Add probability-based metrics</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+                <span class="s1">&#39;ranked_probability_score&#39;</span><span class="p">:</span> <span class="n">ranked_probability_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred_proba</span><span class="p">),</span>
+                <span class="s1">&#39;ordinal_weighted_ce&#39;</span><span class="p">:</span> <span class="n">ordinal_weighted_ce</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred_proba</span><span class="p">),</span>
+                <span class="s1">&#39;ordinal_log_loss&#39;</span><span class="p">:</span> <span class="n">ordinal_log_loss</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred_proba</span><span class="p">)</span>
+            <span class="p">})</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Could not calculate probability-based metrics: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="print_evaluation_results">
+<a class="viewcode-back" href="../../api/utils.html#utils.evaluation_metrics.print_evaluation_results">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">print_evaluation_results</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print evaluation results in a formatted way.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    results : dict</span>
+<span class="sd">        Dictionary containing evaluation metrics</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Ordinal Regression Evaluation Results:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+    
+    <span class="c1"># Print hard label metrics</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hard Label Metrics:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">,</span> <span class="s1">&#39;adjacent_accuracy&#39;</span><span class="p">,</span> <span class="s1">&#39;mze&#39;</span><span class="p">,</span> <span class="s1">&#39;mae&#39;</span><span class="p">,</span> <span class="s1">&#39;mse&#39;</span><span class="p">,</span> <span class="s1">&#39;weighted_kappa&#39;</span><span class="p">,</span> <span class="s1">&#39;cem&#39;</span><span class="p">,</span> 
+                  <span class="s1">&#39;spearman_correlation&#39;</span><span class="p">,</span> <span class="s1">&#39;kendall_tau&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">metric</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Print probability-based metrics if available</span>
+    <span class="k">if</span> <span class="s1">&#39;ranked_probability_score&#39;</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Probability-Based Metrics:&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ranked_probability_score&#39;</span><span class="p">,</span> <span class="s1">&#39;ordinal_weighted_ce&#39;</span><span class="p">,</span> <span class="s1">&#39;ordinal_log_loss&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">metric</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span> </div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Ordinal XAI</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/interpretation.html">Interpretation Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/utils.html">Utilities</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Jakob Wankmüller.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

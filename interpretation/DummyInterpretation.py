@@ -15,13 +15,14 @@ class DummyInterpretation(BaseInterpretation):
         """
         super(DummyInterpretation, self).__init__(model, X, y)
     
-    def explain(self, observation_idx=None, feature_subset=None):
+    def explain(self, observation_idx=None, feature_subset=None, plot=False):
         """
         Generate a dummy explanation.
         
         Parameters:
         - observation_idx: (Optional) Index of the instance to explain.
         - feature_subset: (Optional) List of feature names to consider in the explanation.
+        - plot: (Optional) Whether to create visualizations. Default is False.
         """
         if observation_idx is not None:
             obs = self.X.iloc[observation_idx]

@@ -6,8 +6,10 @@ from sklearn.utils.validation import check_X_y, check_is_fitted, validate_data
 from statsmodels.miscmodels.ordinal_model import OrderedModel
 from sklearn.preprocessing import OneHotEncoder
 from models.base_model import BaseOrdinalModel
-class CLM(BaseEstimator,BaseOrdinalModel):
+
+class CLM(BaseEstimator, BaseOrdinalModel):
     def __init__(self, link="logit"):
+        super().__init__()  # Initialize base class
         self.link = link  # Hyperparameter
 
     def get_params(self, deep=True):
@@ -40,12 +42,14 @@ class CLM(BaseEstimator,BaseOrdinalModel):
         self._result = self._model.fit(method='bfgs', disp=False)
         self.params_ = self._result.params
 
+        # Set fitted flag
+        self.is_fitted_ = True
+
         return self
 
 
     def predict(self, X: pd.DataFrame) -> np.ndarray:
         """Predict the ordinal class labels."""
-
         return self.predict_proba(X).argmax(axis=1)
 
 
