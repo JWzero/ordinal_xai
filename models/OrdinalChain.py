@@ -49,17 +49,50 @@ class OrdinalChain(BaseEstimator, BaseOrdinalModel):
         self._scaler = None
 
     def _get_base_classifier(self):
-        """Get the appropriate base classifier instance."""
+        """Get the appropriate base classifier instance with sensible defaults."""
         if self.base_classifier == 'logistic':
             return LogisticRegression(**self.kwargs)
         elif self.base_classifier == 'svm':
-            return SVC(probability=True, **self.kwargs)
+            # Set sensible defaults for SVM if not provided
+            svm_params = {
+                'C': 1.0,                # Regularization parameter
+                'kernel': 'rbf',         # Radial basis function kernel
+                'gamma': 'scale',        # Automatic gamma scaling
+                'probability': True,      # Enable probability estimates
+                'class_weight': 'balanced',  # Handle class imbalance
+                'random_state': 42,
+                'cache_size': 1000,      # Increase cache size for better performance
+                'tol': 1e-3              # Tolerance for stopping criterion
+            }
+            svm_params.update(self.kwargs)
+            return SVC(**svm_params)
         elif self.base_classifier == 'rf':
-            return RandomForestClassifier(**self.kwargs)
+            # Set conservative defaults if not provided
+            rf_params = {
+                'n_estimators': 100,
+                'max_depth': 5,
+                'min_samples_leaf': 5,
+                'random_state': 42
+            }
+            rf_params.update(self.kwargs)
+            return RandomForestClassifier(**rf_params)
         elif self.base_classifier == 'xgb':
-            return XGBClassifier(**self.kwargs)
+            xgb_params = {
+                'n_estimators': 100,
+                'max_depth': 3,
+                'learning_rate': 0.1,
+                'subsample': 0.8,
+                'colsample_bytree': 0.8,
+                'reg_alpha': 1,
+                'reg_lambda': 1,
+                'use_label_encoder': False,
+                'eval_metric': 'mlogloss',
+                'random_state': 42
+            }
+            xgb_params.update(self.kwargs)
+            return XGBClassifier(**xgb_params)
         else:
-            raise ValueError(f"Unknown base classifier: {self.base_classifier}")
+            raise ValueError(f"Unknown base classifier: {self.base_classifier}. Use 'logistic', 'svm', 'rf', or 'xgb'.")
 
     def get_params(self, deep=True):
         """Return model parameters for scikit-learn compatibility."""

@@ -5,6 +5,7 @@ from interpretation.base_interpretation import BaseInterpretation
 from utils import pdp_modified
 import matplotlib.cm as cm
 from matplotlib.patches import Patch
+import textwrap
 
 class ICEProbability(BaseInterpretation):
     """Individual Conditional Expectation (ICE) Plot interpretation method for probabilities."""
@@ -53,12 +54,14 @@ class ICEProbability(BaseInterpretation):
 
         # Create visualizations if requested
         if plot:
-            fig, axes = plt.subplots(nrows=num_rows, ncols=num_cols, figsize=(5 * num_cols, 4 * num_rows))
+            fig, axes = plt.subplots(nrows=num_rows, ncols=num_cols, figsize=(7 * num_cols, 5 * num_rows))
             if num_features == 1:
                 axes = np.array([[axes]])
             elif num_features <= num_cols:
                 axes = axes.reshape(1, -1)
             
+            legend_elements = None  # <-- Add this before the plotting loop
+
             for idx, feature in enumerate(feature_subset):
                 row, col = divmod(idx, num_cols)
                 ax = axes[row, col]
@@ -80,7 +83,13 @@ class ICEProbability(BaseInterpretation):
                     colors = [cmap(i) for i in range(num_ranks)]
                     
                     # Create a custom legend
-                    legend_elements = []
+                    if legend_elements is None:
+                        # Only create legend_elements once
+                        legend_elements = [
+                            Patch(facecolor=colors[rank], alpha=0.7, label=f'R{rank}') for rank in range(num_ranks)
+                        ] + [
+                            Patch(facecolor=colors[rank], alpha=0.15, label=f'R{rank} avg', hatch='//') for rank in range(num_ranks)
+                        ]
                     
                     # Plot stacked areas for instance
                     ax.stackplot(x_values, instance_probs, colors=colors, alpha=0.7, zorder=2)
@@ -100,12 +109,6 @@ class ICEProbability(BaseInterpretation):
                         
                         # Update baseline for next rank - explicitly convert if needed
                         baseline = baseline + averaged_predictions[rank]
-                        
-                        # Add to legend
-                        legend_elements.append(Patch(facecolor=colors[rank], alpha=0.7, 
-                                                   label=f'Instance - Rank {rank}'))
-                        legend_elements.append(Patch(facecolor=colors[rank], alpha=0.15, 
-                                                   label=f'Average - Rank {rank}', hatch='//'))
                     
                     # Plot original value marker and vertical line
                     original_value = self.X.iloc[observation_idx][feature]
@@ -122,19 +125,26 @@ class ICEProbability(BaseInterpretation):
                         # For categorical features, find the exact match
                         closest_idx = np.where(x_values == original_value)[0][0]
                     
-                    # Add text annotation for probabilities at the original value
+                    # Get probabilities at original value
                     probs_at_orig = instance_probs[:, closest_idx]
-                    prob_str = ", ".join([f"Rank {i}: {p:.2f}" for i, p in enumerate(probs_at_orig)])
-                    ax.annotate(f"Probabilities at {feature}={original_value}:\n{prob_str}", 
-                               xy=(original_value, 0.5), xytext=(10, 0),
-                               textcoords="offset points", bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8),
-                               ha='left', va='center', zorder=6)
+                    prob_str = ", ".join([f"R{i}: {p:.2f}" for i, p in enumerate(probs_at_orig)])
+                    
+                    # Insert line breaks in subcaption if too long
+                    caption = f"Probabilities at {feature}={original_value}: {prob_str}"
+                    wrapped_caption = "\n".join(textwrap.wrap(caption, width=60))
+                    ax.text(
+                        0.5, 1.02, wrapped_caption,  # Moved to top position
+                        ha='center', va='bottom',
+                        transform=ax.transAxes,
+                        fontsize=8,
+                        bbox=dict(facecolor='white', alpha=0.8, edgecolor='none', pad=1)
+                    )
                     
                     # Set y-axis limits for the plot
                     ax.set_ylim(0, 1)
                     
-                    # Add custom legend
-                    ax.legend(handles=legend_elements, loc='upper left', fontsize=9)
+                    # Adjust layout to make room for subcaption
+                    plt.subplots_adjust(bottom=0.2)
                     
                 else:
                     # Plot all instances and average (standard line plot)
@@ -147,22 +157,36 @@ class ICEProbability(BaseInterpretation):
                     for rank in range(num_ranks):
                         ax.plot(x_values, averaged_predictions[rank], 
                                color=f'C{rank}', linestyle='--', linewidth=2, 
-                               label=f'Average Rank {rank}')
+                               label=f'R{rank}')
                     
-                    # Add a legend
-                    ax.legend()
-                
-                ax.set_xlabel(feature, fontsize=12, labelpad=10)
-                ax.set_ylabel("Probability", fontsize=12, labelpad=10)
-                ax.set_title(f"ICE Probability Plot for {feature}", fontsize=14, pad=15)
+                ax.set_xlabel(feature, fontsize=12, labelpad=6)
+                ax.set_ylabel("Probability", fontsize=8, labelpad=4)
                 ax.grid(alpha=0.3)
+
+            # After the plotting loop, add the shared legend to the figure
+            if legend_elements is not None:
+                fig.legend(
+                    handles=legend_elements,
+                    loc='lower right',           # Move to bottom right
+                    fontsize=12,                 # Increase font size
+                    ncol=3,
+                    handletextpad=0.5,
+                    columnspacing=0.5,
+                    frameon=True,
+                    borderpad=0.5,
+                    labelspacing=0.5,
+                    handlelength=1.5,
+                    borderaxespad=0.5,
+                    fancybox=True
+                )
 
             # Hide empty subplots
             for idx in range(num_features, num_rows * num_cols):
                 row, col = divmod(idx, num_cols)
                 fig.delaxes(axes[row, col])
 
-            plt.tight_layout(pad=3.0)  # Increase padding to avoid overlap
+            plt.tight_layout(pad=3.0, h_pad=8.0)  # Increased vertical padding with h_pad
+            plt.subplots_adjust(bottom=0.25)  # Increased bottom margin for subcaptions
             plt.show()
         
         print(f"Generated ICE Plots for features: {feature_subset}")

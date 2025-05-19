@@ -52,6 +52,8 @@ class ProbabilityPDP(BaseInterpretation):
             fig, axes = plt.subplots(nrows=num_rows, ncols=num_cols, figsize=(5 * num_cols, 4 * num_rows))
             axes = np.array(axes).reshape(num_rows, num_cols)  # Ensure it's a 2D array
             
+            legend_handles = None  # Add before the plotting loop
+
             for idx, feature in enumerate(feature_subset):
                 row, col = divmod(idx, num_cols)
                 ax = axes[row, col]
@@ -62,13 +64,33 @@ class ProbabilityPDP(BaseInterpretation):
                 probabilities = pdp_result['average']
                 
                 # Use stackplot for stacked probability visualization
-                ax.stackplot(x_values, probabilities, labels=[f"Rank {rank}" for rank in range(num_ranks)], alpha=0.7)
+                stack = ax.stackplot(x_values, probabilities, labels=[f"Rank {rank}" for rank in range(num_ranks)], alpha=0.7)
                 
-                ax.legend(loc="upper right")
+                # Collect legend handles from the first subplot only
+                if legend_handles is None:
+                    legend_handles = stack
+
                 ax.set_xlabel(feature, fontsize=12, labelpad=10)
-                ax.set_ylabel("Partial Dependence", fontsize=12, labelpad=10)
-                ax.set_title(f"PDP for {feature}", fontsize=14, pad=15)
+                ax.set_ylabel("Partial Dependence Probabilities", fontsize=6, labelpad=6)
+                ax.set_title(f"PDP for {feature}", fontsize=10, pad=15)
                 ax.grid()
+
+            # After the plotting loop, add the shared legend to the figure
+            if legend_handles is not None:
+                fig.legend(
+                    handles=legend_handles,
+                    loc='lower right',           # Bottom right, as in ICEProbability.py
+                    fontsize=12,                 # Larger font size
+                    ncol=3,
+                    handletextpad=0.5,
+                    columnspacing=0.5,
+                    frameon=True,
+                    borderpad=0.5,
+                    labelspacing=0.5,
+                    handlelength=1.5,
+                    borderaxespad=0.5,
+                    fancybox=True
+                )
 
             # Hide empty subplots
             for idx in range(num_features, num_rows * num_cols):
