@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator
-from sklearn.preprocessing import StandardScaler
+from utils.data_utils import transform_features
 from sklearn.utils.validation import check_X_y, check_is_fitted, validate_data
 from statsmodels.miscmodels.ordinal_model import OrderedModel
-from sklearn.preprocessing import OneHotEncoder
 from models.base_model import BaseOrdinalModel
 
 class CLM(BaseEstimator, BaseOrdinalModel):
@@ -66,43 +65,21 @@ class CLM(BaseEstimator, BaseOrdinalModel):
         return self._result.predict(X_transformed.values)
 
         
-    def transform(self, X: pd.DataFrame, fit=False) -> pd.DataFrame:
+    def transform(self, X: pd.DataFrame, fit=False, no_scaling=False) -> pd.DataFrame:
         """Transform input data into the format expected by the model."""
-        
-        # Identify categorical columns
-        categorical_columns = X.select_dtypes(include=["object"]).columns
-        
         if fit:
-            # Initialize and fit the encoder on categorical data
-            self._encoder = OneHotEncoder(drop="first", handle_unknown="ignore", sparse_output=False)
-            categorical_features = self._encoder.fit_transform(X[categorical_columns])
-        else:
-            # Transform categorical data using stored encoder
-            categorical_features = self._encoder.transform(X[categorical_columns])
-
-        # Convert to DataFrame with proper column names
-        categorical_features = pd.DataFrame(categorical_features, 
-                                            columns=self._encoder.get_feature_names_out(categorical_columns),
-                                            index=X.index)
-
-        # Handle numerical features if they exist
-        numerical_columns = X.drop(columns=categorical_columns, axis=1).columns
-        if len(numerical_columns) > 0:
-            if fit:
-                self._scaler = StandardScaler()
-                numerical_features = self._scaler.fit_transform(X[numerical_columns])
-            else:
-                numerical_features = self._scaler.transform(X[numerical_columns])
-
-            # Combine numerical and categorical features
-            numerical_df = pd.DataFrame(numerical_features, 
-                                        columns=numerical_columns,
-                                        index=X.index)
-            X_transformed = pd.concat([numerical_df, categorical_features], axis=1)
-        else:
-            # If no numerical columns, just use categorical features
-            X_transformed = categorical_features
-
+            self._encoder = None
+            self._scaler = None
+        X_transformed, encoder, scaler = transform_features(
+            X,
+            fit=fit,
+            encoder=self._encoder,
+            scaler=self._scaler,
+            no_scaling=no_scaling
+        )
+        if fit:
+            self._encoder = encoder
+            self._scaler = scaler
         return X_transformed
 
 

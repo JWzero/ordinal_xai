@@ -15,7 +15,7 @@ from utils.evaluation_metrics import (
 class LOCO(BaseInterpretation):
     """Leave-One-Covariate-Out (LOCO) interpretation method for feature importance."""
     
-    def __init__(self, model, X, y=None, metrics=None, test_size=0.2, random_state=None, use_train_test_split=True):
+    def __init__(self, model, X, y=None, test_size=0.2, random_state=None, use_train_test_split=True):
         """
         Initialize the LOCO interpretation method.
         
@@ -23,8 +23,6 @@ class LOCO(BaseInterpretation):
         - model: The trained ordinal regression model.
         - X: DataFrame containing the dataset used for interpretation.
         - y: (Optional) Series containing target labels.
-        - metrics: (Optional) List of metrics to use for feature importance calculation.
-                  If None, all available metrics will be used.
         - test_size: (Optional) Proportion of the dataset to include in the test split.
                      Default is 0.2.
         - random_state: (Optional) Controls the shuffling applied to the data before splitting.
@@ -33,8 +31,6 @@ class LOCO(BaseInterpretation):
                                 Default is True.
         """
         super().__init__(model, X, y)
-        
-        # Define available metrics
         self.available_metrics = {
             'mze': mze,
             'mae': mae,
@@ -49,30 +45,14 @@ class LOCO(BaseInterpretation):
             'ordinal_weighted_ce_linear': lambda y_true, y_pred_proba: ordinal_weighted_ce(y_true, y_pred_proba, alpha=1),
             'ordinal_weighted_ce_quadratic': lambda y_true, y_pred_proba: ordinal_weighted_ce(y_true, y_pred_proba, alpha=2)
         }
-        
-        # Set metrics to use
-        if metrics is None:
-            self.metrics = list(self.available_metrics.keys())
-        else:
-            # Validate metrics
-            invalid_metrics = [m for m in metrics if m not in self.available_metrics]
-            if invalid_metrics:
-                raise ValueError(f"Invalid metrics: {invalid_metrics}. Available metrics: {list(self.available_metrics.keys())}")
-            self.metrics = metrics
-        
-        # Store train-test split parameters
         self.test_size = test_size
         self.random_state = random_state
         self.use_train_test_split = use_train_test_split
-        
-        # Perform train-test split if requested and y is provided
         if self.use_train_test_split and self.y is not None:
             self._perform_train_test_split()
         else:
-            # Store the original model's performance metrics
             if self.y is not None:
                 self.original_predictions = self.model.predict(self.X)
-                # Get probability predictions if available
                 try:
                     self.original_proba_predictions = self.model.predict_proba(self.X)
                 except (AttributeError, NotImplementedError):
@@ -112,7 +92,7 @@ class LOCO(BaseInterpretation):
             self.y_test, self.original_predictions, self.original_proba_predictions
         )
     
-    def explain(self, observation_idx=None, feature_subset=None, plot=False):
+    def explain(self, observation_idx=None, feature_subset=None, plot=False, metrics=None):
         """
         Generate LOCO feature importance scores.
         If observation_idx is provided, perform local explanation for that instance only (local LOCO).
@@ -121,32 +101,37 @@ class LOCO(BaseInterpretation):
         - observation_idx: (Optional) Index of specific instance to analyze (local explanation).
         - feature_subset: (Optional) List of feature names or indices to analyze.
         - plot: (Optional) Whether to create visualizations. Default is False.
+        - metrics: (Optional) List of metrics to use for feature importance calculation.
         Returns:
         - Dictionary containing feature importance scores and visualizations.
         """
         _is_local = observation_idx is not None
         if _is_local:
             # Restrict metrics for local explanation
-            metrics = [m for m in self.metrics if m not in [
-                'spearman_correlation', 'kendall_tau', 'weighted_kappa_quadratic', 'weighted_kappa_linear', 'cem']]
+            if metrics is None:
+                metrics_to_use = [m for m in self.available_metrics if m not in [
+                    'spearman_correlation', 'kendall_tau', 'weighted_kappa_quadratic', 'weighted_kappa_linear', 'cem']]
+            else:
+                metrics_to_use = [m for m in metrics if m not in [
+                    'spearman_correlation', 'kendall_tau', 'weighted_kappa_quadratic', 'weighted_kappa_linear', 'cem']]
             metric_funcs = self.available_metrics
-            # Use only the specified observation for prediction, but fit on all data
             X_test = self.X.iloc[[observation_idx]]
             y_test = self.y.iloc[[observation_idx]] if hasattr(self.y, 'iloc') else np.array([self.y[observation_idx]])
             X_train = self.X
             y_train = self.y
             model_to_use = self.model
-            # Evaluate the original model on the single observation
             original_predictions = model_to_use.predict(X_test)
             try:
                 original_proba_predictions = model_to_use.predict_proba(X_test)
             except (AttributeError, NotImplementedError):
                 original_proba_predictions = None
-            original_results = evaluate_ordinal_model(y_test, original_predictions, original_proba_predictions, metrics=metrics)
+            original_results = evaluate_ordinal_model(y_test, original_predictions, original_proba_predictions, metrics=metrics_to_use)
         else:
-            metrics = self.metrics
+            if metrics is None:
+                metrics_to_use = list(self.available_metrics.keys())
+            else:
+                metrics_to_use = metrics
             metric_funcs = self.available_metrics
-            # Select data for global
             if self.use_train_test_split and self.y is not None:
                 X_train = self.X_train
                 X_test = self.X_test
@@ -182,9 +167,9 @@ class LOCO(BaseInterpretation):
                 proba_predictions = model_copy.predict_proba(X_test_without_feature)
             except (AttributeError, NotImplementedError):
                 proba_predictions = None
-            feature_results = evaluate_ordinal_model(y_test, predictions, proba_predictions, metrics=metrics)
+            feature_results = evaluate_ordinal_model(y_test, predictions, proba_predictions, metrics=metrics_to_use)
             metric_drops = {}
-            for metric in metrics:
+            for metric in metrics_to_use:
                 if metric in original_results and metric in feature_results:
                     if metric in ['mae', 'mse', 'mze', 'ranked_probability_score', 
                                  'ordinal_weighted_ce_linear', 'ordinal_weighted_ce_quadratic']:
@@ -197,7 +182,7 @@ class LOCO(BaseInterpretation):
                     results['metric_drops'][metric] = {}
                 results['metric_drops'][metric][feature] = drop
         if plot:
-            self._plot_feature_importance(results, metrics=metrics)
+            self._plot_feature_importance(results, metrics=metrics_to_use)
         return results
     
     def _plot_feature_importance(self, results, metrics=None):
@@ -225,7 +210,7 @@ class LOCO(BaseInterpretation):
         if metrics is None:
             metrics = list(results['metric_drops'].keys())
         n_metrics = len(metrics)
-        n_cols = 2 if n_metrics > 1 else 1
+        n_cols = min(4, n_metrics) if n_metrics > 1 else 1
         n_rows = math.ceil(n_metrics / n_cols)
         fig, axes = plt.subplots(n_rows, n_cols, figsize=(7 * n_cols, 4.5 * n_rows))
         if n_metrics == 1:
@@ -251,19 +236,23 @@ class LOCO(BaseInterpretation):
                 title_suffix = "Drop"
             abbr = metric_abbr.get(metric, metric)
             bars = ax.bar(features, scores, color=color, alpha=0.85)
-            ax.set_ylabel(f'{abbr} {title_suffix}', fontsize=8, labelpad=10)
+            ax.set_ylabel(f'{abbr} {title_suffix}', fontsize=8, labelpad=3)
             ax.grid(axis='y', linestyle='--', alpha=0.5)
-            plt.setp(ax.get_xticklabels(), rotation=30, ha='right', fontsize=8)
-            # Add value labels at the same height in the middle of the subplot
+            if len(features) > 10:
+                feature_fontsize = 5
+            else:
+                feature_fontsize = 8
+            plt.setp(ax.get_xticklabels(), rotation=90, ha='right', fontsize=feature_fontsize)
             ylim = ax.get_ylim()
             y_mid = (ylim[0] + ylim[1]) / 2
             for bar, score in zip(bars, scores):
                 ax.text(bar.get_x() + bar.get_width()/2, y_mid,
-                        f'{score:.3f}', ha='center', va='center', fontsize=8, rotation=90, clip_on=True)
+                        f'{score:.3f}', ha='center', va='center', fontsize=feature_fontsize, rotation=90, clip_on=True)
         for i in range(n_metrics, len(axes)):
             axes[i].set_visible(False)
         fig.suptitle('LOCO Feature Importance Across Metrics', fontsize=18, y=0.995)
-        plt.tight_layout(h_pad=8)
+        plt.tight_layout(h_pad=5,w_pad=5)
+        plt.subplots_adjust(top=0.95,left=0.05)
         plt.show()
         
         

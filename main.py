@@ -4,6 +4,16 @@ import os
 import numpy as np
 import pandas as pd
 from utils.evaluation_metrics import evaluate_ordinal_model, print_evaluation_results
+import warnings
+import sys
+
+if sys.platform == "win32":
+    warnings.filterwarnings(
+        "ignore",
+        message=".*'super' object has no attribute '__del__'.*",
+        category=UserWarning,
+        module="joblib.externals.loky.backend.resource_tracker"
+    )
 
 def load_data(dataset_name):
     """Load dataset from the data/ folder."""
@@ -88,6 +98,13 @@ def parse_args():
         choices=["logistic", "svm", "rf", "xgb"],
         help="Base classifier for OrdinalChain (logistic, svm, rf, xgb)"
     )
+    parser.add_argument(
+        "--model_type",
+        type=str,
+        default="logistic",
+        choices=["logistic", "decision_tree"],
+        help="Model type for LIME interpretation (default: 'logistic'). Options: 'logistic', 'decision_tree'"
+    )
 
     return parser.parse_args()
 
@@ -113,24 +130,24 @@ def main(args):
 
     # Load interpretability method
     if args.features:
-        #covert numbers to ints, else keep feature names
         feature_subset = [int(i) if i.isdigit() else i for i in args.features.split(",")]
     else:
         feature_subset = None
     
     # Prepare kwargs for interpretation method
     interpretation_kwargs = {}
-    
-    # Add metrics parameter for LOCO if specified
-    if args.interpretation == "LOCO" and args.metrics:
-        interpretation_kwargs["metrics"] = args.metrics.split(",")
-    
     # Add sampling parameter for LIME if specified
-    if args.interpretation == "LIME" and args.sampling:
-        interpretation_kwargs["sampling"] = args.sampling
+    if args.interpretation == "LIME":
+        if args.sampling:
+            interpretation_kwargs["sampling"] = args.sampling
+        interpretation_kwargs["model_type"] = args.model_type
 
     interpretation = load_interpretation(args.interpretation, model, X, y, **interpretation_kwargs)
-    explanation = interpretation.explain(observation_idx=args.observation_idx, feature_subset=feature_subset, plot=True)
+    # Prepare kwargs for explain
+    explain_kwargs = {}
+    if args.metrics:
+        explain_kwargs["metrics"] = args.metrics.split(",")
+    explanation = interpretation.explain(observation_idx=args.observation_idx, feature_subset=feature_subset, plot=True, **explain_kwargs)
 
 if __name__ == "__main__":
     args = parse_args()
