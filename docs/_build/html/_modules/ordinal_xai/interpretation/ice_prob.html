@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ordinal_xai.interpretation.ice_prob &#8212; ordinal_xai  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for ordinal_xai.interpretation.ice_prob</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Individual Conditional Expectation (ICE) Plot implementation for probability visualization in ordinal regression.</span>
+
+<span class="sd">This module implements ICE plots specifically designed for visualizing probability distributions</span>
+<span class="sd">in ordinal regression models. It extends the standard ICE plot to show how class probabilities</span>
+<span class="sd">change as feature values change, using stacked area plots to represent the probability</span>
+<span class="sd">distribution across ordinal classes.</span>
+
+<span class="sd">Key Features:</span>
+<span class="sd">- Stacked area plots to visualize probability distributions</span>
+<span class="sd">- Support for both individual instance analysis and average behavior (PDP)</span>
+<span class="sd">- Automatic handling of categorical and numerical features</span>
+<span class="sd">- Detailed probability annotations at original feature values</span>
+<span class="sd">- Color-coded visualization of ordinal class probabilities</span>
+
+<span class="sd">The implementation is particularly useful for:</span>
+<span class="sd">- Understanding how features affect the probability distribution across ordinal classes</span>
+<span class="sd">- Analyzing the relationship between feature values and class probabilities</span>
+<span class="sd">- Comparing individual instance behavior with average behavior</span>
+<span class="sd">- Visualizing the uncertainty in ordinal predictions</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base_interpretation</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseInterpretation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdp_modified</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.cm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="kn">import</span> <span class="n">Patch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">textwrap</span>
+
+<div class="viewcode-block" id="ICEProb">
+<a class="viewcode-back" href="../../../source/api/interpretation/ice_prob.html#ordinal_xai.interpretation.ice_prob.ICEProb">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ICEProb</span><span class="p">(</span><span class="n">BaseInterpretation</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Individual Conditional Expectation (ICE) Plot interpretation method for probabilities.</span>
+<span class="sd">    </span>
+<span class="sd">    This class implements ICE plots specifically designed for visualizing probability</span>
+<span class="sd">    distributions in ordinal regression models. It uses stacked area plots to show how</span>
+<span class="sd">    the probability distribution across ordinal classes changes as feature values change.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : object</span>
+<span class="sd">        The trained ordinal regression model. Must implement predict_proba method.</span>
+<span class="sd">    X : pd.DataFrame</span>
+<span class="sd">        Dataset used for interpretation. Should contain the same features used</span>
+<span class="sd">        during model training.</span>
+<span class="sd">    y : pd.Series, optional</span>
+<span class="sd">        Target labels. Not required for interpretation but useful for reference.</span>
+<span class="sd">        </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : object</span>
+<span class="sd">        The trained ordinal regression model</span>
+<span class="sd">    X : pd.DataFrame</span>
+<span class="sd">        Dataset used for interpretation</span>
+<span class="sd">    y : pd.Series</span>
+<span class="sd">        Target labels (if provided)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the ICE Plot interpretation method for probabilities.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        model : object</span>
+<span class="sd">            The trained ordinal regression model</span>
+<span class="sd">        X : pd.DataFrame</span>
+<span class="sd">            Dataset used for interpretation</span>
+<span class="sd">        y : pd.Series, optional</span>
+<span class="sd">            Target labels</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="ICEProb.explain">
+<a class="viewcode-back" href="../../../source/api/interpretation/ice_prob.html#ordinal_xai.interpretation.ice_prob.ICEProb.explain">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">feature_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate Individual Conditional Expectation Plots for probabilities.</span>
+<span class="sd">        </span>
+<span class="sd">        This method computes and optionally visualizes how the model&#39;s probability</span>
+<span class="sd">        distribution changes as feature values change. It uses stacked area plots</span>
+<span class="sd">        to show the probability distribution across ordinal classes.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        observation_idx : int, optional</span>
+<span class="sd">            Index of specific instance to highlight in the plot. If provided,</span>
+<span class="sd">            only this instance&#39;s probability distribution will be shown along with</span>
+<span class="sd">            the average (PDP) distribution.</span>
+<span class="sd">        feature_subset : list, optional</span>
+<span class="sd">            List of feature names or indices to plot. If None, all features are used.</span>
+<span class="sd">        plot : bool, default=False</span>
+<span class="sd">            Whether to create visualizations of the ICE plots.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Dictionary containing ICE results for each feature:</span>
+<span class="sd">            - &#39;grid_values&#39;: Feature values used for prediction</span>
+<span class="sd">            - &#39;average&#39;: Average probability predictions (PDP) for each class</span>
+<span class="sd">            - &#39;individual&#39;: Individual probability predictions for each instance and class</span>
+<span class="sd">            </span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - Uses stacked area plots to visualize probability distributions</span>
+<span class="sd">        - Shows both individual instance probabilities and average probabilities</span>
+<span class="sd">        - Includes probability annotations at original feature values</span>
+<span class="sd">        - Uses a viridis colormap for different ordinal classes</span>
+<span class="sd">        - Automatically handles both categorical and numerical features</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">feature_subset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">feature_subset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">feature_subset</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">feature_subset</span><span class="p">]</span>
+        
+        <span class="n">num_features</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature_subset</span><span class="p">)</span>
+        <span class="n">num_cols</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">num_features</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># Max 4 plots per row</span>
+        <span class="n">num_rows</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">num_features</span> <span class="o">/</span> <span class="n">num_cols</span><span class="p">))</span>  <span class="c1"># Compute required rows</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">is_fitted_</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span> <span class="c1"># Ensure model is fitted</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Compute ICE curves for each feature</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">feature_subset</span><span class="p">):</span>
+            <span class="n">feature_idx</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">feature</span><span class="p">)]</span>
+            <span class="n">ice_result</span> <span class="o">=</span> <span class="n">pdp_modified</span><span class="o">.</span><span class="n">partial_dependence</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="n">feature_idx</span><span class="p">,</span> 
+                <span class="n">response_method</span><span class="o">=</span><span class="s2">&quot;predict_proba&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;both&quot;</span>
+            <span class="p">)</span>
+            <span class="n">results</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="o">=</span> <span class="n">ice_result</span>
+
+        <span class="c1"># Create visualizations if requested</span>
+        <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="n">num_rows</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="n">num_cols</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span> <span class="o">*</span> <span class="n">num_cols</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">num_rows</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">num_features</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">axes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">axes</span><span class="p">]])</span>
+            <span class="k">elif</span> <span class="n">num_features</span> <span class="o">&lt;=</span> <span class="n">num_cols</span><span class="p">:</span>
+                <span class="n">axes</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            
+            <span class="n">legend_elements</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Initialize legend elements</span>
+
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">feature_subset</span><span class="p">):</span>
+                <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">num_cols</span><span class="p">)</span>
+                <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span>
+                
+                <span class="n">ice_result</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span>
+                <span class="n">x_values</span> <span class="o">=</span> <span class="n">ice_result</span><span class="p">[</span><span class="s1">&#39;grid_values&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">averaged_predictions</span> <span class="o">=</span> <span class="n">ice_result</span><span class="p">[</span><span class="s1">&#39;average&#39;</span><span class="p">]</span>  <span class="c1"># Shape: (n_classes, n_grid_points)</span>
+                <span class="n">individual_predictions</span> <span class="o">=</span> <span class="n">ice_result</span><span class="p">[</span><span class="s1">&#39;individual&#39;</span><span class="p">]</span>  <span class="c1"># Shape: (n_classes, n_instances, n_grid_points)</span>
+                <span class="n">num_ranks</span> <span class="o">=</span> <span class="n">averaged_predictions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                
+                <span class="c1"># Create colormap for different ranks</span>
+                <span class="n">cmap</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">num_ranks</span><span class="p">)</span>
+                <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">cmap</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_ranks</span><span class="p">)]</span>
+                
+                <span class="c1"># Plot curves based on whether observation_idx is specified</span>
+                <span class="k">if</span> <span class="n">observation_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># Create a stacked area plot for the specified instance</span>
+                    <span class="n">instance_probs</span> <span class="o">=</span> <span class="n">individual_predictions</span><span class="p">[:,</span> <span class="n">observation_idx</span><span class="p">,</span> <span class="p">:]</span>
+                    
+                    <span class="c1"># Create legend elements if not already created</span>
+                    <span class="k">if</span> <span class="n">legend_elements</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">legend_elements</span> <span class="o">=</span> <span class="p">[</span>
+                            <span class="n">Patch</span><span class="p">(</span><span class="n">facecolor</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">rank</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;R</span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_ranks</span><span class="p">)</span>
+                        <span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
+                            <span class="n">Patch</span><span class="p">(</span><span class="n">facecolor</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">rank</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;R</span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s1"> avg&#39;</span><span class="p">,</span> <span class="n">hatch</span><span class="o">=</span><span class="s1">&#39;//&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_ranks</span><span class="p">)</span>
+                        <span class="p">]</span>
+                    
+                    <span class="c1"># Plot stacked areas for instance</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">stackplot</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="n">instance_probs</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                    
+                    <span class="c1"># Plot stacked areas for average probabilities</span>
+                    <span class="n">baseline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_values</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+                    
+                    <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_ranks</span><span class="p">):</span>
+                        <span class="c1"># Create stacked area for this rank</span>
+                        <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="n">baseline</span><span class="p">,</span> <span class="n">baseline</span> <span class="o">+</span> <span class="n">averaged_predictions</span><span class="p">[</span><span class="n">rank</span><span class="p">],</span> 
+                                       <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">rank</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                        
+                        <span class="c1"># Add dashed line at the top edge of this rank&#39;s area</span>
+                        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="n">baseline</span> <span class="o">+</span> <span class="n">averaged_predictions</span><span class="p">[</span><span class="n">rank</span><span class="p">],</span> 
+                               <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">rank</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+                        
+                        <span class="c1"># Update baseline for next rank</span>
+                        <span class="n">baseline</span> <span class="o">=</span> <span class="n">baseline</span> <span class="o">+</span> <span class="n">averaged_predictions</span><span class="p">[</span><span class="n">rank</span><span class="p">]</span>
+                    
+                    <span class="c1"># Add original value marker and vertical line</span>
+                    <span class="n">original_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">observation_idx</span><span class="p">][</span><span class="n">feature</span><span class="p">]</span>
+                    
+                    <span class="c1"># Add vertical line at original feature value</span>
+                    <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>  <span class="c1"># Probability bounds</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">original_value</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span> 
+                            <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+                    
+                    <span class="c1"># Find probabilities at original value</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">original_value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+                        <span class="n">closest_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x_values</span> <span class="o">-</span> <span class="n">original_value</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">closest_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x_values</span> <span class="o">==</span> <span class="n">original_value</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    
+                    <span class="c1"># Get and display probabilities at original value</span>
+                    <span class="n">probs_at_orig</span> <span class="o">=</span> <span class="n">instance_probs</span><span class="p">[:,</span> <span class="n">closest_idx</span><span class="p">]</span>
+                    <span class="n">prob_str</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;R</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">p</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">probs_at_orig</span><span class="p">)])</span>
+                    
+                    <span class="c1"># Add probability annotation</span>
+                    <span class="n">caption</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Probabilities at </span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">original_value</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">prob_str</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">wrapped_caption</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">caption</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">60</span><span class="p">))</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+                        <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.02</span><span class="p">,</span> <span class="n">wrapped_caption</span><span class="p">,</span>
+                        <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span>
+                        <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
+                        <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+                        <span class="n">bbox</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    
+                    <span class="c1"># Set y-axis limits</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Plot all instances and average (standard line plot)</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">)):</span>
+                        <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_ranks</span><span class="p">):</span>
+                            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="n">individual_predictions</span><span class="p">[</span><span class="n">rank</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:],</span> 
+                                   <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">rank</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+                    
+                    <span class="c1"># Plot the average curves</span>
+                    <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_ranks</span><span class="p">):</span>
+                        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="n">averaged_predictions</span><span class="p">[</span><span class="n">rank</span><span class="p">],</span> 
+                               <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">rank</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+                               <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;R</span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                
+                <span class="c1"># Create simple legend with one entry per rank color</span>
+                <span class="k">if</span> <span class="n">legend_elements</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">legend_elements</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">Patch</span><span class="p">(</span><span class="n">facecolor</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">rank</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Rank </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_ranks</span><span class="p">)</span>
+                    <span class="p">]</span>
+                
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">labelpad</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Probability&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">labelpad</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+            <span class="c1"># Add shared legend</span>
+            <span class="k">if</span> <span class="n">legend_elements</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
+                    <span class="n">handles</span><span class="o">=</span><span class="n">legend_elements</span><span class="p">,</span>
+                    <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">,</span>
+                    <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+                    <span class="n">ncol</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">num_ranks</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>  <span class="c1"># Adjust number of columns based on number of ranks</span>
+                    <span class="n">handletextpad</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                    <span class="n">columnspacing</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                    <span class="n">frameon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">borderpad</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                    <span class="n">labelspacing</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                    <span class="n">handlelength</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+                    <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                    <span class="n">fancybox</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+
+            <span class="c1"># Hide empty subplots</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_features</span><span class="p">,</span> <span class="n">num_rows</span> <span class="o">*</span> <span class="n">num_cols</span><span class="p">):</span>
+                <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">num_cols</span><span class="p">)</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">delaxes</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">])</span>
+
+            <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">h_pad</span><span class="o">=</span><span class="mf">8.0</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated ICE Plots for features: </span><span class="si">{</span><span class="n">feature_subset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">results</span> </div>
+</div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">ordinal_xai</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/api/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/api/interpretation.html">Interpretation Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/api/utils.html">Utilities</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -451,10 +451,9 @@ def evaluate_ordinal_model(y_true, y_pred, y_pred_proba=None, metrics=None):
     """
     Evaluate an ordinal regression model using multiple metrics.
     
-    This function provides a comprehensive evaluation of ordinal regression models
-    by computing multiple metrics. It supports both hard-label metrics (based on
-    predicted class labels) and probability-based metrics (based on predicted
-    probabilities).
+    This function computes a comprehensive set of evaluation metrics for ordinal
+    regression models, including both hard-label metrics and probability-based metrics
+    if probability predictions are available.
     
     Parameters
     ----------
@@ -463,26 +462,19 @@ def evaluate_ordinal_model(y_true, y_pred, y_pred_proba=None, metrics=None):
     y_pred : array-like of shape (n_samples,)
         Predicted ordinal labels
     y_pred_proba : array-like of shape (n_samples, n_classes), optional
-        Predicted probabilities for each class
+        Predicted class probabilities
     metrics : list of str, optional
-        List of metrics to compute. If None, all available metrics are computed.
-        Available metrics:
-        - Hard label metrics: accuracy, adjacent_accuracy, mze, mae, mse,
-          weighted_kappa_quadratic, weighted_kappa_linear, cem,
-          spearman_correlation, kendall_tau
-        - Probability-based metrics: ranked_probability_score,
-          ordinal_weighted_ce_linear, ordinal_weighted_ce_quadratic
+        List of metric names to compute. If None, all available metrics are used.
         
     Returns
     -------
     dict
-        Dictionary containing all computed evaluation metrics
+        Dictionary containing evaluation results for each metric
         
     Notes
     -----
-    - Probability-based metrics are only computed if y_pred_proba is provided
-    - If a metric fails to compute, a warning is printed and the metric is skipped
-    - For probability-based metrics, probabilities are normalized to sum to 1
+    The function automatically selects appropriate metrics based on the available
+    predictions. Probability-based metrics are only computed if y_pred_proba is provided.
     """
     available_hard_metrics = {
         'accuracy': accuracy,

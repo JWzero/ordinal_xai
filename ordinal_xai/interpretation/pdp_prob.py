@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from interpretation.base_interpretation import BaseInterpretation
-from utils import pdp_modified
+from .base_interpretation import BaseInterpretation
+from ..utils import pdp_modified
 from typing import Optional, List, Union, Dict, Any
 
 class PDPProb(BaseInterpretation):

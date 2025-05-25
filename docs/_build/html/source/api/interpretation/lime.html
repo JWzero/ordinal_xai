@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>LIME (Local Interpretable Model-agnostic Explanations) &#8212; ordinal_xai  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="LOCO (Leave-One-Covariate-Out)" href="loco.html" />
+    <link rel="prev" title="Interpretation Methods" href="../interpretation.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="lime-local-interpretable-model-agnostic-explanations">
+<h1>LIME (Local Interpretable Model-agnostic Explanations)<a class="headerlink" href="#lime-local-interpretable-model-agnostic-explanations" title="Link to this heading">¶</a></h1>
+<p id="module-ordinal_xai.interpretation.lime">Local Interpretable Model-agnostic Explanations (LIME) for ordinal regression models.</p>
+<p>This module implements LIME for ordinal regression models, providing local explanations
+by fitting interpretable surrogate models to explain individual predictions. The implementation
+extends standard LIME to handle ordinal data by comparing predictions with adjacent or
+following classes.</p>
+<p>Key Features:
+- Local explanations for individual predictions
+- Support for both logistic regression and decision tree surrogate models
+- Multiple sampling strategies (grid, uniform, permutation)
+- Customizable kernel functions for sample weighting
+- Visualization of feature importance through coefficients or decision trees
+- Support for both numerical and categorical features</p>
+<p>The implementation is particularly useful for:
+- Understanding individual predictions in ordinal regression models
+- Identifying key features that influence specific predictions
+- Comparing feature importance across different classes
+- Providing interpretable explanations for model decisions</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LIME</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comparison_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'one_vs_following'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'logistic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.75</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'permute'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/ordinal_xai/interpretation/lime.html#LIME"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="base_interpretation.html#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<p>Local Interpretable Model-agnostic Explanations for ordinal regression models.</p>
+<p>This class implements LIME for ordinal regression models, providing local explanations
+by fitting interpretable surrogate models to explain individual predictions. The implementation
+extends standard LIME to handle ordinal data by comparing predictions with adjacent or
+following classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><em>object</em></a>) – The trained ordinal regression model. Must implement predict and transform methods.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Dataset used for interpretation. Should contain the same features used
+during model training.</p></li>
+<li><p><strong>y</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – Target labels. Not required for interpretation but useful for reference.</p></li>
+<li><p><strong>comparison_method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>default='one_vs_following'</em>) – Method for comparing classes:
+- ‘one_vs_next’: Compare with adjacent classes only
+- ‘one_vs_following’: Compare with all higher/lower classes</p></li>
+<li><p><strong>model_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>default='logistic'</em>) – Type of surrogate model to use:
+- ‘logistic’: Logistic regression model
+- ‘decision_tree’: Decision tree model</p></li>
+<li><p><strong>kernel_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>default=0.75</em>) – Width of the exponential kernel for sample weighting. Controls how quickly
+the weight of samples decreases with distance.</p></li>
+<li><p><strong>custom_kernel</strong> (<em>callable</em><em>, </em><em>optional</em>) – Custom kernel function for sample weighting. Should take distances as input
+and return weights.</p></li>
+<li><p><strong>sampling</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>default='permute'</em>) – Sampling strategy for generating perturbed samples:
+- ‘grid’: Generate samples on a grid (for small feature spaces)
+- ‘uniform’: Sample uniformly from feature ranges
+- ‘permute’: Permute feature values from the dataset</p></li>
+<li><p><strong>max_samples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>default=10000</em>) – Maximum number of samples to generate for surrogate model training.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.model" title="Link to this definition">¶</a></dt>
+<dd><p>The trained ordinal regression model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.X">
+<span class="sig-name descname"><span class="pre">X</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.X" title="Link to this definition">¶</a></dt>
+<dd><p>Training data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.y">
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.y" title="Link to this definition">¶</a></dt>
+<dd><p>Target labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.comparison_method">
+<span class="sig-name descname"><span class="pre">comparison_method</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.comparison_method" title="Link to this definition">¶</a></dt>
+<dd><p>Method for comparing classes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.model_type">
+<span class="sig-name descname"><span class="pre">model_type</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.model_type" title="Link to this definition">¶</a></dt>
+<dd><p>Type of surrogate model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.kernel_width">
+<span class="sig-name descname"><span class="pre">kernel_width</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.kernel_width" title="Link to this definition">¶</a></dt>
+<dd><p>Width of the exponential kernel</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.custom_kernel">
+<span class="sig-name descname"><span class="pre">custom_kernel</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.custom_kernel" title="Link to this definition">¶</a></dt>
+<dd><p>Custom kernel function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.sampling">
+<span class="sig-name descname"><span class="pre">sampling</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.sampling" title="Link to this definition">¶</a></dt>
+<dd><p>Sampling strategy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.max_samples">
+<span class="sig-name descname"><span class="pre">max_samples</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.max_samples" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum number of samples</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If comparison_method is invalid, kernel_width is non-positive,
+    or sampling strategy is invalid</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>X</strong> (<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.2.3)"><em>DataFrame</em></a>)</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>ndarray</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>comparison_method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
+<li><p><strong>model_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
+<li><p><strong>kernel_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
+<li><p><strong>custom_kernel</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><em>Callable</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>sampling</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
+<li><p><strong>max_samples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/ordinal_xai/interpretation/lime.html#LIME.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.explain" title="Link to this definition">¶</a></dt>
+<dd><p>Generate LIME explanations for a specific observation.</p>
+<p>This method creates local explanations by:
+1. Generating perturbed samples around the observation
+2. Computing sample weights based on distance
+3. Fitting surrogate models to explain the prediction
+4. Visualizing the results if requested</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Index of the observation to explain</p></li>
+<li><p><strong>feature_subset</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em><em>]</em><em>, </em><em>optional</em>) – List of feature indices or names to include</p></li>
+<li><p><strong>plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default=False</em>) – Whether to create visualizations</p></li>
+<li><p><strong>**kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Additional keyword arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing:
+- features: List of feature names
+- higher_model: Decision tree model for higher class comparison (if model_type=”decision_tree”)
+- lower_model: Decision tree model for lower class comparison (if model_type=”decision_tree”)
+- higher_coef: Coefficients for higher class comparison (if model_type=”logistic”)
+- lower_coef: Coefficients for lower class comparison (if model_type=”logistic”)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>, Union[List[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>], np.ndarray, DecisionTreeClassifier]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If observation_idx is not specified or model_type is invalid</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Requires observation_idx to be specified</p></li>
+<li><p>Supports both logistic regression and decision tree surrogate models</p></li>
+<li><p>Can focus on specific features using feature_subset</p></li>
+<li><p>Provides visualizations of coefficients or decision trees</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">ordinal_xai</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">Models</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../interpretation.html">Interpretation Methods</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">LIME (Local Interpretable Model-agnostic Explanations)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loco.html">LOCO (Leave-One-Covariate-Out)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pfi.html">PFI (Permutation Feature Importance)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ice.html">ICE (Individual Conditional Expectation)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ice_prob.html">ICE Probability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pdp.html">PDP (Partial Dependence Plot)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pdp_prob.html">PDP Probability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="base_interpretation.html">Base Interpretation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utilities</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../interpretation.html">Interpretation Methods</a><ul>
+      <li>Previous: <a href="../interpretation.html" title="previous chapter">Interpretation Methods</a></li>
+      <li>Next: <a href="loco.html" title="next chapter">LOCO (Leave-One-Covariate-Out)</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../../_sources/source/api/interpretation/lime.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

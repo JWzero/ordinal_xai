@@ -23,8 +23,8 @@ The implementation is particularly useful for:
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from interpretation.base_interpretation import BaseInterpretation
-from utils import pdp_modified
+from .base_interpretation import BaseInterpretation
+from ..utils import pdp_modified
 import matplotlib.cm as cm
 from matplotlib.patches import Patch
 import textwrap

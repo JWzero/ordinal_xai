@@ -9,14 +9,14 @@ The model is implemented as a scikit-learn compatible estimator, allowing it to 
 with scikit-learn's pipeline and cross-validation tools.
 """
 
+from typing import Optional, List, Dict, Union, Callable, Tuple
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator
-from utils.data_utils import transform_features
+from ..utils.data_utils import transform_features
 from sklearn.utils.validation import check_X_y, check_is_fitted, validate_data
 from statsmodels.miscmodels.ordinal_model import OrderedModel
-from models.base_model import BaseOrdinalModel
-from typing import Optional, Union, Dict, Any
+from .base_model import BaseOrdinalModel
 
 class CLM(BaseEstimator, BaseOrdinalModel):
     """

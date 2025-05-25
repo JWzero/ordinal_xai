@@ -20,14 +20,16 @@ The implementation is particularly useful for:
 - Comparing feature importance between different models
 """
 
+from typing import Optional, List, Dict, Union, Callable, Tuple
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from interpretation.base_interpretation import BaseInterpretation
+from sklearn.base import BaseEstimator
+from .base_interpretation import BaseInterpretation
 from sklearn.inspection import permutation_importance
-from utils.evaluation_metrics import (
-    adjacent_accuracy, mze, mae, mse, weighted_kappa, cem, 
-    spearman_correlation, kendall_tau,
+from ..utils.evaluation_metrics import (
+    mze, mae, mse, adjacent_accuracy, weighted_kappa,
+    cem, spearman_correlation, kendall_tau,
     ranked_probability_score, ordinal_weighted_ce,
     evaluate_ordinal_model
 )

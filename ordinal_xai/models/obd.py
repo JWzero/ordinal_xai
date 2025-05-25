@@ -38,22 +38,18 @@ Example:
     >>> probabilities = model.predict_proba(X)
 """
 
+from typing import Optional, List, Dict, Union, Callable, Tuple
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator
-from utils.data_utils import transform_features
+from ..utils.data_utils import transform_features
 from sklearn.utils.validation import check_X_y, check_is_fitted
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 from sklearn.dummy import DummyClassifier
-import sys
-import os
-
-# Add the root directory to the path to make imports work when running directly
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from models.base_model import BaseOrdinalModel
+from .base_model import BaseOrdinalModel
 
 class OBD(BaseEstimator, BaseOrdinalModel):
     """

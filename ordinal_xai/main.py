@@ -28,7 +28,7 @@ import os
 import numpy as np
 import pandas as pd
 from typing import Tuple, Optional, Dict, Any, List, Union
-from utils.evaluation_metrics import evaluate_ordinal_model, print_evaluation_results
+from .utils.evaluation_metrics import evaluate_ordinal_model, print_evaluation_results
 import warnings
 import sys
 import json

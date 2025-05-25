@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Evaluation Metrics &#8212; ordinal_xai  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Data Utilities" href="data_utils.html" />
+    <link rel="prev" title="Utilities" href="../utils.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="evaluation-metrics">
+<h1>Evaluation Metrics<a class="headerlink" href="#evaluation-metrics" title="Link to this heading">¶</a></h1>
+<p id="module-ordinal_xai.utils.evaluation_metrics">Evaluation metrics for ordinal regression and classification.</p>
+<p>This module provides a comprehensive set of metrics specifically designed for evaluating
+ordinal regression and classification models. It includes both hard-label metrics (based on
+predicted class labels) and probability-based metrics (based on predicted probabilities).</p>
+<p>The metrics are designed to account for the ordinal nature of the data, where classes
+have a natural ordering and misclassification costs increase with the distance between
+predicted and true classes.</p>
+<section id="available-metrics">
+<h2>Available Metrics:<a class="headerlink" href="#available-metrics" title="Link to this heading">¶</a></h2>
+<p>Hard Label Metrics:
+- accuracy: Standard classification accuracy
+- adjacent_accuracy: Proportion of predictions within one class of true label
+- mze: Mean Zero-One Error (1 - accuracy)
+- mae: Mean Absolute Error
+- mse: Mean Squared Error
+- weighted_kappa: Cohen’s Kappa with linear or quadratic weights
+- cem: Closeness Evaluation Measure
+- spearman_correlation: Spearman’s rank correlation
+- kendall_tau: Kendall’s Tau correlation</p>
+<p>Probability-Based Metrics:
+- ranked_probability_score: RPS for probabilistic predictions
+- ordinal_weighted_ce: Ordinal weighted cross-entropy loss (Ordinal Log Loss)</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.accuracy">
+<span class="sig-name descname"><span class="pre">accuracy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/ordinal_xai/utils/evaluation_metrics.html#accuracy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.accuracy" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate accuracy for ordinal regression.</p>
+<p>This is the standard classification accuracy, measuring the proportion of
+correct predictions. While simple, it doesn’t account for the ordinal nature
+of the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Accuracy score between 0 and 1, where 1 indicates perfect predictions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.mze">
+<span class="sig-name descname"><span class="pre">mze</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/ordinal_xai/utils/evaluation_metrics.html#mze"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.mze" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate Mean Zero-One Error (MZE) for ordinal regression.</p>
+<p>MZE is the complement of accuracy (1 - accuracy). It measures the proportion
+of incorrect predictions, treating all misclassifications equally regardless
+of their distance from the true class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mean Zero-One Error between 0 and 1, where 0 indicates perfect predictions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.mae">
+<span class="sig-name descname"><span class="pre">mae</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/ordinal_xai/utils/evaluation_metrics.html#mae"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.mae" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate Mean Absolute Error (MAE) for ordinal regression.</p>
+<p>MAE measures the average absolute difference between predicted and true labels.
+Unlike accuracy, it accounts for the ordinal nature of the data by penalizing
+predictions based on their distance from the true class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mean Absolute Error, where 0 indicates perfect predictions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.mse">
+<span class="sig-name descname"><span class="pre">mse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/ordinal_xai/utils/evaluation_metrics.html#mse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.mse" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate Mean Squared Error (MSE) for ordinal regression.</p>
+<p>MSE measures the average squared difference between predicted and true labels.
+It penalizes larger errors more heavily than MAE due to the squaring operation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mean Squared Error, where 0 indicates perfect predictions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.weighted_kappa">
+<span class="sig-name descname"><span class="pre">weighted_kappa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'quadratic'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/ordinal_xai/utils/evaluation_metrics.html#weighted_kappa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.weighted_kappa" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate weighted kappa for ordinal regression.</p>
+<p>Weighted kappa extends Cohen’s kappa to account for the ordinal nature of the data
+by applying weights to the confusion matrix (Cohen (1968)). The weights can be linear or quadratic,
+with quadratic weights penalizing larger misclassifications more heavily.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+<li><p><strong>weights</strong> (<em>{'linear'</em><em>, </em><em>'quadratic'</em><em>, </em><em>'none'}</em><em>, </em><em>default='quadratic'</em>) – Weighting scheme for the confusion matrix:
+- ‘linear’: Linear weights based on distance
+- ‘quadratic’: Quadratic weights (squared distance)
+- ‘none’: No weights (standard kappa)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Weighted kappa score between -1 and 1, where:
+- 1 indicates perfect agreement
+- 0 indicates agreement equivalent to chance
+- -1 indicates perfect disagreement</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.cem">
+<span class="sig-name descname"><span class="pre">cem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_counts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/ordinal_xai/utils/evaluation_metrics.html#cem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.cem" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate Closeness Evaluation Measure (CEM) for ordinal classification.</p>
+<p>CEM is a metric proposed by Amigo et al. (2020) that evaluates the performance of ordinal classifiers based on measure and information theory. It uses a proximity-based
+approach that penalizes misclassifications based on their distance from the true class
+and the distribution of classes in the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+<li><p><strong>class_counts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>, </em><em>optional</em>) – Dictionary mapping class labels to their counts. If None, calculated from y_true.
+Useful for local explanations where class distribution might differ from training.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>CEM score between 0 and 1, where:
+- 1 indicates perfect predictions
+- 0 indicates worst possible predictions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.spearman_correlation">
+<span class="sig-name descname"><span class="pre">spearman_correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/ordinal_xai/utils/evaluation_metrics.html#spearman_correlation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.spearman_correlation" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate Spearman rank correlation for ordinal regression.</p>
+<p>Spearman (1904)’s rank correlation measures the monotonic relationship between predicted and
+true labels. It’s particularly useful for ordinal data as it only considers
+the ranking of values, not their absolute differences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Spearman rank correlation coefficient between -1 and 1, where:
+- 1 indicates perfect positive correlation
+- 0 indicates no correlation
+- -1 indicates perfect negative correlation</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.kendall_tau">
+<span class="sig-name descname"><span class="pre">kendall_tau</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/ordinal_xai/utils/evaluation_metrics.html#kendall_tau"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.kendall_tau" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate Kendall’s Tau correlation coefficient for ordinal data.</p>
+<p>Kendall(1945)’s Tau-b measures the ordinal association between two rankings. It’s
+particularly suitable for ordinal data as it considers the concordance of
+pairs of observations and the number of tied ranks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Kendall’s Tau correlation coefficient between -1 and 1, where:
+- 1 indicates perfect agreement in rankings
+- 0 indicates no association between rankings
+- -1 indicates perfect disagreement in rankings</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.ranked_probability_score">
+<span class="sig-name descname"><span class="pre">ranked_probability_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred_proba</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/ordinal_xai/utils/evaluation_metrics.html#ranked_probability_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.ranked_probability_score" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate Ranked Probability Score (RPS) for ordinal regression.</p>
+<p>Epstein (1969)’s Ranked Probability Score (RPS) evaluates probabilistic predictions for ordinal data by comparing the
+cumulative predicted probabilities with the cumulative observed probabilities.
+It penalizes predictions that deviate from the true class distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred_proba</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_classes</em><em>)</em>) – Predicted probabilities for each class</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Ranked Probability Score, where:
+- 0 indicates perfect predictions
+- Higher values indicate worse predictions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.ordinal_weighted_ce">
+<span class="sig-name descname"><span class="pre">ordinal_weighted_ce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred_proba</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/ordinal_xai/utils/evaluation_metrics.html#ordinal_weighted_ce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.ordinal_weighted_ce" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate ordinal weighted cross-entropy loss.</p>
+<p>This loss function extends standard cross-entropy to account for the ordinal
+nature of the data by weighting the loss based on the distance between
+predicted and true classes, see Polat et al. (2025). Also known as ordinal log loss (Castagnos et al. (2022)).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred_proba</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_classes</em><em>)</em>) – Predicted probabilities for each class</p></li>
+<li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>default=1</em>) – Exponent for the absolute difference. Higher values increase the penalty
+for predictions far from the true class.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Loss value, where:
+- Lower values indicate better predictions
+- The loss is always non-negative</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.adjacent_accuracy">
+<span class="sig-name descname"><span class="pre">adjacent_accuracy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/ordinal_xai/utils/evaluation_metrics.html#adjacent_accuracy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.adjacent_accuracy" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate Adjacent Accuracy for ordinal regression.</p>
+<p>Adjacent accuracy measures the proportion of predictions that are either
+correct or off by one class. This is particularly useful for ordinal data
+where predictions close to the true class are more acceptable than those
+far away.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Adjacent accuracy score between 0 and 1, where:
+- 1 indicates all predictions are either correct or off by one class
+- 0 indicates all predictions are off by more than one class</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.evaluate_ordinal_model">
+<span class="sig-name descname"><span class="pre">evaluate_ordinal_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred_proba</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/ordinal_xai/utils/evaluation_metrics.html#evaluate_ordinal_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.evaluate_ordinal_model" title="Link to this definition">¶</a></dt>
+<dd><p>Evaluate an ordinal regression model using multiple metrics.</p>
+<p>This function provides a comprehensive evaluation of ordinal regression models
+by computing multiple metrics. It supports both hard-label metrics (based on
+predicted class labels) and probability-based metrics (based on predicted
+probabilities).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+<li><p><strong>y_pred_proba</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_classes</em><em>)</em><em>, </em><em>optional</em>) – Predicted probabilities for each class</p></li>
+<li><p><strong>metrics</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – <p>List of metrics to compute. If None, all available metrics are computed.
+Available metrics:
+- Hard label metrics: accuracy, adjacent_accuracy, mze, mae, mse,</p>
+<blockquote>
+<div><p>weighted_kappa_quadratic, weighted_kappa_linear, cem,
+spearman_correlation, kendall_tau</p>
+</div></blockquote>
+<ul>
+<li><p>Probability-based metrics: ranked_probability_score,
+ordinal_weighted_ce_linear, ordinal_weighted_ce_quadratic</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing all computed evaluation metrics</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Probability-based metrics are only computed if y_pred_proba is provided</p></li>
+<li><p>If a metric fails to compute, a warning is printed and the metric is skipped</p></li>
+<li><p>For probability-based metrics, probabilities are normalized to sum to 1</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.print_evaluation_results">
+<span class="sig-name descname"><span class="pre">print_evaluation_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/ordinal_xai/utils/evaluation_metrics.html#print_evaluation_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.print_evaluation_results" title="Link to this definition">¶</a></dt>
+<dd><p>Print evaluation results in a formatted way.</p>
+<p>This function provides a clear, formatted output of the evaluation metrics,
+grouping them into hard label metrics and probability-based metrics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>results</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Dictionary containing evaluation metrics as returned by evaluate_ordinal_model</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Metrics are printed with 4 decimal places</p></li>
+<li><p>Hard label metrics are printed first, followed by probability-based metrics</p></li>
+<li><p>Metric names are formatted for better readability</p></li>
+</ul>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">ordinal_xai</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interpretation.html">Interpretation Methods</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../utils.html">Utilities</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Evaluation Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_utils.html">Data Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pdp_modified.html">Modified PDP Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_response_modified.html">Modified Response Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html#ordinal_xai.utils.load_data"><code class="docutils literal notranslate"><span class="pre">load_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html#ordinal_xai.utils.transform_features"><code class="docutils literal notranslate"><span class="pre">transform_features()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html#ordinal_xai.utils.evaluate_ordinal_model"><code class="docutils literal notranslate"><span class="pre">evaluate_ordinal_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html#ordinal_xai.utils.print_evaluation_results"><code class="docutils literal notranslate"><span class="pre">print_evaluation_results()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../utils.html">Utilities</a><ul>
+      <li>Previous: <a href="../utils.html" title="previous chapter">Utilities</a></li>
+      <li>Next: <a href="data_utils.html" title="next chapter">Data Utilities</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../../_sources/source/api/utils/evaluation_metrics.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -10,8 +10,8 @@ individual observations with feature variations.
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from interpretation.base_interpretation import BaseInterpretation
-from utils import pdp_modified
+from .base_interpretation import BaseInterpretation
+from ..utils import pdp_modified
 
 class ICE(BaseInterpretation):
     """

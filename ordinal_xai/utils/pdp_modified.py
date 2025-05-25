@@ -28,7 +28,7 @@ from sklearn.utils._param_validation import (
     StrOptions,
     validate_params,
 )
-from utils._response_modified import _get_response_values
+from ._response_modified import _get_response_values
 from sklearn.utils.extmath import cartesian
 from sklearn.utils.validation import _check_sample_weight, check_is_fitted
 from sklearn.inspection._pd_utils import _check_feature_names, _get_feature_index

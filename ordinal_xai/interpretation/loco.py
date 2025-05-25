@@ -19,14 +19,16 @@ The implementation is particularly useful for:
 - Comparing feature importance across different evaluation metrics
 """
 
+from typing import Optional, List, Dict, Union, Callable, Tuple
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from interpretation.base_interpretation import BaseInterpretation
+from sklearn.base import BaseEstimator
+from .base_interpretation import BaseInterpretation
 from sklearn.metrics import accuracy_score, mean_absolute_error
 import copy
 from sklearn.model_selection import train_test_split
-from utils.evaluation_metrics import (
+from ..utils.evaluation_metrics import (
     adjacent_accuracy, mze, mae, mse, weighted_kappa, cem, _get_class_counts,
     spearman_correlation, kendall_tau,
     ranked_probability_score, ordinal_weighted_ce,
@@ -198,20 +200,7 @@ class LOCO(BaseInterpretation):
         Returns
         -------
         dict
-            Dictionary containing:
-            - 'feature_importance': Dictionary mapping features to their importance scores
-              for each metric
-            - 'metric_drops': Dictionary mapping metrics to feature importance scores
-            
-        Notes
-        -----
-        - In local mode, certain metrics (spearman_correlation, kendall_tau,
-          weighted_kappa_quadratic, weighted_kappa_linear, cem) are automatically excluded
-          as they are not suitable for single-instance evaluation
-        - For error metrics (mae, mse, mze, ranked_probability_score,
-          ordinal_weighted_ce_linear, ordinal_weighted_ce_quadratic), higher values
-          indicate higher importance
-        - For other metrics, higher drops indicate higher importance
+            Dictionary containing feature importance scores for each metric
         """
         _is_local = observation_idx is not None
         if _is_local:
