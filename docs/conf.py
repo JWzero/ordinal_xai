@@ -11,8 +11,8 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 
 project = 'ordinal_xai'
-copyright = '2024'
-author = 'none'
+copyright = '2025'
+author = 'Jakob Wankmüller'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
