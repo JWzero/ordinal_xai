@@ -7,7 +7,7 @@ scipy
 matplotlib
 gower
 statsmodels
-sklearn
 torch
 skorch
 dlordinal
+xgboost
