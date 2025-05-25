@@ -1,2 +1,13 @@
 sphinx>=7.0.0
 sphinx_rtd_theme>=1.2.0 
+numpy
+pandas
+scikit-learn
+scipy
+matplotlib
+gower
+statsmodels
+sklearn
+torch
+skorch
+dlordinal
