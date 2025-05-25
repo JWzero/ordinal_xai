@@ -1,0 +1,7 @@
+ordinal_xai
+===========
+
+.. toctree::
+   :maxdepth: 4
+
+   ordinal_xai

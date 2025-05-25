@@ -1,7 +1,7 @@
 Metadata-Version: 2.4
 Name: ordinal_xai
-Version: 0.1.0
-Summary: A Python package for ordinal regression and model agnosticinterpretation methods
+Version: 0.1.11
+Summary: A Python package for ordinal regression and model-agnostic interpretation methods
 Home-page: https://github.com/JWzero/ordinal_xai
 Author: Jakob Wankmüller
 Author-email: crjakobcr@gmail.com
@@ -15,26 +15,17 @@ Classifier: Topic :: Scientific/Engineering :: Mathematics
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 License-File: LICENSE
-Requires-Dist: numpy<2.0.0,>=1.24.0
-Requires-Dist: pandas<3.0.0,>=2.0.0
-Requires-Dist: scikit-learn<2.0.0,>=1.3.0
-Requires-Dist: scipy<2.0.0,>=1.10.0
-Requires-Dist: matplotlib<4.0.0,>=3.7.0
-Requires-Dist: gower>=0.1.0
-Requires-Dist: statsmodels<0.15.0,>=0.14.0
-Requires-Dist: xgboost<2.0.0,>=1.7.0
-Requires-Dist: torch<3.0.0,>=2.0.0
-Requires-Dist: skorch<1.0.0,>=0.13.0
-Requires-Dist: dlordinal>=2.4.1
-Provides-Extra: dev
-Requires-Dist: pytest>=6.0; extra == "dev"
-Requires-Dist: pytest-cov>=2.0; extra == "dev"
-Requires-Dist: black>=21.0; extra == "dev"
-Requires-Dist: isort>=5.0; extra == "dev"
-Requires-Dist: flake8>=3.9; extra == "dev"
-Requires-Dist: mypy>=0.910; extra == "dev"
-Requires-Dist: sphinx>=4.0; extra == "dev"
-Requires-Dist: sphinx-rtd-theme>=1.0; extra == "dev"
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: scikit-learn
+Requires-Dist: scipy
+Requires-Dist: matplotlib
+Requires-Dist: gower
+Requires-Dist: statsmodels
+Requires-Dist: xgboost
+Requires-Dist: torch
+Requires-Dist: skorch
+Requires-Dist: dlordinal
 Dynamic: author
 Dynamic: author-email
 Dynamic: classifier
@@ -42,7 +33,6 @@ Dynamic: description
 Dynamic: description-content-type
 Dynamic: home-page
 Dynamic: license-file
-Dynamic: provides-extra
 Dynamic: requires-dist
 Dynamic: requires-python
 Dynamic: summary
@@ -60,15 +50,15 @@ This package provides a comprehensive suite of ordinal regression models and int
 ### Models
 
 1. **Cumulative Link Model (CLM)**
-   - Implements ordered logit/probit regression
    - Supports both logit and probit link functions
    - Handles categorical and numerical features automatically
    - Provides probability estimates for each class
 
 2. **Ordinal Neural Network (ONN)**
    - Neural network architecture for ordinal regression
-   - Configurable hidden layers and dropout
+   - Configurable hidden layers
    - Supports various output layers and loss functions
+   - Parameters like learning rate, batch size, dropout, etc. can be tuned
    - Automatic GPU acceleration when available
    - Early stopping to prevent overfitting
 
@@ -82,6 +72,9 @@ This package provides a comprehensive suite of ordinal regression models and int
      - SVM
      - Random Forest
      - XGBoost
+   - Base classifier parameters can be tuned
+
+The models provided in this package are only examples. The interpretation methods are model-agnostic and designed to work with any ordinal regression model. Necessary requirements for custom models are that they implement the BaseOrdinalModel and sklearn BaseEstimator interfacess.
 
 ### Interpretation Methods
 
@@ -91,29 +84,31 @@ This package provides a comprehensive suite of ordinal regression models and int
      - Handles both categorical and numerical features
      - Automatic subplot arrangement
    - **PDP with Probabilities (PDPProb)**
-     - Visualizes probability distributions across feature values
+     - Visualizes average probability distributions across feature values
      - Shows class probability changes
      - Detailed probability annotations
    - **Individual Conditional Expectation (ICE)**
      - Analyzes individual instance behavior
      - Shows heterogeneous effects across samples
-     - Supports both categorical and numerical features
+     - Displays either entire population or individual instances (recommended)
    - **ICE with Probabilities (ICEProb)**
-     - Visualizes individual probability distributions
+     - Visualizes individual probability distributions across feature values
      - Shows class probability changes per instance
      - Detailed probability annotations at original values
+     - Displays either entire population or individual instances (recommended)
 
 2. **Feature Importance Analysis**
    - **Permutation Feature Importance (PFI)**
      - Global feature importance through permutation
-     - Multiple evaluation metrics support
+     - Multiple evaluation metrics support, subset can be specified
      - Handles both categorical and numerical features
-     - Visualizes feature importance scores
+     - Subset of features to perform analysis on can be specified
+     - Visualizes feature importance scores in a bar plot
    - **Leave-One-Covariate-Out (LOCO)**
-     - Global feature importance through feature removal
-     - Supports multiple evaluation metrics
-     - Provides train-test split functionality
-     - Visualizes feature importance scores
+     - Global feature importance through feature removal and refitting
+     - Uses train - test split to fit the models and evaluate performance
+     - Supports multiple evaluation metrics, subset can be specified
+     - Visualizes feature importance scores in a bar plot
 
 3. **Local Explanations**
    - **Local Interpretable Model-agnostic Explanations (LIME)**
@@ -121,7 +116,7 @@ This package provides a comprehensive suite of ordinal regression models and int
      - Supports both logistic regression and decision tree surrogate models
      - Multiple sampling strategies (grid, uniform, permutation)
      - Customizable kernel functions for sample weighting
-     - Visualizes feature importance through coefficients or decision trees
+     - Visualizes feature importance through coefficients or tree plot
 
 ### Datasets
 
@@ -143,15 +138,18 @@ The package includes several benchmark datasets for ordinal regression:
    - Mixed numerical and categorical features
 
 3. **Feature Importance Test Datasets**
-   - FI_simple.csv: 1002 samples
-   - FI_test.csv: 1002 samples
+   - FI_simple.csv: 1000 samples
+   - FI_test.csv: 1000 samples
    - Designed for testing feature importance methods
    - Contains both numerical and categorical features
 
 4. **Dummy Dataset**
-   - 1002 samples
+   - 1000 samples
    - Used for testing and demonstration purposes
    - Contains synthetic data with known patterns
+   - Labels are representing a health risk level influenced by health, and gender
+   - Latent variable: 0.006*age + 0.0005*height + 0.3*gender_w + 0.05*normal(0,1)
+   - ranks generated by generating 3 equal-sized buckets based on the latent variable
 
 ## Installation
 

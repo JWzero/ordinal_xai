@@ -1,0 +1,20 @@
+ordinal\_xai package
+====================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   ordinal_xai.interpretation
+   ordinal_xai.models
+   ordinal_xai.utils
+
+Module contents
+---------------
+
+.. automodule:: ordinal_xai
+   :members:
+   :undoc-members:
+   :show-inheritance:

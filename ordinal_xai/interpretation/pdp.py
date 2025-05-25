@@ -23,7 +23,7 @@ class PDP(BaseInterpretation):
     
     Parameters
     ----------
-    model : BaseOrdinalModel
+    model : :class:`ordinal_xai.models.base_model.BaseOrdinalModel`
         The trained ordinal regression model to interpret
     X : pd.DataFrame
         Dataset used for interpretation, shape (n_samples, n_features)
@@ -32,7 +32,7 @@ class PDP(BaseInterpretation):
         
     Attributes
     ----------
-    model : BaseOrdinalModel
+    model : :class:`ordinal_xai.models.base_model.BaseOrdinalModel`
         The trained model to interpret
     X : pd.DataFrame
         Dataset used for interpretation
@@ -55,7 +55,7 @@ class PDP(BaseInterpretation):
         
         Parameters
         ----------
-        model : BaseOrdinalModel
+        model : :class:`ordinal_xai.models.base_model.BaseOrdinalModel`
             The trained ordinal regression model to interpret
         X : pd.DataFrame
             Dataset used for interpretation, shape (n_samples, n_features)

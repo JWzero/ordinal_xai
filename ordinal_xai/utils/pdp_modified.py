@@ -152,8 +152,7 @@ def _partial_dependence_brute(
     Parameters
     ----------
     est : BaseEstimator
-        A fitted estimator object implementing :term:`predict`,
-        :term:`predict_proba`, or :term:`decision_function`.
+        A fitted estimator object implementing predict, predict_proba, or decision_function.
         Multioutput-multiclass classifiers are not supported.
 
     grid : array-like of shape (n_points, n_target_features)
@@ -172,11 +171,9 @@ def _partial_dependence_brute(
 
     response_method : {'auto', 'predict_proba', 'decision_function'}, \
             default='auto'
-        Specifies whether to use :term:`predict_proba` or
-        :term:`decision_function` as the target response. For regressors
-        this parameter is ignored and the response is always the output of
-        :term:`predict`. By default, :term:`predict_proba` is tried first
-        and we revert to :term:`decision_function` if it doesn't exist.
+        Specifies whether to use predict_proba or decision_function as the target response. For regressors
+        this parameter is ignored and the response is always the output of predict. By default, predict_proba is tried first
+        and we revert to decision_function if it doesn't exist.
 
     sample_weight : array-like of shape (n_samples,), default=None
         Sample weights are used to calculate weighted means when averaging the
@@ -318,8 +315,7 @@ def partial_dependence(
     Parameters
     ----------
     estimator : BaseEstimator
-        A fitted estimator object implementing :term:`predict`,
-        :term:`predict_proba`, or :term:`decision_function`.
+        A fitted estimator object implementing predict, predict_proba, or decision_function.
         Multioutput-multiclass classifiers are not supported.
 
     X : {array-like, sparse matrix or dataframe} of shape (n_samples, n_features)
@@ -363,13 +359,9 @@ def partial_dependence(
 
     response_method : {'auto', 'predict_proba', 'decision_function'}, \
             default='auto'
-        Specifies whether to use :term:`predict_proba` or
-        :term:`decision_function` as the target response. For regressors
-        this parameter is ignored and the response is always the output of
-        :term:`predict`. By default, :term:`predict_proba` is tried first
-        and we revert to :term:`decision_function` if it doesn't exist. If
-        ``method`` is 'recursion', the response is always the output of
-        :term:`decision_function`.
+        Specifies whether to use predict_proba or decision_function as the target response. For regressors
+        this parameter is ignored and the response is always the output of predict. By default, predict_proba is tried first
+        and we revert to decision_function if it doesn't exist.
 
     percentiles : tuple of float, default=(0.05, 0.95)
         The lower and upper percentile used to create the extreme values
@@ -405,9 +397,6 @@ def partial_dependence(
         - `'auto'`: the `'recursion'` is used for estimators that support it,
           and `'brute'` is used otherwise. If `sample_weight` is not `None`,
           then `'brute'` is used regardless of the estimator.
-
-        Please see :ref:`this note <pdp_method_differences>` for
-        differences between the `'brute'` and `'recursion'` method.
 
     kind : {'average', 'individual', 'both'}, default='average'
         Whether to return the partial dependence averaged across all the

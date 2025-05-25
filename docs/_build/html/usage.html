@@ -1,0 +1,277 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usage &mdash; Ordinal XAI 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Models" href="models/index.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Ordinal XAI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#models">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interpretation-methods">Interpretation Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-usage">Command-Line Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="models/index.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interpretation/index.html">Interpretation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Ordinal XAI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Usage</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
+<p>This page provides detailed usage examples for the main models and interpretation methods in Ordinal XAI.</p>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ordinal_xai.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CLM</span><span class="p">,</span> <span class="n">ONN</span><span class="p">,</span> <span class="n">OBD</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ordinal_xai.interpretation</span><span class="w"> </span><span class="kn">import</span> <span class="n">LIME</span><span class="p">,</span> <span class="n">LOCO</span><span class="p">,</span> <span class="n">ICE</span><span class="p">,</span> <span class="n">ICEProb</span><span class="p">,</span> <span class="n">PDP</span><span class="p">,</span> <span class="n">PDPProb</span><span class="p">,</span> <span class="n">PFI</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Create sample data</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+
+<span class="c1"># Initialize and train model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">CLM</span><span class="p">(</span><span class="n">link</span><span class="o">=</span><span class="s1">&#39;logit&#39;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="c1"># Make predictions</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">probabilities</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="c1"># Generate explanations</span>
+<span class="n">pdp</span> <span class="o">=</span> <span class="n">PDP</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">pdp_effects</span> <span class="o">=</span> <span class="n">pdp</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;feature1&#39;</span><span class="p">,</span> <span class="s1">&#39;feature2&#39;</span><span class="p">],</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">pdp_prob</span> <span class="o">=</span> <span class="n">PDPProb</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">pdp_prob_effects</span> <span class="o">=</span> <span class="n">pdp_prob</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;feature1&#39;</span><span class="p">,</span> <span class="s1">&#39;feature2&#39;</span><span class="p">],</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">ice</span> <span class="o">=</span> <span class="n">ICE</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">ice_effects</span> <span class="o">=</span> <span class="n">ice</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;feature1&#39;</span><span class="p">,</span> <span class="s1">&#39;feature2&#39;</span><span class="p">],</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">ice_prob</span> <span class="o">=</span> <span class="n">ICEProb</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">ice_prob_effects</span> <span class="o">=</span> <span class="n">ice_prob</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;feature1&#39;</span><span class="p">,</span> <span class="s1">&#39;feature2&#39;</span><span class="p">],</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">pfi</span> <span class="o">=</span> <span class="n">PFI</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">pfi_importance</span> <span class="o">=</span> <span class="n">pfi</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">loco</span> <span class="o">=</span> <span class="n">LOCO</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">loco_importance</span> <span class="o">=</span> <span class="n">loco</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">lime</span> <span class="o">=</span> <span class="n">LIME</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">lime_explanation</span> <span class="o">=</span> <span class="n">lime</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">observation_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="models">
+<h2>Models<a class="headerlink" href="#models" title="Link to this heading"></a></h2>
+<p>The following models are currently implemented:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Cumulative Link Model (CLM):</dt><dd><p>The Cumulative Link Model (CLM) is a popular model for ordinal regression. It models the cumulative probability of the response variable being less than or equal to a certain threshold as a function of the predictors. It uses the proportional odds assumption, which means that the odds of being in any category are the same for all categories.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Ordinal Neural Network (ONN):</dt><dd><p>The Ordinal Neural Network (ONN) is a fully connected neural network that uses a softmax activation function in the output layer to ensure that the output is a valid probability distribution over the categories.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Ordinal Binary Decomposition (OBD):</dt><dd><p>The Ordinal Binary Decomposition (OBD) is a model for ordinal regression that decomposes the ordinal response into a set of binary responses. It uses a series of binary classifiers to model the relationship between the predictors and the binary responses.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="interpretation-methods">
+<h2>Interpretation Methods<a class="headerlink" href="#interpretation-methods" title="Link to this heading"></a></h2>
+<p>Ordinal XAI provides a variety of interpretation methods to help understand the predictions of ordinal regression models.</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Feature Effect Plots:</dt><dd><ul>
+<li><dl class="simple">
+<dt>Partial Dependence Plot (PDP):</dt><dd><p>The Partial Dependence Plot (PDP) shows the marginal effect of a feature on the predicted probability of the response variable. It is a global method that can be used to understand the relationship between a feature and the response variable.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Individual Conditional Expectation (ICE):</dt><dd><p>The Individual Conditional Expectation (ICE) plot shows the effect of a feature on the predicted probability of the response variable for a specific observation. It is a local method that can be used to understand the relationship between a feature and the response variable for a specific observation.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Partial Dependence Plot with Probabilities (PDPProb):</dt><dd><p>The Partial Dependence Plot with Probabilities (PDPProb) shows the marginal effect of a feature on the predicted probability of the response variable. It is a global method that can be used to understand the relationship between a feature and the response variable.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Individual Conditional Expectation with Probabilities (ICEProb):</dt><dd><p>The Individual Conditional Expectation with Probabilities (ICEProb) plot shows the effect of a feature on the predicted probability of the response variable for a specific observation. It is a local method that can be used to understand the relationship between a feature and the response variable for a specific observation.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Local Interpretable Model-agnostic Explanations (LIME):</dt><dd><p>The Local Interpretable Model-agnostic Explanations (LIME) method is a local method that can be used to explain the predictions of a model for a specific observation. It is a model-agnostic method that can be used to explain the predictions of any model.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Feature Importance Methods:</dt><dd><ul>
+<li><dl class="simple">
+<dt>Permutation Feature Importance (PFI):</dt><dd><p>The Permutation Feature Importance (PFI) method is a global method that can be used to understand the importance of each feature in the model. It is a model-agnostic method that can be used to understand the importance of each feature in any model.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Leave-One-Covariate-Out (LOCO):</dt><dd><p>The Leave-One-Covariate-Out (LOCO) method is a global method that can be used to understand the importance of each feature in the model. It is a model-agnostic method that can be used to understand the importance of each feature in any model. A local version of this method is also implemented.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="command-line-usage">
+<h2>Command-Line Usage<a class="headerlink" href="#command-line-usage" title="Link to this heading"></a></h2>
+<p>You can also use Ordinal XAI directly from the command line to run models and generate explanations. This is useful for batch processing, automation, or quick experimentation.</p>
+<p>Basic usage:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>ordinal_xai<span class="w"> </span>--dataset<span class="w"> </span>wine.csv<span class="w"> </span>--model<span class="w"> </span>CLM<span class="w"> </span>--interpretation<span class="w"> </span>PDP
+</pre></div>
+</div>
+<p>Or, if installed as a CLI entry point (if available):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ordinal_xai<span class="w"> </span>--dataset<span class="w"> </span>wine.csv<span class="w"> </span>--model<span class="w"> </span>CLM<span class="w"> </span>--interpretation<span class="w"> </span>PDP
+</pre></div>
+</div>
+<p>You can specify various arguments to control the dataset, model, interpretation method, and their parameters.</p>
+<p><strong>Command-Line Arguments:</strong></p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">--dataset</span></code></dt><dd><p>Dataset filename in ‘data/’ folder (default: ‘dummy.csv’)</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--model</span></code></dt><dd><p>Model to use: CLM, ONN, or OBD (default: ‘CLM’)</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--interpretation</span></code></dt><dd><p>Interpretation method: PDP, ICE, LIME, LOCO, PFI, etc. (default: ‘PDP’)</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--model_params</span></code></dt><dd><p>JSON string of model parameters (e.g., ‘{“link”: “probit”}’)</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--interpretation_params</span></code></dt><dd><p>JSON string of interpretation parameters (e.g., ‘{“sampling”: “uniform”, “model_type”: “decision_tree”}’)</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--observation_idx</span></code></dt><dd><p>Index of the observation to interpret (for local explanations)</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">--features</span></code></dt><dd><p>Comma-separated list of feature indices or names to include in the explanation (optional)</p>
+</dd>
+</dl>
+<p><strong>Examples:</strong></p>
+<p>Run CLM with default settings on the wine dataset and generate a PDP:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>ordinal_xai<span class="w"> </span>--dataset<span class="w"> </span>wine.csv<span class="w"> </span>--model<span class="w"> </span>CLM<span class="w"> </span>--interpretation<span class="w"> </span>PDP
+</pre></div>
+</div>
+<p>Run OBD with SVM base classifier and LIME interpretation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>ordinal_xai<span class="w"> </span>--dataset<span class="w"> </span>wine.csv<span class="w"> </span>--model<span class="w"> </span>OBD<span class="w"> </span>--model_params<span class="w"> </span><span class="s1">&#39;{&quot;base_classifier&quot;: &quot;svm&quot;, &quot;decomposition_type&quot;: &quot;one-vs-next&quot;}&#39;</span><span class="w"> </span>--interpretation<span class="w"> </span>LIME<span class="w"> </span>--interpretation_params<span class="w"> </span><span class="s1">&#39;{&quot;sampling&quot;: &quot;uniform&quot;, &quot;model_type&quot;: &quot;decision_tree&quot;}&#39;</span><span class="w"> </span>--observation_idx<span class="w"> </span><span class="m">0</span>
+</pre></div>
+</div>
+<p>For more advanced usage, see the API reference and the documentation for each class and method.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="models/index.html" class="btn btn-neutral float-right" title="Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ordinal XAI Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

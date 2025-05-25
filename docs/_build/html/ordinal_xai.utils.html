@@ -1,0 +1,838 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ordinal_xai.utils package &mdash; Ordinal XAI 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Ordinal XAI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models/index.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interpretation/index.html">Interpretation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Ordinal XAI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ordinal_xai.utils package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ordinal_xai.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ordinal-xai-utils-package">
+<h1>ordinal_xai.utils package<a class="headerlink" href="#ordinal-xai-utils-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-ordinal_xai.utils.data_utils">
+<span id="ordinal-xai-utils-data-utils-module"></span><h2>ordinal_xai.utils.data_utils module<a class="headerlink" href="#module-ordinal_xai.utils.data_utils" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.data_utils.load_data">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.data_utils.</span></span><span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">';'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_nan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'drop'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Series</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/ordinal_xai/utils/data_utils.html#load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.data_utils.load_data" title="Link to this definition"></a></dt>
+<dd><p>Load and preprocess a dataset from a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>str</em>) – Full path to the data file</p></li>
+<li><p><strong>target</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>str</em><em>]</em><em>, </em><em>default=-1</em>) – Target variable specification. Can be:
+- int: Index of target column (e.g., -1 for last column)
+- str: Name of target column</p></li>
+<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>default=';'</em>) – Delimiter to use when reading the file</p></li>
+<li><p><strong>label_map</strong> (<em>Optional</em><em>[</em><em>dict</em><em>]</em><em>, </em><em>default=None</em>) – Optional mapping to convert target labels to numeric values.
+If None, labels will be mapped to 0-based continuous indices.</p></li>
+<li><p><strong>drop</strong> (<em>Optional</em><em>[</em><em>list</em><em>]</em><em>, </em><em>default=None</em>) – List of feature indices or names to drop from the features DataFrame.</p></li>
+<li><p><strong>handle_nan</strong> (<em>str</em><em>, </em><em>default='drop'</em>) – How to handle NaN values. Options are:
+- ‘drop’: Drop rows containing any NaN values
+- ‘error’: Raise an error if NaN values are found
+- ‘warn’: Print a warning if NaN values are found but continue</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>X: Features DataFrame
+y: Target Series with mapped labels</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[pd.DataFrame, pd.Series]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If the data file doesn’t exist</p></li>
+<li><p><strong>ValueError</strong> – If target specification is invalid
+    If handle_nan is not one of [‘drop’, ‘error’, ‘warn’]
+    If handle_nan=’error’ and NaN values are found</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.data_utils.transform_features">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.data_utils.</span></span><span class="sig-name descname"><span class="pre">transform_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_scaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OneHotEncoder</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">StandardScaler</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_nan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'drop'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">OneHotEncoder</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">StandardScaler</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/ordinal_xai/utils/data_utils.html#transform_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.data_utils.transform_features" title="Link to this definition"></a></dt>
+<dd><p>Transform input data using one-hot encoding for categoricals and scaling for numericals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Input data to transform</p></li>
+<li><p><strong>fit</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to fit new encoder/scaler or use existing ones</p></li>
+<li><p><strong>no_scaling</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to skip scaling of numerical features</p></li>
+<li><p><strong>encoder</strong> (<em>Optional</em><em>[</em><em>OneHotEncoder</em><em>]</em><em>, </em><em>default=None</em>) – Existing encoder to use if fit=False</p></li>
+<li><p><strong>scaler</strong> (<em>Optional</em><em>[</em><em>StandardScaler</em><em>]</em><em>, </em><em>default=None</em>) – Existing scaler to use if fit=False</p></li>
+<li><p><strong>categorical_columns</strong> (<em>Optional</em><em>[</em><em>list</em><em>]</em><em>, </em><em>default=None</em>) – List of categorical column names. If None, inferred from data types</p></li>
+<li><p><strong>handle_nan</strong> (<em>str</em><em>, </em><em>default='drop'</em>) – How to handle NaN values. Options are:
+- ‘drop’: Drop rows containing any NaN values
+- ‘error’: Raise an error if NaN values are found
+- ‘warn’: Print a warning if NaN values are found but continue</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>X_transformed: Transformed DataFrame
+encoder: Fitted OneHotEncoder
+scaler: Fitted StandardScaler (None if no_scaling=True)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[pd.DataFrame, OneHotEncoder, Optional[StandardScaler]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If handle_nan is not one of [‘drop’, ‘error’, ‘warn’]
+    If handle_nan=’error’ and NaN values are found</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ordinal_xai.utils.evaluation_metrics">
+<span id="ordinal-xai-utils-evaluation-metrics-module"></span><h2>ordinal_xai.utils.evaluation_metrics module<a class="headerlink" href="#module-ordinal_xai.utils.evaluation_metrics" title="Link to this heading"></a></h2>
+<p>Evaluation metrics for ordinal regression and classification.</p>
+<p>This module provides a comprehensive set of metrics specifically designed for evaluating
+ordinal regression and classification models. It includes both hard-label metrics (based on
+predicted class labels) and probability-based metrics (based on predicted probabilities).</p>
+<p>The metrics are designed to account for the ordinal nature of the data, where classes
+have a natural ordering and misclassification costs increase with the distance between
+predicted and true classes.</p>
+<section id="available-metrics">
+<h3>Available Metrics:<a class="headerlink" href="#available-metrics" title="Link to this heading"></a></h3>
+<p>Hard Label Metrics:
+- accuracy: Standard classification accuracy
+- adjacent_accuracy: Proportion of predictions within one class of true label
+- mze: Mean Zero-One Error (1 - accuracy)
+- mae: Mean Absolute Error
+- mse: Mean Squared Error
+- weighted_kappa: Cohen’s Kappa with linear or quadratic weights
+- cem: Closeness Evaluation Measure
+- spearman_correlation: Spearman’s rank correlation
+- kendall_tau: Kendall’s Tau correlation</p>
+<p>Probability-Based Metrics:
+- ranked_probability_score: RPS for probabilistic predictions
+- ordinal_weighted_ce: Ordinal weighted cross-entropy loss (Ordinal Log Loss)</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.accuracy">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.evaluation_metrics.</span></span><span class="sig-name descname"><span class="pre">accuracy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/utils/evaluation_metrics.html#accuracy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.accuracy" title="Link to this definition"></a></dt>
+<dd><p>Calculate accuracy for ordinal regression.</p>
+<p>This is the standard classification accuracy, measuring the proportion of
+correct predictions. While simple, it doesn’t account for the ordinal nature
+of the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Accuracy score between 0 and 1, where 1 indicates perfect predictions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.adjacent_accuracy">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.evaluation_metrics.</span></span><span class="sig-name descname"><span class="pre">adjacent_accuracy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/utils/evaluation_metrics.html#adjacent_accuracy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.adjacent_accuracy" title="Link to this definition"></a></dt>
+<dd><p>Calculate Adjacent Accuracy for ordinal regression.</p>
+<p>Adjacent accuracy measures the proportion of predictions that are either
+correct or off by one class. This is particularly useful for ordinal data
+where predictions close to the true class are more acceptable than those
+far away.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Adjacent accuracy score between 0 and 1, where:
+- 1 indicates all predictions are either correct or off by one class
+- 0 indicates all predictions are off by more than one class</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.cem">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.evaluation_metrics.</span></span><span class="sig-name descname"><span class="pre">cem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_counts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/utils/evaluation_metrics.html#cem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.cem" title="Link to this definition"></a></dt>
+<dd><p>Calculate Closeness Evaluation Measure (CEM) for ordinal classification.</p>
+<p>CEM is a metric proposed by Amigo et al. (2020) that evaluates the performance of ordinal classifiers based on measure and information theory. It uses a proximity-based
+approach that penalizes misclassifications based on their distance from the true class
+and the distribution of classes in the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+<li><p><strong>class_counts</strong> (<em>dict</em><em>, </em><em>optional</em>) – Dictionary mapping class labels to their counts. If None, calculated from y_true.
+Useful for local explanations where class distribution might differ from training.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>CEM score between 0 and 1, where:
+- 1 indicates perfect predictions
+- 0 indicates worst possible predictions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.evaluate_ordinal_model">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.evaluation_metrics.</span></span><span class="sig-name descname"><span class="pre">evaluate_ordinal_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred_proba</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/utils/evaluation_metrics.html#evaluate_ordinal_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.evaluate_ordinal_model" title="Link to this definition"></a></dt>
+<dd><p>Evaluate an ordinal regression model using multiple metrics.</p>
+<p>This function computes a comprehensive set of evaluation metrics for ordinal
+regression models, including both hard-label metrics and probability-based metrics
+if probability predictions are available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+<li><p><strong>y_pred_proba</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_classes</em><em>)</em><em>, </em><em>optional</em>) – Predicted class probabilities</p></li>
+<li><p><strong>metrics</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – List of metric names to compute. If None, all available metrics are used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing evaluation results for each metric</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function automatically selects appropriate metrics based on the available
+predictions. Probability-based metrics are only computed if y_pred_proba is provided.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.kendall_tau">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.evaluation_metrics.</span></span><span class="sig-name descname"><span class="pre">kendall_tau</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/utils/evaluation_metrics.html#kendall_tau"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.kendall_tau" title="Link to this definition"></a></dt>
+<dd><p>Calculate Kendall’s Tau correlation coefficient for ordinal data.</p>
+<p>Kendall(1945)’s Tau-b measures the ordinal association between two rankings. It’s
+particularly suitable for ordinal data as it considers the concordance of
+pairs of observations and the number of tied ranks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Kendall’s Tau correlation coefficient between -1 and 1, where:
+- 1 indicates perfect agreement in rankings
+- 0 indicates no association between rankings
+- -1 indicates perfect disagreement in rankings</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.mae">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.evaluation_metrics.</span></span><span class="sig-name descname"><span class="pre">mae</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/utils/evaluation_metrics.html#mae"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.mae" title="Link to this definition"></a></dt>
+<dd><p>Calculate Mean Absolute Error (MAE) for ordinal regression.</p>
+<p>MAE measures the average absolute difference between predicted and true labels.
+Unlike accuracy, it accounts for the ordinal nature of the data by penalizing
+predictions based on their distance from the true class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mean Absolute Error, where 0 indicates perfect predictions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.mse">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.evaluation_metrics.</span></span><span class="sig-name descname"><span class="pre">mse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/utils/evaluation_metrics.html#mse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.mse" title="Link to this definition"></a></dt>
+<dd><p>Calculate Mean Squared Error (MSE) for ordinal regression.</p>
+<p>MSE measures the average squared difference between predicted and true labels.
+It penalizes larger errors more heavily than MAE due to the squaring operation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mean Squared Error, where 0 indicates perfect predictions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.mze">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.evaluation_metrics.</span></span><span class="sig-name descname"><span class="pre">mze</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/utils/evaluation_metrics.html#mze"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.mze" title="Link to this definition"></a></dt>
+<dd><p>Calculate Mean Zero-One Error (MZE) for ordinal regression.</p>
+<p>MZE is the complement of accuracy (1 - accuracy). It measures the proportion
+of incorrect predictions, treating all misclassifications equally regardless
+of their distance from the true class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mean Zero-One Error between 0 and 1, where 0 indicates perfect predictions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.ordinal_weighted_ce">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.evaluation_metrics.</span></span><span class="sig-name descname"><span class="pre">ordinal_weighted_ce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred_proba</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/utils/evaluation_metrics.html#ordinal_weighted_ce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.ordinal_weighted_ce" title="Link to this definition"></a></dt>
+<dd><p>Calculate ordinal weighted cross-entropy loss.</p>
+<p>This loss function extends standard cross-entropy to account for the ordinal
+nature of the data by weighting the loss based on the distance between
+predicted and true classes, see Polat et al. (2025). Also known as ordinal log loss (Castagnos et al. (2022)).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred_proba</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_classes</em><em>)</em>) – Predicted probabilities for each class</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>default=1</em>) – Exponent for the absolute difference. Higher values increase the penalty
+for predictions far from the true class.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Loss value, where:
+- Lower values indicate better predictions
+- The loss is always non-negative</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.print_evaluation_results">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.evaluation_metrics.</span></span><span class="sig-name descname"><span class="pre">print_evaluation_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/utils/evaluation_metrics.html#print_evaluation_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.print_evaluation_results" title="Link to this definition"></a></dt>
+<dd><p>Print evaluation results in a formatted way.</p>
+<p>This function provides a clear, formatted output of the evaluation metrics,
+grouping them into hard label metrics and probability-based metrics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>results</strong> (<em>dict</em>) – Dictionary containing evaluation metrics as returned by evaluate_ordinal_model</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Metrics are printed with 4 decimal places</p></li>
+<li><p>Hard label metrics are printed first, followed by probability-based metrics</p></li>
+<li><p>Metric names are formatted for better readability</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.ranked_probability_score">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.evaluation_metrics.</span></span><span class="sig-name descname"><span class="pre">ranked_probability_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred_proba</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/utils/evaluation_metrics.html#ranked_probability_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.ranked_probability_score" title="Link to this definition"></a></dt>
+<dd><p>Calculate Ranked Probability Score (RPS) for ordinal regression.</p>
+<p>Epstein (1969)’s Ranked Probability Score (RPS) evaluates probabilistic predictions for ordinal data by comparing the
+cumulative predicted probabilities with the cumulative observed probabilities.
+It penalizes predictions that deviate from the true class distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred_proba</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_classes</em><em>)</em>) – Predicted probabilities for each class</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Ranked Probability Score, where:
+- 0 indicates perfect predictions
+- Higher values indicate worse predictions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.spearman_correlation">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.evaluation_metrics.</span></span><span class="sig-name descname"><span class="pre">spearman_correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/utils/evaluation_metrics.html#spearman_correlation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.spearman_correlation" title="Link to this definition"></a></dt>
+<dd><p>Calculate Spearman rank correlation for ordinal regression.</p>
+<p>Spearman (1904)’s rank correlation measures the monotonic relationship between predicted and
+true labels. It’s particularly useful for ordinal data as it only considers
+the ranking of values, not their absolute differences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Spearman rank correlation coefficient between -1 and 1, where:
+- 1 indicates perfect positive correlation
+- 0 indicates no correlation
+- -1 indicates perfect negative correlation</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluation_metrics.weighted_kappa">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.evaluation_metrics.</span></span><span class="sig-name descname"><span class="pre">weighted_kappa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'quadratic'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/utils/evaluation_metrics.html#weighted_kappa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluation_metrics.weighted_kappa" title="Link to this definition"></a></dt>
+<dd><p>Calculate weighted kappa for ordinal regression.</p>
+<p>Weighted kappa extends Cohen’s kappa to account for the ordinal nature of the data
+by applying weights to the confusion matrix (Cohen (1968)). The weights can be linear or quadratic,
+with quadratic weights penalizing larger misclassifications more heavily.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+<li><p><strong>weights</strong> (<em>{'linear'</em><em>, </em><em>'quadratic'</em><em>, </em><em>'none'}</em><em>, </em><em>default='quadratic'</em>) – Weighting scheme for the confusion matrix:
+- ‘linear’: Linear weights based on distance
+- ‘quadratic’: Quadratic weights (squared distance)
+- ‘none’: No weights (standard kappa)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Weighted kappa score between -1 and 1, where:
+- 1 indicates perfect agreement
+- 0 indicates agreement equivalent to chance
+- -1 indicates perfect disagreement</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ordinal_xai.utils.pdp_modified">
+<span id="ordinal-xai-utils-pdp-modified-module"></span><h2>ordinal_xai.utils.pdp_modified module<a class="headerlink" href="#module-ordinal_xai.utils.pdp_modified" title="Link to this heading"></a></h2>
+<p>Partial dependence plots for regression and classification models.</p>
+<p>Modification of the existing scikit-learn pdp module thats is compatible with ordinal regression estimators.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.pdp_modified.partial_dependence">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.pdp_modified.</span></span><span class="sig-name descname"><span class="pre">partial_dependence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percentiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.05,</span> <span class="pre">0.95)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'average'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/utils/pdp_modified.html#partial_dependence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.pdp_modified.partial_dependence" title="Link to this definition"></a></dt>
+<dd><p>Partial dependence of <code class="docutils literal notranslate"><span class="pre">features</span></code>.</p>
+<p>Partial dependence of a feature (or a set of features) corresponds to
+the average response of an estimator for each possible value of the
+feature.</p>
+<p>Read more in the <span class="xref std std-ref">User Guide</span>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>For <code class="xref py py-class docutils literal notranslate"><span class="pre">GradientBoostingClassifier</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">GradientBoostingRegressor</span></code>, the
+<cite>‘recursion’</cite> method (used by default) will not account for the <cite>init</cite>
+predictor of the boosting process. In practice, this will produce
+the same values as <cite>‘brute’</cite> up to a constant offset in the target
+response, provided that <cite>init</cite> is a constant estimator (which is the
+default). However, if <cite>init</cite> is not a constant estimator, the
+partial dependence values are incorrect for <cite>‘recursion’</cite> because the
+offset will be sample-dependent. It is preferable to use the <cite>‘brute’</cite>
+method. Note that this only applies to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">GradientBoostingClassifier</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">GradientBoostingRegressor</span></code>, not to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">HistGradientBoostingClassifier</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">HistGradientBoostingRegressor</span></code>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>estimator</strong> (<em>BaseEstimator</em>) – A fitted estimator object implementing predict, predict_proba, or decision_function.
+Multioutput-multiclass classifiers are not supported.</p></li>
+<li><p><strong>X</strong> (<em>{array-like</em><em>, </em><em>sparse matrix</em><em> or </em><em>dataframe}</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – <code class="docutils literal notranslate"><span class="pre">X</span></code> is used to generate a grid of values for the target
+<code class="docutils literal notranslate"><span class="pre">features</span></code> (where the partial dependence will be evaluated), and
+also to generate values for the complement features when the
+<cite>method</cite> is ‘brute’.</p></li>
+<li><p><strong>features</strong> (<em>array-like</em><em> of </em><em>{int</em><em>, </em><em>str</em><em>, </em><em>bool}</em><em> or </em><em>int</em><em> or </em><em>str</em>) – The feature (e.g. <cite>[0]</cite>) or pair of interacting features
+(e.g. <cite>[(0, 1)]</cite>) for which the partial dependency should be computed.</p></li>
+<li><p><strong>sample_weight</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em><em>, </em><em>default=None</em>) – <p>Sample weights are used to calculate weighted means when averaging the
+model output. If <cite>None</cite>, then samples are equally weighted. If
+<cite>sample_weight</cite> is not <cite>None</cite>, then <cite>method</cite> will be set to <cite>‘brute’</cite>.
+Note that <cite>sample_weight</cite> is ignored for <cite>kind=’individual’</cite>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.3.</span></p>
+</div>
+</p></li>
+<li><p><strong>categorical_features</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_features</em><em>,</em><em>) or </em><em>shape</em><em>             (</em><em>n_categorical_features</em><em>,</em><em>)</em><em>, </em><em>dtype={bool</em><em>, </em><em>int</em><em>, </em><em>str}</em><em>, </em><em>default=None</em>) – <p>Indicates the categorical features.</p>
+<ul>
+<li><p><cite>None</cite>: no feature will be considered categorical;</p></li>
+<li><dl class="simple">
+<dt>boolean array-like: boolean mask of shape <cite>(n_features,)</cite></dt><dd><p>indicating which features are categorical. Thus, this array has
+the same shape has <cite>X.shape[1]</cite>;</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>integer or string array-like: integer indices or strings</dt><dd><p>indicating categorical features.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.2.</span></p>
+</div>
+</p></li>
+<li><p><strong>feature_names</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_features</em><em>,</em><em>)</em><em>, </em><em>dtype=str</em><em>, </em><em>default=None</em>) – <p>Name of each feature; <cite>feature_names[i]</cite> holds the name of the feature
+with index <cite>i</cite>.
+By default, the name of the feature corresponds to their numerical
+index for NumPy array and their column name for pandas dataframe.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.2.</span></p>
+</div>
+</p></li>
+<li><p><strong>response_method</strong> (<em>{'auto'</em><em>, </em><em>'predict_proba'</em><em>, </em><em>'decision_function'}</em><em>,             </em><em>default='auto'</em>) – Specifies whether to use predict_proba or decision_function as the target response. For regressors
+this parameter is ignored and the response is always the output of predict. By default, predict_proba is tried first
+and we revert to decision_function if it doesn’t exist.</p></li>
+<li><p><strong>percentiles</strong> (<em>tuple</em><em> of </em><em>float</em><em>, </em><em>default=</em><em>(</em><em>0.05</em><em>, </em><em>0.95</em><em>)</em>) – The lower and upper percentile used to create the extreme values
+for the grid. Must be in [0, 1].</p></li>
+<li><p><strong>grid_resolution</strong> (<em>int</em><em>, </em><em>default=100</em>) – The number of equally spaced points on the grid, for each target
+feature.</p></li>
+<li><p><strong>method</strong> (<em>{'auto'</em><em>, </em><em>'recursion'</em><em>, </em><em>'brute'}</em><em>, </em><em>default='auto'</em>) – <p>The method used to calculate the averaged predictions:</p>
+<ul>
+<li><p><cite>’recursion’</cite> is only supported for some tree-based estimators
+(namely
+<code class="xref py py-class docutils literal notranslate"><span class="pre">GradientBoostingClassifier</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">GradientBoostingRegressor</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">HistGradientBoostingClassifier</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">HistGradientBoostingRegressor</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DecisionTreeRegressor</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">RandomForestRegressor</span></code>,
+) when <cite>kind=’average’</cite>.
+This is more efficient in terms of speed.
+With this method, the target response of a
+classifier is always the decision function, not the predicted
+probabilities. Since the <cite>‘recursion’</cite> method implicitly computes
+the average of the Individual Conditional Expectation (ICE) by
+design, it is not compatible with ICE and thus <cite>kind</cite> must be
+<cite>‘average’</cite>.</p></li>
+<li><p><cite>’brute’</cite> is supported for any estimator, but is more
+computationally intensive.</p></li>
+<li><p><cite>’auto’</cite>: the <cite>‘recursion’</cite> is used for estimators that support it,
+and <cite>‘brute’</cite> is used otherwise. If <cite>sample_weight</cite> is not <cite>None</cite>,
+then <cite>‘brute’</cite> is used regardless of the estimator.</p></li>
+</ul>
+</p></li>
+<li><p><strong>kind</strong> (<em>{'average'</em><em>, </em><em>'individual'</em><em>, </em><em>'both'}</em><em>, </em><em>default='average'</em>) – <p>Whether to return the partial dependence averaged across all the
+samples in the dataset or one value per sample or both.
+See Returns below.</p>
+<p>Note that the fast <cite>method=’recursion’</cite> option is only available for
+<cite>kind=’average’</cite> and <cite>sample_weights=None</cite>. Computing individual
+dependencies and doing weighted averages requires using the slower
+<cite>method=’brute’</cite>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.24.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>predictions</strong> – Dictionary-like object, with the following attributes.</p>
+<dl>
+<dt>individual<span class="classifier">ndarray of shape (n_outputs, n_instances,                 len(values[0]), len(values[1]), …)</span></dt><dd><p>The predictions for all the points in the grid for all
+samples in X. This is also known as Individual
+Conditional Expectation (ICE).
+Only available when <cite>kind=’individual’</cite> or <cite>kind=’both’</cite>.</p>
+</dd>
+<dt>average<span class="classifier">ndarray of shape (n_outputs, len(values[0]),                 len(values[1]), …)</span></dt><dd><p>The predictions for all the points in the grid, averaged
+over all samples in X (or over the training data if
+<cite>method</cite> is ‘recursion’).
+Only available when <cite>kind=’average’</cite> or <cite>kind=’both’</cite>.</p>
+</dd>
+<dt>grid_values<span class="classifier">seq of 1d ndarrays</span></dt><dd><p>The values with which the grid has been created. The generated
+grid is a cartesian product of the arrays in <cite>grid_values</cite> where
+<cite>len(grid_values) == len(features)</cite>. The size of each array
+<cite>grid_values[j]</cite> is either <cite>grid_resolution</cite>, or the number of
+unique values in <cite>X[:, j]</cite>, whichever is smaller.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.3.</span></p>
+</div>
+</dd>
+</dl>
+<p><cite>n_outputs</cite> corresponds to the number of classes in a multi-class
+setting, or to the number of tasks for multi-output regression.
+For classical regression and binary classification <cite>n_outputs==1</cite>.
+<cite>n_values_feature_j</cite> corresponds to the size <cite>grid_values[j]</cite>.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Bunch</span></code></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">PartialDependenceDisplay.from_estimator</span></code></dt><dd><p>Plot Partial Dependence.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">PartialDependenceDisplay</span></code></dt><dd><p>Partial Dependence visualization.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">GradientBoostingClassifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb</span> <span class="o">=</span> <span class="n">GradientBoostingClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">partial_dependence</span><span class="p">(</span><span class="n">gb</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">percentiles</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>                   <span class="n">grid_resolution</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> 
+<span class="go">(array([[-4.52...,  4.52...]]), [array([ 0.,  1.])])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="module-ordinal_xai.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ordinal_xai.utils" title="Link to this heading"></a></h2>
+<p>Utility functions for ordinal regression and XAI.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.evaluate_ordinal_model">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.</span></span><span class="sig-name descname"><span class="pre">evaluate_ordinal_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred_proba</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/utils/evaluation_metrics.html#evaluate_ordinal_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluate_ordinal_model" title="Link to this definition"></a></dt>
+<dd><p>Evaluate an ordinal regression model using multiple metrics.</p>
+<p>This function computes a comprehensive set of evaluation metrics for ordinal
+regression models, including both hard-label metrics and probability-based metrics
+if probability predictions are available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
+<li><p><strong>y_pred_proba</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_classes</em><em>)</em><em>, </em><em>optional</em>) – Predicted class probabilities</p></li>
+<li><p><strong>metrics</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – List of metric names to compute. If None, all available metrics are used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing evaluation results for each metric</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function automatically selects appropriate metrics based on the available
+predictions. Probability-based metrics are only computed if y_pred_proba is provided.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.load_data">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.</span></span><span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">';'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_nan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'drop'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Series</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/ordinal_xai/utils/data_utils.html#load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.load_data" title="Link to this definition"></a></dt>
+<dd><p>Load and preprocess a dataset from a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>str</em>) – Full path to the data file</p></li>
+<li><p><strong>target</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>str</em><em>]</em><em>, </em><em>default=-1</em>) – Target variable specification. Can be:
+- int: Index of target column (e.g., -1 for last column)
+- str: Name of target column</p></li>
+<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>default=';'</em>) – Delimiter to use when reading the file</p></li>
+<li><p><strong>label_map</strong> (<em>Optional</em><em>[</em><em>dict</em><em>]</em><em>, </em><em>default=None</em>) – Optional mapping to convert target labels to numeric values.
+If None, labels will be mapped to 0-based continuous indices.</p></li>
+<li><p><strong>drop</strong> (<em>Optional</em><em>[</em><em>list</em><em>]</em><em>, </em><em>default=None</em>) – List of feature indices or names to drop from the features DataFrame.</p></li>
+<li><p><strong>handle_nan</strong> (<em>str</em><em>, </em><em>default='drop'</em>) – How to handle NaN values. Options are:
+- ‘drop’: Drop rows containing any NaN values
+- ‘error’: Raise an error if NaN values are found
+- ‘warn’: Print a warning if NaN values are found but continue</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>X: Features DataFrame
+y: Target Series with mapped labels</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[pd.DataFrame, pd.Series]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If the data file doesn’t exist</p></li>
+<li><p><strong>ValueError</strong> – If target specification is invalid
+    If handle_nan is not one of [‘drop’, ‘error’, ‘warn’]
+    If handle_nan=’error’ and NaN values are found</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.print_evaluation_results">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.</span></span><span class="sig-name descname"><span class="pre">print_evaluation_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/utils/evaluation_metrics.html#print_evaluation_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.print_evaluation_results" title="Link to this definition"></a></dt>
+<dd><p>Print evaluation results in a formatted way.</p>
+<p>This function provides a clear, formatted output of the evaluation metrics,
+grouping them into hard label metrics and probability-based metrics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>results</strong> (<em>dict</em>) – Dictionary containing evaluation metrics as returned by evaluate_ordinal_model</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Metrics are printed with 4 decimal places</p></li>
+<li><p>Hard label metrics are printed first, followed by probability-based metrics</p></li>
+<li><p>Metric names are formatted for better readability</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.transform_features">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.</span></span><span class="sig-name descname"><span class="pre">transform_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_scaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OneHotEncoder</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">StandardScaler</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_nan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'drop'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">OneHotEncoder</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">StandardScaler</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/ordinal_xai/utils/data_utils.html#transform_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.transform_features" title="Link to this definition"></a></dt>
+<dd><p>Transform input data using one-hot encoding for categoricals and scaling for numericals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Input data to transform</p></li>
+<li><p><strong>fit</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to fit new encoder/scaler or use existing ones</p></li>
+<li><p><strong>no_scaling</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to skip scaling of numerical features</p></li>
+<li><p><strong>encoder</strong> (<em>Optional</em><em>[</em><em>OneHotEncoder</em><em>]</em><em>, </em><em>default=None</em>) – Existing encoder to use if fit=False</p></li>
+<li><p><strong>scaler</strong> (<em>Optional</em><em>[</em><em>StandardScaler</em><em>]</em><em>, </em><em>default=None</em>) – Existing scaler to use if fit=False</p></li>
+<li><p><strong>categorical_columns</strong> (<em>Optional</em><em>[</em><em>list</em><em>]</em><em>, </em><em>default=None</em>) – List of categorical column names. If None, inferred from data types</p></li>
+<li><p><strong>handle_nan</strong> (<em>str</em><em>, </em><em>default='drop'</em>) – How to handle NaN values. Options are:
+- ‘drop’: Drop rows containing any NaN values
+- ‘error’: Raise an error if NaN values are found
+- ‘warn’: Print a warning if NaN values are found but continue</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>X_transformed: Transformed DataFrame
+encoder: Fitted OneHotEncoder
+scaler: Fitted StandardScaler (None if no_scaling=True)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[pd.DataFrame, OneHotEncoder, Optional[StandardScaler]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If handle_nan is not one of [‘drop’, ‘error’, ‘warn’]
+    If handle_nan=’error’ and NaN values are found</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ordinal XAI Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

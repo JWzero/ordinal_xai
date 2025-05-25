@@ -1,0 +1,8 @@
+CLM
+===
+
+.. autoclass:: ordinal_xai.models.clm.CLM
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :no-index: 

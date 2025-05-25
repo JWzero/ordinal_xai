@@ -1,0 +1,457 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ordinal_xai package &mdash; Ordinal XAI 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Ordinal XAI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models/index.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interpretation/index.html">Interpretation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Ordinal XAI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ordinal_xai package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ordinal_xai.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ordinal-xai-package">
+<h1>ordinal_xai package<a class="headerlink" href="#ordinal-xai-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ordinal_xai.interpretation.html">ordinal_xai.interpretation package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.interpretation.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.interpretation.html#module-ordinal_xai.interpretation.base_interpretation">ordinal_xai.interpretation.base_interpretation module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.base_interpretation.BaseInterpretation.explain"><code class="docutils literal notranslate"><span class="pre">BaseInterpretation.explain()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.interpretation.html#module-ordinal_xai.interpretation.ice">ordinal_xai.interpretation.ice module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ice.ICE"><code class="docutils literal notranslate"><span class="pre">ICE</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ice.ICE.model"><code class="docutils literal notranslate"><span class="pre">ICE.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ice.ICE.X"><code class="docutils literal notranslate"><span class="pre">ICE.X</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ice.ICE.y"><code class="docutils literal notranslate"><span class="pre">ICE.y</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ice.ICE.explain"><code class="docutils literal notranslate"><span class="pre">ICE.explain()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.interpretation.html#module-ordinal_xai.interpretation.ice_prob">ordinal_xai.interpretation.ice_prob module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ice_prob.ICEProb"><code class="docutils literal notranslate"><span class="pre">ICEProb</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ice_prob.ICEProb.model"><code class="docutils literal notranslate"><span class="pre">ICEProb.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ice_prob.ICEProb.X"><code class="docutils literal notranslate"><span class="pre">ICEProb.X</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ice_prob.ICEProb.y"><code class="docutils literal notranslate"><span class="pre">ICEProb.y</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ice_prob.ICEProb.explain"><code class="docutils literal notranslate"><span class="pre">ICEProb.explain()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.interpretation.html#module-ordinal_xai.interpretation.lime">ordinal_xai.interpretation.lime module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.lime.LIME"><code class="docutils literal notranslate"><span class="pre">LIME</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.lime.LIME.model"><code class="docutils literal notranslate"><span class="pre">LIME.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.lime.LIME.X"><code class="docutils literal notranslate"><span class="pre">LIME.X</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.lime.LIME.y"><code class="docutils literal notranslate"><span class="pre">LIME.y</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.lime.LIME.comparison_method"><code class="docutils literal notranslate"><span class="pre">LIME.comparison_method</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.lime.LIME.model_type"><code class="docutils literal notranslate"><span class="pre">LIME.model_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.lime.LIME.kernel_width"><code class="docutils literal notranslate"><span class="pre">LIME.kernel_width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.lime.LIME.custom_kernel"><code class="docutils literal notranslate"><span class="pre">LIME.custom_kernel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.lime.LIME.sampling"><code class="docutils literal notranslate"><span class="pre">LIME.sampling</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.lime.LIME.max_samples"><code class="docutils literal notranslate"><span class="pre">LIME.max_samples</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.lime.LIME.explain"><code class="docutils literal notranslate"><span class="pre">LIME.explain()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.interpretation.html#module-ordinal_xai.interpretation.loco">ordinal_xai.interpretation.loco module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.loco.LOCO"><code class="docutils literal notranslate"><span class="pre">LOCO</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.loco.LOCO.available_metrics"><code class="docutils literal notranslate"><span class="pre">LOCO.available_metrics</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.loco.LOCO.test_size"><code class="docutils literal notranslate"><span class="pre">LOCO.test_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.loco.LOCO.random_state"><code class="docutils literal notranslate"><span class="pre">LOCO.random_state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.loco.LOCO.use_train_test_split"><code class="docutils literal notranslate"><span class="pre">LOCO.use_train_test_split</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.loco.LOCO.original_predictions"><code class="docutils literal notranslate"><span class="pre">LOCO.original_predictions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.loco.LOCO.original_proba_predictions"><code class="docutils literal notranslate"><span class="pre">LOCO.original_proba_predictions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.loco.LOCO.original_results"><code class="docutils literal notranslate"><span class="pre">LOCO.original_results</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.loco.LOCO.explain"><code class="docutils literal notranslate"><span class="pre">LOCO.explain()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.interpretation.html#module-ordinal_xai.interpretation.pdp">ordinal_xai.interpretation.pdp module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.pdp.PDP"><code class="docutils literal notranslate"><span class="pre">PDP</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.pdp.PDP.model"><code class="docutils literal notranslate"><span class="pre">PDP.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.pdp.PDP.X"><code class="docutils literal notranslate"><span class="pre">PDP.X</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.pdp.PDP.y"><code class="docutils literal notranslate"><span class="pre">PDP.y</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.pdp.PDP.feature_names_"><code class="docutils literal notranslate"><span class="pre">PDP.feature_names_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.pdp.PDP.explain"><code class="docutils literal notranslate"><span class="pre">PDP.explain()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.interpretation.html#module-ordinal_xai.interpretation.pdp_prob">ordinal_xai.interpretation.pdp_prob module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.pdp_prob.PDPProb"><code class="docutils literal notranslate"><span class="pre">PDPProb</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.pdp_prob.PDPProb.explain"><code class="docutils literal notranslate"><span class="pre">PDPProb.explain()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.interpretation.html#module-ordinal_xai.interpretation.pfi">ordinal_xai.interpretation.pfi module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.pfi.PFI"><code class="docutils literal notranslate"><span class="pre">PFI</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.pfi.PFI.available_metrics"><code class="docutils literal notranslate"><span class="pre">PFI.available_metrics</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.pfi.PFI.n_repeats"><code class="docutils literal notranslate"><span class="pre">PFI.n_repeats</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.pfi.PFI.random_state"><code class="docutils literal notranslate"><span class="pre">PFI.random_state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.pfi.PFI.original_predictions"><code class="docutils literal notranslate"><span class="pre">PFI.original_predictions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.pfi.PFI.original_results"><code class="docutils literal notranslate"><span class="pre">PFI.original_results</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.pfi.PFI.explain"><code class="docutils literal notranslate"><span class="pre">PFI.explain()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.interpretation.html#module-ordinal_xai.interpretation">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.BaseInterpretation"><code class="docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.BaseInterpretation.explain"><code class="docutils literal notranslate"><span class="pre">BaseInterpretation.explain()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ICE"><code class="docutils literal notranslate"><span class="pre">ICE</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ICE.model"><code class="docutils literal notranslate"><span class="pre">ICE.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ICE.X"><code class="docutils literal notranslate"><span class="pre">ICE.X</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ICE.y"><code class="docutils literal notranslate"><span class="pre">ICE.y</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ICE.explain"><code class="docutils literal notranslate"><span class="pre">ICE.explain()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ICEProb"><code class="docutils literal notranslate"><span class="pre">ICEProb</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ICEProb.model"><code class="docutils literal notranslate"><span class="pre">ICEProb.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ICEProb.X"><code class="docutils literal notranslate"><span class="pre">ICEProb.X</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ICEProb.y"><code class="docutils literal notranslate"><span class="pre">ICEProb.y</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.ICEProb.explain"><code class="docutils literal notranslate"><span class="pre">ICEProb.explain()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LIME"><code class="docutils literal notranslate"><span class="pre">LIME</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LIME.model"><code class="docutils literal notranslate"><span class="pre">LIME.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LIME.X"><code class="docutils literal notranslate"><span class="pre">LIME.X</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LIME.y"><code class="docutils literal notranslate"><span class="pre">LIME.y</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LIME.comparison_method"><code class="docutils literal notranslate"><span class="pre">LIME.comparison_method</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LIME.model_type"><code class="docutils literal notranslate"><span class="pre">LIME.model_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LIME.kernel_width"><code class="docutils literal notranslate"><span class="pre">LIME.kernel_width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LIME.custom_kernel"><code class="docutils literal notranslate"><span class="pre">LIME.custom_kernel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LIME.sampling"><code class="docutils literal notranslate"><span class="pre">LIME.sampling</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LIME.max_samples"><code class="docutils literal notranslate"><span class="pre">LIME.max_samples</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LIME.explain"><code class="docutils literal notranslate"><span class="pre">LIME.explain()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LOCO"><code class="docutils literal notranslate"><span class="pre">LOCO</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LOCO.available_metrics"><code class="docutils literal notranslate"><span class="pre">LOCO.available_metrics</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LOCO.test_size"><code class="docutils literal notranslate"><span class="pre">LOCO.test_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LOCO.random_state"><code class="docutils literal notranslate"><span class="pre">LOCO.random_state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LOCO.use_train_test_split"><code class="docutils literal notranslate"><span class="pre">LOCO.use_train_test_split</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LOCO.original_predictions"><code class="docutils literal notranslate"><span class="pre">LOCO.original_predictions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LOCO.original_proba_predictions"><code class="docutils literal notranslate"><span class="pre">LOCO.original_proba_predictions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LOCO.original_results"><code class="docutils literal notranslate"><span class="pre">LOCO.original_results</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.LOCO.explain"><code class="docutils literal notranslate"><span class="pre">LOCO.explain()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.PDP"><code class="docutils literal notranslate"><span class="pre">PDP</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.PDP.model"><code class="docutils literal notranslate"><span class="pre">PDP.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.PDP.X"><code class="docutils literal notranslate"><span class="pre">PDP.X</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.PDP.y"><code class="docutils literal notranslate"><span class="pre">PDP.y</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.PDP.feature_names_"><code class="docutils literal notranslate"><span class="pre">PDP.feature_names_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.PDP.explain"><code class="docutils literal notranslate"><span class="pre">PDP.explain()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.PDPProb"><code class="docutils literal notranslate"><span class="pre">PDPProb</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.PDPProb.explain"><code class="docutils literal notranslate"><span class="pre">PDPProb.explain()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.PFI"><code class="docutils literal notranslate"><span class="pre">PFI</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.PFI.available_metrics"><code class="docutils literal notranslate"><span class="pre">PFI.available_metrics</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.PFI.n_repeats"><code class="docutils literal notranslate"><span class="pre">PFI.n_repeats</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.PFI.random_state"><code class="docutils literal notranslate"><span class="pre">PFI.random_state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.PFI.original_predictions"><code class="docutils literal notranslate"><span class="pre">PFI.original_predictions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.PFI.original_results"><code class="docutils literal notranslate"><span class="pre">PFI.original_results</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.interpretation.html#ordinal_xai.interpretation.PFI.explain"><code class="docutils literal notranslate"><span class="pre">PFI.explain()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ordinal_xai.models.html">ordinal_xai.models package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.models.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.models.html#module-ordinal_xai.models.base_model">ordinal_xai.models.base_model module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.base_model.BaseOrdinalModel"><code class="docutils literal notranslate"><span class="pre">BaseOrdinalModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.base_model.BaseOrdinalModel.fit"><code class="docutils literal notranslate"><span class="pre">BaseOrdinalModel.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.base_model.BaseOrdinalModel.get_params"><code class="docutils literal notranslate"><span class="pre">BaseOrdinalModel.get_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.base_model.BaseOrdinalModel.predict"><code class="docutils literal notranslate"><span class="pre">BaseOrdinalModel.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.base_model.BaseOrdinalModel.predict_proba"><code class="docutils literal notranslate"><span class="pre">BaseOrdinalModel.predict_proba()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.models.html#module-ordinal_xai.models.clm">ordinal_xai.models.clm module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM"><code class="docutils literal notranslate"><span class="pre">CLM</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM.feature_names_"><code class="docutils literal notranslate"><span class="pre">CLM.feature_names_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM.n_features_in_"><code class="docutils literal notranslate"><span class="pre">CLM.n_features_in_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM.ranks_"><code class="docutils literal notranslate"><span class="pre">CLM.ranks_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM._encoder"><code class="docutils literal notranslate"><span class="pre">CLM._encoder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM._scaler"><code class="docutils literal notranslate"><span class="pre">CLM._scaler</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM._model"><code class="docutils literal notranslate"><span class="pre">CLM._model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM._result"><code class="docutils literal notranslate"><span class="pre">CLM._result</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM.params_"><code class="docutils literal notranslate"><span class="pre">CLM.params_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM.is_fitted_"><code class="docutils literal notranslate"><span class="pre">CLM.is_fitted_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM.fit"><code class="docutils literal notranslate"><span class="pre">CLM.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM.get_params"><code class="docutils literal notranslate"><span class="pre">CLM.get_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM.predict"><code class="docutils literal notranslate"><span class="pre">CLM.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM.predict_proba"><code class="docutils literal notranslate"><span class="pre">CLM.predict_proba()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM.set_params"><code class="docutils literal notranslate"><span class="pre">CLM.set_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM.set_transform_request"><code class="docutils literal notranslate"><span class="pre">CLM.set_transform_request()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.clm.CLM.transform"><code class="docutils literal notranslate"><span class="pre">CLM.transform()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.models.html#module-ordinal_xai.models.obd">ordinal_xai.models.obd module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.obd.OBD"><code class="docutils literal notranslate"><span class="pre">OBD</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.obd.OBD.feature_names_"><code class="docutils literal notranslate"><span class="pre">OBD.feature_names_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.obd.OBD.n_features_in_"><code class="docutils literal notranslate"><span class="pre">OBD.n_features_in_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.obd.OBD.ranks_"><code class="docutils literal notranslate"><span class="pre">OBD.ranks_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.obd.OBD._models"><code class="docutils literal notranslate"><span class="pre">OBD._models</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.obd.OBD._encoder"><code class="docutils literal notranslate"><span class="pre">OBD._encoder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.obd.OBD._scaler"><code class="docutils literal notranslate"><span class="pre">OBD._scaler</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.obd.OBD.is_fitted_"><code class="docutils literal notranslate"><span class="pre">OBD.is_fitted_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.obd.OBD.fit"><code class="docutils literal notranslate"><span class="pre">OBD.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.obd.OBD.get_params"><code class="docutils literal notranslate"><span class="pre">OBD.get_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.obd.OBD.predict"><code class="docutils literal notranslate"><span class="pre">OBD.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.obd.OBD.predict_proba"><code class="docutils literal notranslate"><span class="pre">OBD.predict_proba()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.obd.OBD.set_params"><code class="docutils literal notranslate"><span class="pre">OBD.set_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.obd.OBD.set_transform_request"><code class="docutils literal notranslate"><span class="pre">OBD.set_transform_request()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.obd.OBD.transform"><code class="docutils literal notranslate"><span class="pre">OBD.transform()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.models.html#module-ordinal_xai.models.onn">ordinal_xai.models.onn module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.FCNet"><code class="docutils literal notranslate"><span class="pre">FCNet</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.FCNet.network"><code class="docutils literal notranslate"><span class="pre">FCNet.network</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.FCNet.forward"><code class="docutils literal notranslate"><span class="pre">FCNet.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.ONN"><code class="docutils literal notranslate"><span class="pre">ONN</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.ONN.feature_names_"><code class="docutils literal notranslate"><span class="pre">ONN.feature_names_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.ONN.n_features_in_"><code class="docutils literal notranslate"><span class="pre">ONN.n_features_in_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.ONN.ranks_"><code class="docutils literal notranslate"><span class="pre">ONN.ranks_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.ONN._model"><code class="docutils literal notranslate"><span class="pre">ONN._model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.ONN._encoder"><code class="docutils literal notranslate"><span class="pre">ONN._encoder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.ONN._scaler"><code class="docutils literal notranslate"><span class="pre">ONN._scaler</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.ONN.is_fitted_"><code class="docutils literal notranslate"><span class="pre">ONN.is_fitted_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.ONN.fit"><code class="docutils literal notranslate"><span class="pre">ONN.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.ONN.get_params"><code class="docutils literal notranslate"><span class="pre">ONN.get_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.ONN.predict"><code class="docutils literal notranslate"><span class="pre">ONN.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.ONN.predict_proba"><code class="docutils literal notranslate"><span class="pre">ONN.predict_proba()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.ONN.set_params"><code class="docutils literal notranslate"><span class="pre">ONN.set_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.ONN.set_transform_request"><code class="docutils literal notranslate"><span class="pre">ONN.set_transform_request()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.onn.ONN.transform"><code class="docutils literal notranslate"><span class="pre">ONN.transform()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.models.html#module-ordinal_xai.models">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.BaseOrdinalModel"><code class="docutils literal notranslate"><span class="pre">BaseOrdinalModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.BaseOrdinalModel.fit"><code class="docutils literal notranslate"><span class="pre">BaseOrdinalModel.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.BaseOrdinalModel.get_params"><code class="docutils literal notranslate"><span class="pre">BaseOrdinalModel.get_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.BaseOrdinalModel.predict"><code class="docutils literal notranslate"><span class="pre">BaseOrdinalModel.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.BaseOrdinalModel.predict_proba"><code class="docutils literal notranslate"><span class="pre">BaseOrdinalModel.predict_proba()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM"><code class="docutils literal notranslate"><span class="pre">CLM</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM.feature_names_"><code class="docutils literal notranslate"><span class="pre">CLM.feature_names_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM.n_features_in_"><code class="docutils literal notranslate"><span class="pre">CLM.n_features_in_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM.ranks_"><code class="docutils literal notranslate"><span class="pre">CLM.ranks_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM._encoder"><code class="docutils literal notranslate"><span class="pre">CLM._encoder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM._scaler"><code class="docutils literal notranslate"><span class="pre">CLM._scaler</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM._model"><code class="docutils literal notranslate"><span class="pre">CLM._model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM._result"><code class="docutils literal notranslate"><span class="pre">CLM._result</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM.params_"><code class="docutils literal notranslate"><span class="pre">CLM.params_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM.is_fitted_"><code class="docutils literal notranslate"><span class="pre">CLM.is_fitted_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM.fit"><code class="docutils literal notranslate"><span class="pre">CLM.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM.get_params"><code class="docutils literal notranslate"><span class="pre">CLM.get_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM.predict"><code class="docutils literal notranslate"><span class="pre">CLM.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM.predict_proba"><code class="docutils literal notranslate"><span class="pre">CLM.predict_proba()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM.set_params"><code class="docutils literal notranslate"><span class="pre">CLM.set_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM.set_transform_request"><code class="docutils literal notranslate"><span class="pre">CLM.set_transform_request()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.CLM.transform"><code class="docutils literal notranslate"><span class="pre">CLM.transform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.OBD"><code class="docutils literal notranslate"><span class="pre">OBD</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.OBD.feature_names_"><code class="docutils literal notranslate"><span class="pre">OBD.feature_names_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.OBD.n_features_in_"><code class="docutils literal notranslate"><span class="pre">OBD.n_features_in_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.OBD.ranks_"><code class="docutils literal notranslate"><span class="pre">OBD.ranks_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.OBD._models"><code class="docutils literal notranslate"><span class="pre">OBD._models</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.OBD._encoder"><code class="docutils literal notranslate"><span class="pre">OBD._encoder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.OBD._scaler"><code class="docutils literal notranslate"><span class="pre">OBD._scaler</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.OBD.is_fitted_"><code class="docutils literal notranslate"><span class="pre">OBD.is_fitted_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.OBD.fit"><code class="docutils literal notranslate"><span class="pre">OBD.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.OBD.get_params"><code class="docutils literal notranslate"><span class="pre">OBD.get_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.OBD.predict"><code class="docutils literal notranslate"><span class="pre">OBD.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.OBD.predict_proba"><code class="docutils literal notranslate"><span class="pre">OBD.predict_proba()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.OBD.set_params"><code class="docutils literal notranslate"><span class="pre">OBD.set_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.OBD.set_transform_request"><code class="docutils literal notranslate"><span class="pre">OBD.set_transform_request()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.OBD.transform"><code class="docutils literal notranslate"><span class="pre">OBD.transform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.ONN"><code class="docutils literal notranslate"><span class="pre">ONN</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.ONN.feature_names_"><code class="docutils literal notranslate"><span class="pre">ONN.feature_names_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.ONN.n_features_in_"><code class="docutils literal notranslate"><span class="pre">ONN.n_features_in_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.ONN.ranks_"><code class="docutils literal notranslate"><span class="pre">ONN.ranks_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.ONN._model"><code class="docutils literal notranslate"><span class="pre">ONN._model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.ONN._encoder"><code class="docutils literal notranslate"><span class="pre">ONN._encoder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.ONN._scaler"><code class="docutils literal notranslate"><span class="pre">ONN._scaler</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.ONN.is_fitted_"><code class="docutils literal notranslate"><span class="pre">ONN.is_fitted_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.ONN.fit"><code class="docutils literal notranslate"><span class="pre">ONN.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.ONN.get_params"><code class="docutils literal notranslate"><span class="pre">ONN.get_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.ONN.predict"><code class="docutils literal notranslate"><span class="pre">ONN.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.ONN.predict_proba"><code class="docutils literal notranslate"><span class="pre">ONN.predict_proba()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.ONN.set_params"><code class="docutils literal notranslate"><span class="pre">ONN.set_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.ONN.set_transform_request"><code class="docutils literal notranslate"><span class="pre">ONN.set_transform_request()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.ONN.transform"><code class="docutils literal notranslate"><span class="pre">ONN.transform()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ordinal_xai.utils.html">ordinal_xai.utils package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.utils.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.utils.html#module-ordinal_xai.utils.data_utils">ordinal_xai.utils.data_utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.data_utils.load_data"><code class="docutils literal notranslate"><span class="pre">load_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.data_utils.transform_features"><code class="docutils literal notranslate"><span class="pre">transform_features()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.utils.html#module-ordinal_xai.utils.evaluation_metrics">ordinal_xai.utils.evaluation_metrics module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#available-metrics">Available Metrics:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.evaluation_metrics.accuracy"><code class="docutils literal notranslate"><span class="pre">accuracy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.evaluation_metrics.adjacent_accuracy"><code class="docutils literal notranslate"><span class="pre">adjacent_accuracy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.evaluation_metrics.cem"><code class="docutils literal notranslate"><span class="pre">cem()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.evaluation_metrics.evaluate_ordinal_model"><code class="docutils literal notranslate"><span class="pre">evaluate_ordinal_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.evaluation_metrics.kendall_tau"><code class="docutils literal notranslate"><span class="pre">kendall_tau()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.evaluation_metrics.mae"><code class="docutils literal notranslate"><span class="pre">mae()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.evaluation_metrics.mse"><code class="docutils literal notranslate"><span class="pre">mse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.evaluation_metrics.mze"><code class="docutils literal notranslate"><span class="pre">mze()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.evaluation_metrics.ordinal_weighted_ce"><code class="docutils literal notranslate"><span class="pre">ordinal_weighted_ce()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.evaluation_metrics.print_evaluation_results"><code class="docutils literal notranslate"><span class="pre">print_evaluation_results()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.evaluation_metrics.ranked_probability_score"><code class="docutils literal notranslate"><span class="pre">ranked_probability_score()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.evaluation_metrics.spearman_correlation"><code class="docutils literal notranslate"><span class="pre">spearman_correlation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.evaluation_metrics.weighted_kappa"><code class="docutils literal notranslate"><span class="pre">weighted_kappa()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.utils.html#module-ordinal_xai.utils.pdp_modified">ordinal_xai.utils.pdp_modified module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.pdp_modified.partial_dependence"><code class="docutils literal notranslate"><span class="pre">partial_dependence()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ordinal_xai.utils.html#module-ordinal_xai.utils">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.evaluate_ordinal_model"><code class="docutils literal notranslate"><span class="pre">evaluate_ordinal_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.load_data"><code class="docutils literal notranslate"><span class="pre">load_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.print_evaluation_results"><code class="docutils literal notranslate"><span class="pre">print_evaluation_results()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ordinal_xai.utils.html#ordinal_xai.utils.transform_features"><code class="docutils literal notranslate"><span class="pre">transform_features()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-ordinal_xai">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ordinal_xai" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ordinal XAI Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -10,19 +10,19 @@ The model is implemented as a scikit-learn compatible estimator, allowing it to 
 used with scikit-learn's pipeline and cross-validation tools.
 """
 
+from typing import Optional, List, Dict, Union, Callable, Tuple
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
 from sklearn.base import BaseEstimator
-from utils.data_utils import transform_features
+from ..utils.data_utils import transform_features
 from sklearn.utils.validation import check_X_y, check_is_fitted
 from skorch import NeuralNet
 from skorch.callbacks import EarlyStopping
 from dlordinal.losses import CDWCELoss
 from dlordinal.output_layers import StickBreakingLayer, CLM
-from models.base_model import BaseOrdinalModel
-from typing import List, Optional, Union, Dict, Any
+from .base_model import BaseOrdinalModel
 
 class FCNet(nn.Module):
     """
@@ -199,7 +199,7 @@ class ONN(BaseEstimator, BaseOrdinalModel):
         self._scaler = None
         self.is_fitted_ = False
 
-    def get_params(self, deep: bool = True) -> Dict[str, Any]:
+    def get_params(self, deep: bool = True) -> Dict[str, any]:
         """
         Get parameters for this estimator.
         
@@ -225,7 +225,7 @@ class ONN(BaseEstimator, BaseOrdinalModel):
             "verbose": self.verbose
         }
 
-    def set_params(self, **params: Any) -> "ONN":
+    def set_params(self, **params: any) -> "ONN":
         """
         Set the parameters of this estimator.
         

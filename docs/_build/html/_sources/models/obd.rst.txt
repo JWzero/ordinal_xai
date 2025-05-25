@@ -1,0 +1,8 @@
+OBD
+===
+
+.. autoclass:: ordinal_xai.models.obd.OBD
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :no-index: 

@@ -1,0 +1,1779 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ordinal_xai.interpretation package &mdash; Ordinal XAI 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Ordinal XAI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models/index.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interpretation/index.html">Interpretation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Ordinal XAI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ordinal_xai.interpretation package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ordinal_xai.interpretation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ordinal-xai-interpretation-package">
+<h1>ordinal_xai.interpretation package<a class="headerlink" href="#ordinal-xai-interpretation-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-ordinal_xai.interpretation.base_interpretation">
+<span id="ordinal-xai-interpretation-base-interpretation-module"></span><h2>ordinal_xai.interpretation.base_interpretation module<a class="headerlink" href="#module-ordinal_xai.interpretation.base_interpretation" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.base_interpretation.BaseInterpretation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.base_interpretation.</span></span><span class="sig-name descname"><span class="pre">BaseInterpretation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/base_interpretation.html#BaseInterpretation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Base class for all interpretation methods.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.base_interpretation.BaseInterpretation.explain">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/base_interpretation.html#BaseInterpretation.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.base_interpretation.BaseInterpretation.explain" title="Link to this definition"></a></dt>
+<dd><p>Generate explanations.</p>
+<p>Parameters:
+- observation_idx: (Optional) Index of the specific instance to explain.
+- feature_subset: (Optional) List of feature indices to include in the explanation.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ordinal_xai.interpretation.ice">
+<span id="ordinal-xai-interpretation-ice-module"></span><h2>ordinal_xai.interpretation.ice module<a class="headerlink" href="#module-ordinal_xai.interpretation.ice" title="Link to this heading"></a></h2>
+<p>Individual Conditional Expectation (ICE) Plot implementation for ordinal regression models.</p>
+<p>This module implements ICE plots, a model-agnostic interpretation method that shows how
+a model’s prediction changes as a feature value changes, while keeping other features
+constant. For ordinal regression, it shows how the predicted ordinal classes changes across
+individual observations with feature variations.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ice.ICE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.ice.</span></span><span class="sig-name descname"><span class="pre">ICE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/ice.html#ICE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.ice.ICE" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<p>Individual Conditional Expectation (ICE) Plot interpretation method.</p>
+<p>ICE plots show how a model’s prediction changes as a feature value changes,
+while keeping other features constant. For ordinal regression, it shows how
+the probability distribution across ordinal classes changes with feature variations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>object</em>) – The trained ordinal regression model. Must implement predict_proba method.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Dataset used for interpretation. Should contain the same features used
+during model training.</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em><em>, </em><em>optional</em>) – Target labels. Not required for interpretation but useful for reference.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ice.ICE.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#ordinal_xai.interpretation.ice.ICE.model" title="Link to this definition"></a></dt>
+<dd><p>The trained ordinal regression model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ice.ICE.X">
+<span class="sig-name descname"><span class="pre">X</span></span><a class="headerlink" href="#ordinal_xai.interpretation.ice.ICE.X" title="Link to this definition"></a></dt>
+<dd><p>Dataset used for interpretation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ice.ICE.y">
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#ordinal_xai.interpretation.ice.ICE.y" title="Link to this definition"></a></dt>
+<dd><p>Target labels (if provided)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ice.ICE.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/ice.html#ICE.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.ice.ICE.explain" title="Link to this definition"></a></dt>
+<dd><p>Generate Individual Conditional Expectation Plots.</p>
+<p>This method computes and optionally visualizes how the model’s predictions
+change as feature values change. For ordinal regression, it shows how the
+probability distribution across classes changes with feature variations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_idx</strong> (<em>int</em><em>, </em><em>optional</em>) – Index of specific instance to highlight in the plot. If provided,
+only this instance’s ICE curves will be shown along with the average (PDP).</p></li>
+<li><p><strong>feature_subset</strong> (<em>list</em><em>, </em><em>optional</em>) – List of feature names or indices to plot. If None, all features are used.</p></li>
+<li><p><strong>plot</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to create visualizations of the ICE plots.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing ICE results for each feature:
+- ‘grid_values’: Feature values used for prediction
+- ‘average’: Average predictions (PDP) for each class
+- ‘individual’: Individual predictions for each instance and class</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>For ordinal regression, the plots show probability changes for each class</p></li>
+<li><p>The average curve (PDP) shows the overall effect of the feature</p></li>
+<li><p>Individual curves show instance-specific effects</p></li>
+<li><p>For categorical features, exact feature values are used</p></li>
+<li><p>For numerical features, a grid of values is used</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ordinal_xai.interpretation.ice_prob">
+<span id="ordinal-xai-interpretation-ice-prob-module"></span><h2>ordinal_xai.interpretation.ice_prob module<a class="headerlink" href="#module-ordinal_xai.interpretation.ice_prob" title="Link to this heading"></a></h2>
+<p>Individual Conditional Expectation (ICE) Plot implementation for probability visualization in ordinal regression.</p>
+<p>This module implements ICE plots specifically designed for visualizing probability distributions
+in ordinal regression models. It extends the standard ICE plot to show how class probabilities
+change as feature values change, using stacked area plots to represent the probability
+distribution across ordinal classes.</p>
+<p>Key Features:
+- Stacked area plots to visualize probability distributions
+- Support for both individual instance analysis and average behavior (PDP)
+- Automatic handling of categorical and numerical features
+- Detailed probability annotations at original feature values
+- Color-coded visualization of ordinal class probabilities</p>
+<p>The implementation is particularly useful for:
+- Understanding how features affect the probability distribution across ordinal classes
+- Analyzing the relationship between feature values and class probabilities
+- Comparing individual instance behavior with average behavior
+- Visualizing the uncertainty in ordinal predictions</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ice_prob.ICEProb">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.ice_prob.</span></span><span class="sig-name descname"><span class="pre">ICEProb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/ice_prob.html#ICEProb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.ice_prob.ICEProb" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<p>Individual Conditional Expectation (ICE) Plot interpretation method for probabilities.</p>
+<p>This class implements ICE plots specifically designed for visualizing probability
+distributions in ordinal regression models. It uses stacked area plots to show how
+the probability distribution across ordinal classes changes as feature values change.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>object</em>) – The trained ordinal regression model. Must implement predict_proba method.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Dataset used for interpretation. Should contain the same features used
+during model training.</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em><em>, </em><em>optional</em>) – Target labels. Not required for interpretation but useful for reference.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ice_prob.ICEProb.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#ordinal_xai.interpretation.ice_prob.ICEProb.model" title="Link to this definition"></a></dt>
+<dd><p>The trained ordinal regression model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ice_prob.ICEProb.X">
+<span class="sig-name descname"><span class="pre">X</span></span><a class="headerlink" href="#ordinal_xai.interpretation.ice_prob.ICEProb.X" title="Link to this definition"></a></dt>
+<dd><p>Dataset used for interpretation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ice_prob.ICEProb.y">
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#ordinal_xai.interpretation.ice_prob.ICEProb.y" title="Link to this definition"></a></dt>
+<dd><p>Target labels (if provided)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ice_prob.ICEProb.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/ice_prob.html#ICEProb.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.ice_prob.ICEProb.explain" title="Link to this definition"></a></dt>
+<dd><p>Generate Individual Conditional Expectation Plots for probabilities.</p>
+<p>This method computes and optionally visualizes how the model’s probability
+distribution changes as feature values change. It uses stacked area plots
+to show the probability distribution across ordinal classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_idx</strong> (<em>int</em><em>, </em><em>optional</em>) – Index of specific instance to highlight in the plot. If provided,
+only this instance’s probability distribution will be shown along with
+the average (PDP) distribution.</p></li>
+<li><p><strong>feature_subset</strong> (<em>list</em><em>, </em><em>optional</em>) – List of feature names or indices to plot. If None, all features are used.</p></li>
+<li><p><strong>plot</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to create visualizations of the ICE plots.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing ICE results for each feature:
+- ‘grid_values’: Feature values used for prediction
+- ‘average’: Average probability predictions (PDP) for each class
+- ‘individual’: Individual probability predictions for each instance and class</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Uses stacked area plots to visualize probability distributions</p></li>
+<li><p>Shows both individual instance probabilities and average probabilities</p></li>
+<li><p>Includes probability annotations at original feature values</p></li>
+<li><p>Uses a viridis colormap for different ordinal classes</p></li>
+<li><p>Automatically handles both categorical and numerical features</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ordinal_xai.interpretation.lime">
+<span id="ordinal-xai-interpretation-lime-module"></span><h2>ordinal_xai.interpretation.lime module<a class="headerlink" href="#module-ordinal_xai.interpretation.lime" title="Link to this heading"></a></h2>
+<p>Local Interpretable Model-agnostic Explanations (LIME) for ordinal regression models.</p>
+<p>This module implements LIME for ordinal regression models, providing local explanations
+by fitting interpretable surrogate models to explain individual predictions. The implementation
+extends standard LIME to handle ordinal data by comparing predictions with adjacent or
+following classes.</p>
+<p>Key Features:
+- Local explanations for individual predictions
+- Support for both logistic regression and decision tree surrogate models
+- Multiple sampling strategies (grid, uniform, permutation)
+- Customizable kernel functions for sample weighting
+- Visualization of feature importance through coefficients or decision trees
+- Support for both numerical and categorical features</p>
+<p>The implementation is particularly useful for:
+- Understanding individual predictions in ordinal regression models
+- Identifying key features that influence specific predictions
+- Comparing feature importance across different classes
+- Providing interpretable explanations for model decisions</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.lime.</span></span><span class="sig-name descname"><span class="pre">LIME</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comparison_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'one_vs_following'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'logistic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.75</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_kernel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'permute'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/lime.html#LIME"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<p>Local Interpretable Model-agnostic Explanations for ordinal regression models.</p>
+<p>This class implements LIME for ordinal regression models, providing local explanations
+by fitting interpretable surrogate models to explain individual predictions. The implementation
+extends standard LIME to handle ordinal data by comparing predictions with adjacent or
+following classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>object</em>) – The trained ordinal regression model. Must implement predict and transform methods.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Dataset used for interpretation. Should contain the same features used
+during model training.</p></li>
+<li><p><strong>y</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – Target labels. Not required for interpretation but useful for reference.</p></li>
+<li><p><strong>comparison_method</strong> (<em>str</em><em>, </em><em>default='one_vs_following'</em>) – Method for comparing classes:
+- ‘one_vs_next’: Compare with adjacent classes only
+- ‘one_vs_following’: Compare with all higher/lower classes</p></li>
+<li><p><strong>model_type</strong> (<em>str</em><em>, </em><em>default='logistic'</em>) – Type of surrogate model to use:
+- ‘logistic’: Logistic regression model
+- ‘decision_tree’: Decision tree model</p></li>
+<li><p><strong>kernel_width</strong> (<em>float</em><em>, </em><em>default=0.75</em>) – Width of the exponential kernel for sample weighting. Controls how quickly
+the weight of samples decreases with distance.</p></li>
+<li><p><strong>custom_kernel</strong> (<em>callable</em><em>, </em><em>optional</em>) – Custom kernel function for sample weighting. Should take distances as input
+and return weights.</p></li>
+<li><p><strong>sampling</strong> (<em>str</em><em>, </em><em>default='permute'</em>) – Sampling strategy for generating perturbed samples:
+- ‘grid’: Generate samples on a grid (for small feature spaces)
+- ‘uniform’: Sample uniformly from feature ranges
+- ‘permute’: Permute feature values from the dataset</p></li>
+<li><p><strong>max_samples</strong> (<em>int</em><em>, </em><em>default=10000</em>) – Maximum number of samples to generate for surrogate model training.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.model" title="Link to this definition"></a></dt>
+<dd><p>The trained ordinal regression model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.X">
+<span class="sig-name descname"><span class="pre">X</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.X" title="Link to this definition"></a></dt>
+<dd><p>Training data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.y">
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.y" title="Link to this definition"></a></dt>
+<dd><p>Target labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.comparison_method">
+<span class="sig-name descname"><span class="pre">comparison_method</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.comparison_method" title="Link to this definition"></a></dt>
+<dd><p>Method for comparing classes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.model_type">
+<span class="sig-name descname"><span class="pre">model_type</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.model_type" title="Link to this definition"></a></dt>
+<dd><p>Type of surrogate model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.kernel_width">
+<span class="sig-name descname"><span class="pre">kernel_width</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.kernel_width" title="Link to this definition"></a></dt>
+<dd><p>Width of the exponential kernel</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.custom_kernel">
+<span class="sig-name descname"><span class="pre">custom_kernel</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.custom_kernel" title="Link to this definition"></a></dt>
+<dd><p>Custom kernel function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.sampling">
+<span class="sig-name descname"><span class="pre">sampling</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.sampling" title="Link to this definition"></a></dt>
+<dd><p>Sampling strategy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.max_samples">
+<span class="sig-name descname"><span class="pre">max_samples</span></span><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.max_samples" title="Link to this definition"></a></dt>
+<dd><p>Maximum number of samples</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If comparison_method is invalid, kernel_width is non-positive,
+    or sampling strategy is invalid</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.lime.LIME.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DecisionTreeClassifier</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/ordinal_xai/interpretation/lime.html#LIME.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.lime.LIME.explain" title="Link to this definition"></a></dt>
+<dd><p>Generate LIME explanations for a specific observation.</p>
+<p>This method creates local explanations by:
+1. Generating perturbed samples around the observation
+2. Computing sample weights based on distance
+3. Fitting surrogate models to explain the prediction
+4. Visualizing the results if requested</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_idx</strong> (<em>int</em><em>, </em><em>optional</em>) – Index of the observation to explain</p></li>
+<li><p><strong>feature_subset</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>str</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – List of feature indices or names to include</p></li>
+<li><p><strong>plot</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to create visualizations</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Additional keyword arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing:
+- features: List of feature names
+- higher_model: Decision tree model for higher class comparison (if model_type=”decision_tree”)
+- lower_model: Decision tree model for lower class comparison (if model_type=”decision_tree”)
+- higher_coef: Coefficients for higher class comparison (if model_type=”logistic”)
+- lower_coef: Coefficients for lower class comparison (if model_type=”logistic”)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Union[List[str], np.ndarray, DecisionTreeClassifier]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If observation_idx is not specified or model_type is invalid</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Requires observation_idx to be specified</p></li>
+<li><p>Supports both logistic regression and decision tree surrogate models</p></li>
+<li><p>Can focus on specific features using feature_subset</p></li>
+<li><p>Provides visualizations of coefficients or decision trees</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ordinal_xai.interpretation.loco">
+<span id="ordinal-xai-interpretation-loco-module"></span><h2>ordinal_xai.interpretation.loco module<a class="headerlink" href="#module-ordinal_xai.interpretation.loco" title="Link to this heading"></a></h2>
+<p>Leave-One-Covariate-Out (LOCO) interpretation method for ordinal regression models.</p>
+<p>This module implements the LOCO method for feature importance analysis in ordinal regression.
+LOCO works by measuring how model performance changes when each feature is removed from the dataset.
+The method can be used in both global (dataset-wide) and local (instance-specific) modes.</p>
+<p>Key Features:
+- Global and local feature importance analysis
+- Support for multiple evaluation metrics
+- Train-test split option for more robust evaluation
+- Comprehensive visualization of feature importance
+- Support for both classification and probability-based metrics</p>
+<p>The implementation is particularly useful for:
+- Understanding feature importance in ordinal regression models
+- Identifying key features that influence model predictions
+- Analyzing feature importance at both global and local levels
+- Comparing feature importance across different evaluation metrics</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.loco.LOCO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.loco.</span></span><span class="sig-name descname"><span class="pre">LOCO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_train_test_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/loco.html#LOCO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.loco.LOCO" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<p>Leave-One-Covariate-Out (LOCO) interpretation method for feature importance.</p>
+<p>This class implements the LOCO method for analyzing feature importance in ordinal regression
+models. It measures the impact of each feature by evaluating how model performance changes
+when the feature is removed from the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>object</em>) – The trained ordinal regression model. Must implement fit and predict methods.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Dataset used for interpretation. Should contain the same features used
+during model training.</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em><em>, </em><em>optional</em>) – Target labels. Required for evaluation but optional for initialization.</p></li>
+<li><p><strong>test_size</strong> (<em>float</em><em>, </em><em>default=0.2</em>) – Proportion of the dataset to include in the test split when using
+train-test split evaluation.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>optional</em>) – Random state for reproducibility of train-test splits.</p></li>
+<li><p><strong>use_train_test_split</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Whether to use train-test split for evaluation. If False, the entire
+dataset is used for both training and evaluation.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.loco.LOCO.available_metrics">
+<span class="sig-name descname"><span class="pre">available_metrics</span></span><a class="headerlink" href="#ordinal_xai.interpretation.loco.LOCO.available_metrics" title="Link to this definition"></a></dt>
+<dd><p>Dictionary of available evaluation metrics and their corresponding functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.loco.LOCO.test_size">
+<span class="sig-name descname"><span class="pre">test_size</span></span><a class="headerlink" href="#ordinal_xai.interpretation.loco.LOCO.test_size" title="Link to this definition"></a></dt>
+<dd><p>Proportion of data used for testing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.loco.LOCO.random_state">
+<span class="sig-name descname"><span class="pre">random_state</span></span><a class="headerlink" href="#ordinal_xai.interpretation.loco.LOCO.random_state" title="Link to this definition"></a></dt>
+<dd><p>Random state for reproducibility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.loco.LOCO.use_train_test_split">
+<span class="sig-name descname"><span class="pre">use_train_test_split</span></span><a class="headerlink" href="#ordinal_xai.interpretation.loco.LOCO.use_train_test_split" title="Link to this definition"></a></dt>
+<dd><p>Whether to use train-test split.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">X_train,</span> <span class="pre">X_test</span></span></dt>
+<dd><p>Training and test datasets when using train-test split.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">y_train,</span> <span class="pre">y_test</span></span></dt>
+<dd><p>Training and test labels when using train-test split.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.loco.LOCO.original_predictions">
+<span class="sig-name descname"><span class="pre">original_predictions</span></span><a class="headerlink" href="#ordinal_xai.interpretation.loco.LOCO.original_predictions" title="Link to this definition"></a></dt>
+<dd><p>Predictions from the original model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array-like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.loco.LOCO.original_proba_predictions">
+<span class="sig-name descname"><span class="pre">original_proba_predictions</span></span><a class="headerlink" href="#ordinal_xai.interpretation.loco.LOCO.original_proba_predictions" title="Link to this definition"></a></dt>
+<dd><p>Probability predictions from the original model if available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array-like, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.loco.LOCO.original_results">
+<span class="sig-name descname"><span class="pre">original_results</span></span><a class="headerlink" href="#ordinal_xai.interpretation.loco.LOCO.original_results" title="Link to this definition"></a></dt>
+<dd><p>Evaluation results from the original model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.loco.LOCO.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/loco.html#LOCO.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.loco.LOCO.explain" title="Link to this definition"></a></dt>
+<dd><p>Generate LOCO feature importance scores.</p>
+<p>This method computes feature importance by measuring how model performance
+changes when each feature is removed. It can operate in two modes:
+1. Global mode (default): Evaluates feature importance across the entire dataset
+2. Local mode (when observation_idx is provided): Evaluates feature importance</p>
+<blockquote>
+<div><p>for a specific instance</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_idx</strong> (<em>int</em><em>, </em><em>optional</em>) – Index of specific instance to analyze (local explanation)</p></li>
+<li><p><strong>feature_subset</strong> (<em>list</em><em>, </em><em>optional</em>) – List of feature names or indices to analyze</p></li>
+<li><p><strong>plot</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to create visualizations</p></li>
+<li><p><strong>metrics</strong> (<em>list</em><em>, </em><em>optional</em>) – List of metrics to use for feature importance calculation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing feature importance scores for each metric</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ordinal_xai.interpretation.pdp">
+<span id="ordinal-xai-interpretation-pdp-module"></span><h2>ordinal_xai.interpretation.pdp module<a class="headerlink" href="#module-ordinal_xai.interpretation.pdp" title="Link to this heading"></a></h2>
+<p>Partial Dependence Plot (PDP) interpretation method.</p>
+<p>This module implements Partial Dependence Plots (PDPs) for interpreting ordinal regression models. It is based on the sklearn.inspection.partial_dependence function.
+PDPs show how a feature affects predictions while accounting for the average effect of other features.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.pdp.PDP">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.pdp.</span></span><span class="sig-name descname"><span class="pre">PDP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/pdp.html#PDP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.pdp.PDP" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<p>Partial Dependence Plot (PDP) interpretation method.</p>
+<p>This class implements Partial Dependence Plots for interpreting ordinal regression models.
+PDPs show how a feature affects predictions while accounting for the average effect of other
+features. This helps understand the relationship between features and predictions in a
+model-agnostic way.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.base_model.BaseOrdinalModel" title="ordinal_xai.models.base_model.BaseOrdinalModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ordinal_xai.models.base_model.BaseOrdinalModel</span></code></a>) – The trained ordinal regression model to interpret</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Dataset used for interpretation, shape (n_samples, n_features)</p></li>
+<li><p><strong>y</strong> (<em>Optional</em><em>[</em><em>pd.Series</em><em>]</em><em>, </em><em>default=None</em>) – Target labels, shape (n_samples,)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.pdp.PDP.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#ordinal_xai.interpretation.pdp.PDP.model" title="Link to this definition"></a></dt>
+<dd><p>The trained model to interpret</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.base_model.BaseOrdinalModel" title="ordinal_xai.models.base_model.BaseOrdinalModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ordinal_xai.models.base_model.BaseOrdinalModel</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.pdp.PDP.X">
+<span class="sig-name descname"><span class="pre">X</span></span><a class="headerlink" href="#ordinal_xai.interpretation.pdp.PDP.X" title="Link to this definition"></a></dt>
+<dd><p>Dataset used for interpretation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.pdp.PDP.y">
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#ordinal_xai.interpretation.pdp.PDP.y" title="Link to this definition"></a></dt>
+<dd><p>Target labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[pd.Series]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.pdp.PDP.feature_names_">
+<span class="sig-name descname"><span class="pre">feature_names_</span></span><a class="headerlink" href="#ordinal_xai.interpretation.pdp.PDP.feature_names_" title="Link to this definition"></a></dt>
+<dd><p>Names of features in the dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>PDPs are global interpretation methods that show the average effect of a feature</p></li>
+<li><p>The method works by varying one feature while keeping others at their observed values</p></li>
+<li><p>For each feature value, predictions are made and averaged across all samples</p></li>
+<li><p>This helps understand the marginal effect of features on predictions</p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.pdp.PDP.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_features_per_figure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">12</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/ordinal_xai/interpretation/pdp.html#PDP.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.pdp.PDP.explain" title="Link to this definition"></a></dt>
+<dd><p>Generate Partial Dependence Plots for the selected features.</p>
+<p>This method computes and optionally visualizes the partial dependence of the model’s
+predictions on the selected features. For each feature, it shows how the average
+prediction changes as the feature value changes, while accounting for the effect of
+other features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_idx</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>default=None</em>) – Ignored (PDP is a global method)</p></li>
+<li><p><strong>feature_subset</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em><em>]</em><em>, </em><em>default=None</em>) – List of feature names or indices to plot. If None, all features are used</p></li>
+<li><p><strong>plot</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to create visualizations</p></li>
+<li><p><strong>max_features_per_figure</strong> (<em>int</em><em>, </em><em>default=12</em>) – Maximum number of features to display per figure (for large datasets)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing PDP results for each feature:
+- ‘grid_values’: Feature values used for plotting
+- ‘average’: Average predictions at each feature value</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Dict[str, np.ndarray]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If feature_subset contains invalid feature names or indices</p></li>
+<li><p><strong>RuntimeError</strong> – If model is not fitted and cannot be fitted automatically</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ordinal_xai.interpretation.pdp_prob">
+<span id="ordinal-xai-interpretation-pdp-prob-module"></span><h2>ordinal_xai.interpretation.pdp_prob module<a class="headerlink" href="#module-ordinal_xai.interpretation.pdp_prob" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.pdp_prob.PDPProb">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.pdp_prob.</span></span><span class="sig-name descname"><span class="pre">PDPProb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/pdp_prob.html#PDPProb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.pdp_prob.PDPProb" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<p>Partial Dependence Plot (PDP) interpretation method for ordinal regression models.
+This version visualizes class probabilities as stacked area plots.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.pdp_prob.PDPProb.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_features_per_figure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">12</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/ordinal_xai/interpretation/pdp_prob.html#PDPProb.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.pdp_prob.PDPProb.explain" title="Link to this definition"></a></dt>
+<dd><p>Generate Partial Dependence Plots as stacked area plots for class probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_idx</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>default=None</em>) – Ignored (PDP is a global method).</p></li>
+<li><p><strong>feature_subset</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em><em>]</em><em>, </em><em>default=None</em>) – List of feature names or indices to plot. If None, all features are used.</p></li>
+<li><p><strong>plot</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to create visualizations.</p></li>
+<li><p><strong>max_features_per_figure</strong> (<em>int</em><em>, </em><em>default=12</em>) – Maximum number of features to display per figure (for large datasets).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing PDP results for each feature:
+- ‘grid_values’: Feature values used for plotting
+- ‘average’: Average predicted probabilities at each feature value</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Dict[str, np.ndarray]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ordinal_xai.interpretation.pfi">
+<span id="ordinal-xai-interpretation-pfi-module"></span><h2>ordinal_xai.interpretation.pfi module<a class="headerlink" href="#module-ordinal_xai.interpretation.pfi" title="Link to this heading"></a></h2>
+<p>Permutation Feature Importance (PFI) interpretation method for ordinal regression models.</p>
+<p>This module implements the Permutation Feature Importance method for analyzing feature
+importance in ordinal regression models. PFI works by measuring how model performance
+changes when feature values are randomly permuted, breaking the relationship between
+the feature and the target variable.</p>
+<p>Key Features:
+- Global feature importance analysis through feature permutation
+- Support for multiple evaluation metrics
+- Robust importance estimation through multiple permutations
+- Comprehensive visualization of feature importance
+- Support for both classification and probability-based metrics</p>
+<p>The implementation is particularly useful for:
+- Understanding feature importance in ordinal regression models
+- Identifying key features that influence model predictions
+- Analyzing feature importance across different evaluation metrics
+- Comparing feature importance between different models</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.pfi.PFI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.pfi.</span></span><span class="sig-name descname"><span class="pre">PFI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_repeats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">42</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/pfi.html#PFI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.pfi.PFI" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<p>Permutation Feature Importance (PFI) interpretation method for feature importance.</p>
+<p>This class implements the PFI method for analyzing feature importance in ordinal regression
+models. It measures the impact of each feature by evaluating how model performance changes
+when the feature values are randomly permuted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>object</em>) – The trained ordinal regression model. Must implement fit and predict methods.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Dataset used for interpretation. Should contain the same features used
+during model training.</p></li>
+<li><p><strong>y</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – Target labels. Required for evaluation but optional for initialization.</p></li>
+<li><p><strong>n_repeats</strong> (<em>int</em><em>, </em><em>default=5</em>) – Number of times to permute each feature. Higher values provide more
+robust importance estimates but increase computation time.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>default=42</em>) – Random seed for reproducibility of permutations.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.pfi.PFI.available_metrics">
+<span class="sig-name descname"><span class="pre">available_metrics</span></span><a class="headerlink" href="#ordinal_xai.interpretation.pfi.PFI.available_metrics" title="Link to this definition"></a></dt>
+<dd><p>Dictionary of available evaluation metrics and their corresponding functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.pfi.PFI.n_repeats">
+<span class="sig-name descname"><span class="pre">n_repeats</span></span><a class="headerlink" href="#ordinal_xai.interpretation.pfi.PFI.n_repeats" title="Link to this definition"></a></dt>
+<dd><p>Number of permutation repeats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.pfi.PFI.random_state">
+<span class="sig-name descname"><span class="pre">random_state</span></span><a class="headerlink" href="#ordinal_xai.interpretation.pfi.PFI.random_state" title="Link to this definition"></a></dt>
+<dd><p>Random state for reproducibility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.pfi.PFI.original_predictions">
+<span class="sig-name descname"><span class="pre">original_predictions</span></span><a class="headerlink" href="#ordinal_xai.interpretation.pfi.PFI.original_predictions" title="Link to this definition"></a></dt>
+<dd><p>Predictions from the original model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array-like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.pfi.PFI.original_results">
+<span class="sig-name descname"><span class="pre">original_results</span></span><a class="headerlink" href="#ordinal_xai.interpretation.pfi.PFI.original_results" title="Link to this definition"></a></dt>
+<dd><p>Evaluation results from the original model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If X is not a pandas DataFrame or if model predictions fail.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.pfi.PFI.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/pfi.html#PFI.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.pfi.PFI.explain" title="Link to this definition"></a></dt>
+<dd><p>Generate Permutation Feature Importance explanations.</p>
+<p>This method computes feature importance by measuring how model performance
+changes when feature values are randomly permuted. The importance score
+represents the average change in model performance across multiple
+permutations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_idx</strong> (<em>int</em><em>, </em><em>optional</em>) – Ignored (Permutation Importance is a global method)</p></li>
+<li><p><strong>feature_subset</strong> (<em>list</em><em>, </em><em>optional</em>) – List of feature names or indices to consider (for permutation and output only)</p></li>
+<li><p><strong>plot</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to create visualizations</p></li>
+<li><p><strong>metrics</strong> (<em>list</em><em>, </em><em>optional</em>) – List of metrics to use for feature importance calculation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing feature importance scores for each metric:
+- ‘features’: List of feature names
+- ‘importances_mean’: Mean importance scores
+- ‘importances_std’: Standard deviation of importance scores
+- ‘importances’: Raw importance scores for each permutation</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If invalid metrics are specified</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ordinal_xai.interpretation">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ordinal_xai.interpretation" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.BaseInterpretation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.</span></span><span class="sig-name descname"><span class="pre">BaseInterpretation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/base_interpretation.html#BaseInterpretation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.BaseInterpretation" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Base class for all interpretation methods.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.BaseInterpretation.explain">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/base_interpretation.html#BaseInterpretation.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.BaseInterpretation.explain" title="Link to this definition"></a></dt>
+<dd><p>Generate explanations.</p>
+<p>Parameters:
+- observation_idx: (Optional) Index of the specific instance to explain.
+- feature_subset: (Optional) List of feature indices to include in the explanation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ICE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.</span></span><span class="sig-name descname"><span class="pre">ICE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/ice.html#ICE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.ICE" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<p>Individual Conditional Expectation (ICE) Plot interpretation method.</p>
+<p>ICE plots show how a model’s prediction changes as a feature value changes,
+while keeping other features constant. For ordinal regression, it shows how
+the probability distribution across ordinal classes changes with feature variations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>object</em>) – The trained ordinal regression model. Must implement predict_proba method.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Dataset used for interpretation. Should contain the same features used
+during model training.</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em><em>, </em><em>optional</em>) – Target labels. Not required for interpretation but useful for reference.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ICE.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#ordinal_xai.interpretation.ICE.model" title="Link to this definition"></a></dt>
+<dd><p>The trained ordinal regression model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ICE.X">
+<span class="sig-name descname"><span class="pre">X</span></span><a class="headerlink" href="#ordinal_xai.interpretation.ICE.X" title="Link to this definition"></a></dt>
+<dd><p>Dataset used for interpretation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ICE.y">
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#ordinal_xai.interpretation.ICE.y" title="Link to this definition"></a></dt>
+<dd><p>Target labels (if provided)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ICE.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/ice.html#ICE.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.ICE.explain" title="Link to this definition"></a></dt>
+<dd><p>Generate Individual Conditional Expectation Plots.</p>
+<p>This method computes and optionally visualizes how the model’s predictions
+change as feature values change. For ordinal regression, it shows how the
+probability distribution across classes changes with feature variations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_idx</strong> (<em>int</em><em>, </em><em>optional</em>) – Index of specific instance to highlight in the plot. If provided,
+only this instance’s ICE curves will be shown along with the average (PDP).</p></li>
+<li><p><strong>feature_subset</strong> (<em>list</em><em>, </em><em>optional</em>) – List of feature names or indices to plot. If None, all features are used.</p></li>
+<li><p><strong>plot</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to create visualizations of the ICE plots.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing ICE results for each feature:
+- ‘grid_values’: Feature values used for prediction
+- ‘average’: Average predictions (PDP) for each class
+- ‘individual’: Individual predictions for each instance and class</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>For ordinal regression, the plots show probability changes for each class</p></li>
+<li><p>The average curve (PDP) shows the overall effect of the feature</p></li>
+<li><p>Individual curves show instance-specific effects</p></li>
+<li><p>For categorical features, exact feature values are used</p></li>
+<li><p>For numerical features, a grid of values is used</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ICEProb">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.</span></span><span class="sig-name descname"><span class="pre">ICEProb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/ice_prob.html#ICEProb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.ICEProb" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<p>Individual Conditional Expectation (ICE) Plot interpretation method for probabilities.</p>
+<p>This class implements ICE plots specifically designed for visualizing probability
+distributions in ordinal regression models. It uses stacked area plots to show how
+the probability distribution across ordinal classes changes as feature values change.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>object</em>) – The trained ordinal regression model. Must implement predict_proba method.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Dataset used for interpretation. Should contain the same features used
+during model training.</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em><em>, </em><em>optional</em>) – Target labels. Not required for interpretation but useful for reference.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ICEProb.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#ordinal_xai.interpretation.ICEProb.model" title="Link to this definition"></a></dt>
+<dd><p>The trained ordinal regression model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ICEProb.X">
+<span class="sig-name descname"><span class="pre">X</span></span><a class="headerlink" href="#ordinal_xai.interpretation.ICEProb.X" title="Link to this definition"></a></dt>
+<dd><p>Dataset used for interpretation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ICEProb.y">
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#ordinal_xai.interpretation.ICEProb.y" title="Link to this definition"></a></dt>
+<dd><p>Target labels (if provided)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.ICEProb.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/ice_prob.html#ICEProb.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.ICEProb.explain" title="Link to this definition"></a></dt>
+<dd><p>Generate Individual Conditional Expectation Plots for probabilities.</p>
+<p>This method computes and optionally visualizes how the model’s probability
+distribution changes as feature values change. It uses stacked area plots
+to show the probability distribution across ordinal classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_idx</strong> (<em>int</em><em>, </em><em>optional</em>) – Index of specific instance to highlight in the plot. If provided,
+only this instance’s probability distribution will be shown along with
+the average (PDP) distribution.</p></li>
+<li><p><strong>feature_subset</strong> (<em>list</em><em>, </em><em>optional</em>) – List of feature names or indices to plot. If None, all features are used.</p></li>
+<li><p><strong>plot</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to create visualizations of the ICE plots.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing ICE results for each feature:
+- ‘grid_values’: Feature values used for prediction
+- ‘average’: Average probability predictions (PDP) for each class
+- ‘individual’: Individual probability predictions for each instance and class</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Uses stacked area plots to visualize probability distributions</p></li>
+<li><p>Shows both individual instance probabilities and average probabilities</p></li>
+<li><p>Includes probability annotations at original feature values</p></li>
+<li><p>Uses a viridis colormap for different ordinal classes</p></li>
+<li><p>Automatically handles both categorical and numerical features</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LIME">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.</span></span><span class="sig-name descname"><span class="pre">LIME</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comparison_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'one_vs_following'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'logistic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.75</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_kernel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'permute'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/lime.html#LIME"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.LIME" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<p>Local Interpretable Model-agnostic Explanations for ordinal regression models.</p>
+<p>This class implements LIME for ordinal regression models, providing local explanations
+by fitting interpretable surrogate models to explain individual predictions. The implementation
+extends standard LIME to handle ordinal data by comparing predictions with adjacent or
+following classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>object</em>) – The trained ordinal regression model. Must implement predict and transform methods.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Dataset used for interpretation. Should contain the same features used
+during model training.</p></li>
+<li><p><strong>y</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – Target labels. Not required for interpretation but useful for reference.</p></li>
+<li><p><strong>comparison_method</strong> (<em>str</em><em>, </em><em>default='one_vs_following'</em>) – Method for comparing classes:
+- ‘one_vs_next’: Compare with adjacent classes only
+- ‘one_vs_following’: Compare with all higher/lower classes</p></li>
+<li><p><strong>model_type</strong> (<em>str</em><em>, </em><em>default='logistic'</em>) – Type of surrogate model to use:
+- ‘logistic’: Logistic regression model
+- ‘decision_tree’: Decision tree model</p></li>
+<li><p><strong>kernel_width</strong> (<em>float</em><em>, </em><em>default=0.75</em>) – Width of the exponential kernel for sample weighting. Controls how quickly
+the weight of samples decreases with distance.</p></li>
+<li><p><strong>custom_kernel</strong> (<em>callable</em><em>, </em><em>optional</em>) – Custom kernel function for sample weighting. Should take distances as input
+and return weights.</p></li>
+<li><p><strong>sampling</strong> (<em>str</em><em>, </em><em>default='permute'</em>) – Sampling strategy for generating perturbed samples:
+- ‘grid’: Generate samples on a grid (for small feature spaces)
+- ‘uniform’: Sample uniformly from feature ranges
+- ‘permute’: Permute feature values from the dataset</p></li>
+<li><p><strong>max_samples</strong> (<em>int</em><em>, </em><em>default=10000</em>) – Maximum number of samples to generate for surrogate model training.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LIME.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#ordinal_xai.interpretation.LIME.model" title="Link to this definition"></a></dt>
+<dd><p>The trained ordinal regression model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LIME.X">
+<span class="sig-name descname"><span class="pre">X</span></span><a class="headerlink" href="#ordinal_xai.interpretation.LIME.X" title="Link to this definition"></a></dt>
+<dd><p>Training data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LIME.y">
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#ordinal_xai.interpretation.LIME.y" title="Link to this definition"></a></dt>
+<dd><p>Target labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LIME.comparison_method">
+<span class="sig-name descname"><span class="pre">comparison_method</span></span><a class="headerlink" href="#ordinal_xai.interpretation.LIME.comparison_method" title="Link to this definition"></a></dt>
+<dd><p>Method for comparing classes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LIME.model_type">
+<span class="sig-name descname"><span class="pre">model_type</span></span><a class="headerlink" href="#ordinal_xai.interpretation.LIME.model_type" title="Link to this definition"></a></dt>
+<dd><p>Type of surrogate model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LIME.kernel_width">
+<span class="sig-name descname"><span class="pre">kernel_width</span></span><a class="headerlink" href="#ordinal_xai.interpretation.LIME.kernel_width" title="Link to this definition"></a></dt>
+<dd><p>Width of the exponential kernel</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LIME.custom_kernel">
+<span class="sig-name descname"><span class="pre">custom_kernel</span></span><a class="headerlink" href="#ordinal_xai.interpretation.LIME.custom_kernel" title="Link to this definition"></a></dt>
+<dd><p>Custom kernel function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LIME.sampling">
+<span class="sig-name descname"><span class="pre">sampling</span></span><a class="headerlink" href="#ordinal_xai.interpretation.LIME.sampling" title="Link to this definition"></a></dt>
+<dd><p>Sampling strategy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LIME.max_samples">
+<span class="sig-name descname"><span class="pre">max_samples</span></span><a class="headerlink" href="#ordinal_xai.interpretation.LIME.max_samples" title="Link to this definition"></a></dt>
+<dd><p>Maximum number of samples</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If comparison_method is invalid, kernel_width is non-positive,
+    or sampling strategy is invalid</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LIME.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DecisionTreeClassifier</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/ordinal_xai/interpretation/lime.html#LIME.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.LIME.explain" title="Link to this definition"></a></dt>
+<dd><p>Generate LIME explanations for a specific observation.</p>
+<p>This method creates local explanations by:
+1. Generating perturbed samples around the observation
+2. Computing sample weights based on distance
+3. Fitting surrogate models to explain the prediction
+4. Visualizing the results if requested</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_idx</strong> (<em>int</em><em>, </em><em>optional</em>) – Index of the observation to explain</p></li>
+<li><p><strong>feature_subset</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>str</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – List of feature indices or names to include</p></li>
+<li><p><strong>plot</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to create visualizations</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Additional keyword arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing:
+- features: List of feature names
+- higher_model: Decision tree model for higher class comparison (if model_type=”decision_tree”)
+- lower_model: Decision tree model for lower class comparison (if model_type=”decision_tree”)
+- higher_coef: Coefficients for higher class comparison (if model_type=”logistic”)
+- lower_coef: Coefficients for lower class comparison (if model_type=”logistic”)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Union[List[str], np.ndarray, DecisionTreeClassifier]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If observation_idx is not specified or model_type is invalid</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Requires observation_idx to be specified</p></li>
+<li><p>Supports both logistic regression and decision tree surrogate models</p></li>
+<li><p>Can focus on specific features using feature_subset</p></li>
+<li><p>Provides visualizations of coefficients or decision trees</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LOCO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.</span></span><span class="sig-name descname"><span class="pre">LOCO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_train_test_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/loco.html#LOCO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.LOCO" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<p>Leave-One-Covariate-Out (LOCO) interpretation method for feature importance.</p>
+<p>This class implements the LOCO method for analyzing feature importance in ordinal regression
+models. It measures the impact of each feature by evaluating how model performance changes
+when the feature is removed from the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>object</em>) – The trained ordinal regression model. Must implement fit and predict methods.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Dataset used for interpretation. Should contain the same features used
+during model training.</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em><em>, </em><em>optional</em>) – Target labels. Required for evaluation but optional for initialization.</p></li>
+<li><p><strong>test_size</strong> (<em>float</em><em>, </em><em>default=0.2</em>) – Proportion of the dataset to include in the test split when using
+train-test split evaluation.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>optional</em>) – Random state for reproducibility of train-test splits.</p></li>
+<li><p><strong>use_train_test_split</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Whether to use train-test split for evaluation. If False, the entire
+dataset is used for both training and evaluation.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LOCO.available_metrics">
+<span class="sig-name descname"><span class="pre">available_metrics</span></span><a class="headerlink" href="#ordinal_xai.interpretation.LOCO.available_metrics" title="Link to this definition"></a></dt>
+<dd><p>Dictionary of available evaluation metrics and their corresponding functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LOCO.test_size">
+<span class="sig-name descname"><span class="pre">test_size</span></span><a class="headerlink" href="#ordinal_xai.interpretation.LOCO.test_size" title="Link to this definition"></a></dt>
+<dd><p>Proportion of data used for testing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LOCO.random_state">
+<span class="sig-name descname"><span class="pre">random_state</span></span><a class="headerlink" href="#ordinal_xai.interpretation.LOCO.random_state" title="Link to this definition"></a></dt>
+<dd><p>Random state for reproducibility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LOCO.use_train_test_split">
+<span class="sig-name descname"><span class="pre">use_train_test_split</span></span><a class="headerlink" href="#ordinal_xai.interpretation.LOCO.use_train_test_split" title="Link to this definition"></a></dt>
+<dd><p>Whether to use train-test split.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">X_train,</span> <span class="pre">X_test</span></span></dt>
+<dd><p>Training and test datasets when using train-test split.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">y_train,</span> <span class="pre">y_test</span></span></dt>
+<dd><p>Training and test labels when using train-test split.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LOCO.original_predictions">
+<span class="sig-name descname"><span class="pre">original_predictions</span></span><a class="headerlink" href="#ordinal_xai.interpretation.LOCO.original_predictions" title="Link to this definition"></a></dt>
+<dd><p>Predictions from the original model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array-like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LOCO.original_proba_predictions">
+<span class="sig-name descname"><span class="pre">original_proba_predictions</span></span><a class="headerlink" href="#ordinal_xai.interpretation.LOCO.original_proba_predictions" title="Link to this definition"></a></dt>
+<dd><p>Probability predictions from the original model if available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array-like, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LOCO.original_results">
+<span class="sig-name descname"><span class="pre">original_results</span></span><a class="headerlink" href="#ordinal_xai.interpretation.LOCO.original_results" title="Link to this definition"></a></dt>
+<dd><p>Evaluation results from the original model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.LOCO.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/loco.html#LOCO.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.LOCO.explain" title="Link to this definition"></a></dt>
+<dd><p>Generate LOCO feature importance scores.</p>
+<p>This method computes feature importance by measuring how model performance
+changes when each feature is removed. It can operate in two modes:
+1. Global mode (default): Evaluates feature importance across the entire dataset
+2. Local mode (when observation_idx is provided): Evaluates feature importance</p>
+<blockquote>
+<div><p>for a specific instance</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_idx</strong> (<em>int</em><em>, </em><em>optional</em>) – Index of specific instance to analyze (local explanation)</p></li>
+<li><p><strong>feature_subset</strong> (<em>list</em><em>, </em><em>optional</em>) – List of feature names or indices to analyze</p></li>
+<li><p><strong>plot</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to create visualizations</p></li>
+<li><p><strong>metrics</strong> (<em>list</em><em>, </em><em>optional</em>) – List of metrics to use for feature importance calculation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing feature importance scores for each metric</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.PDP">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.</span></span><span class="sig-name descname"><span class="pre">PDP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/pdp.html#PDP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.PDP" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<p>Partial Dependence Plot (PDP) interpretation method.</p>
+<p>This class implements Partial Dependence Plots for interpreting ordinal regression models.
+PDPs show how a feature affects predictions while accounting for the average effect of other
+features. This helps understand the relationship between features and predictions in a
+model-agnostic way.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.base_model.BaseOrdinalModel" title="ordinal_xai.models.base_model.BaseOrdinalModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ordinal_xai.models.base_model.BaseOrdinalModel</span></code></a>) – The trained ordinal regression model to interpret</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Dataset used for interpretation, shape (n_samples, n_features)</p></li>
+<li><p><strong>y</strong> (<em>Optional</em><em>[</em><em>pd.Series</em><em>]</em><em>, </em><em>default=None</em>) – Target labels, shape (n_samples,)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.PDP.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#ordinal_xai.interpretation.PDP.model" title="Link to this definition"></a></dt>
+<dd><p>The trained model to interpret</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="ordinal_xai.models.html#ordinal_xai.models.base_model.BaseOrdinalModel" title="ordinal_xai.models.base_model.BaseOrdinalModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">ordinal_xai.models.base_model.BaseOrdinalModel</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.PDP.X">
+<span class="sig-name descname"><span class="pre">X</span></span><a class="headerlink" href="#ordinal_xai.interpretation.PDP.X" title="Link to this definition"></a></dt>
+<dd><p>Dataset used for interpretation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.PDP.y">
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#ordinal_xai.interpretation.PDP.y" title="Link to this definition"></a></dt>
+<dd><p>Target labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[pd.Series]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.PDP.feature_names_">
+<span class="sig-name descname"><span class="pre">feature_names_</span></span><a class="headerlink" href="#ordinal_xai.interpretation.PDP.feature_names_" title="Link to this definition"></a></dt>
+<dd><p>Names of features in the dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>PDPs are global interpretation methods that show the average effect of a feature</p></li>
+<li><p>The method works by varying one feature while keeping others at their observed values</p></li>
+<li><p>For each feature value, predictions are made and averaged across all samples</p></li>
+<li><p>This helps understand the marginal effect of features on predictions</p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.PDP.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_features_per_figure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">12</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/ordinal_xai/interpretation/pdp.html#PDP.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.PDP.explain" title="Link to this definition"></a></dt>
+<dd><p>Generate Partial Dependence Plots for the selected features.</p>
+<p>This method computes and optionally visualizes the partial dependence of the model’s
+predictions on the selected features. For each feature, it shows how the average
+prediction changes as the feature value changes, while accounting for the effect of
+other features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_idx</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>default=None</em>) – Ignored (PDP is a global method)</p></li>
+<li><p><strong>feature_subset</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em><em>]</em><em>, </em><em>default=None</em>) – List of feature names or indices to plot. If None, all features are used</p></li>
+<li><p><strong>plot</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to create visualizations</p></li>
+<li><p><strong>max_features_per_figure</strong> (<em>int</em><em>, </em><em>default=12</em>) – Maximum number of features to display per figure (for large datasets)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing PDP results for each feature:
+- ‘grid_values’: Feature values used for plotting
+- ‘average’: Average predictions at each feature value</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Dict[str, np.ndarray]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If feature_subset contains invalid feature names or indices</p></li>
+<li><p><strong>RuntimeError</strong> – If model is not fitted and cannot be fitted automatically</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.PDPProb">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.</span></span><span class="sig-name descname"><span class="pre">PDPProb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/pdp_prob.html#PDPProb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.PDPProb" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<p>Partial Dependence Plot (PDP) interpretation method for ordinal regression models.
+This version visualizes class probabilities as stacked area plots.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.PDPProb.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_features_per_figure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">12</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/ordinal_xai/interpretation/pdp_prob.html#PDPProb.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.PDPProb.explain" title="Link to this definition"></a></dt>
+<dd><p>Generate Partial Dependence Plots as stacked area plots for class probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_idx</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>default=None</em>) – Ignored (PDP is a global method).</p></li>
+<li><p><strong>feature_subset</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em><em>]</em><em>, </em><em>default=None</em>) – List of feature names or indices to plot. If None, all features are used.</p></li>
+<li><p><strong>plot</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to create visualizations.</p></li>
+<li><p><strong>max_features_per_figure</strong> (<em>int</em><em>, </em><em>default=12</em>) – Maximum number of features to display per figure (for large datasets).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing PDP results for each feature:
+- ‘grid_values’: Feature values used for plotting
+- ‘average’: Average predicted probabilities at each feature value</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Dict[str, np.ndarray]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.PFI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.</span></span><span class="sig-name descname"><span class="pre">PFI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_repeats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">42</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/pfi.html#PFI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.PFI" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<p>Permutation Feature Importance (PFI) interpretation method for feature importance.</p>
+<p>This class implements the PFI method for analyzing feature importance in ordinal regression
+models. It measures the impact of each feature by evaluating how model performance changes
+when the feature values are randomly permuted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>object</em>) – The trained ordinal regression model. Must implement fit and predict methods.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Dataset used for interpretation. Should contain the same features used
+during model training.</p></li>
+<li><p><strong>y</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – Target labels. Required for evaluation but optional for initialization.</p></li>
+<li><p><strong>n_repeats</strong> (<em>int</em><em>, </em><em>default=5</em>) – Number of times to permute each feature. Higher values provide more
+robust importance estimates but increase computation time.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>default=42</em>) – Random seed for reproducibility of permutations.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.PFI.available_metrics">
+<span class="sig-name descname"><span class="pre">available_metrics</span></span><a class="headerlink" href="#ordinal_xai.interpretation.PFI.available_metrics" title="Link to this definition"></a></dt>
+<dd><p>Dictionary of available evaluation metrics and their corresponding functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.PFI.n_repeats">
+<span class="sig-name descname"><span class="pre">n_repeats</span></span><a class="headerlink" href="#ordinal_xai.interpretation.PFI.n_repeats" title="Link to this definition"></a></dt>
+<dd><p>Number of permutation repeats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.PFI.random_state">
+<span class="sig-name descname"><span class="pre">random_state</span></span><a class="headerlink" href="#ordinal_xai.interpretation.PFI.random_state" title="Link to this definition"></a></dt>
+<dd><p>Random state for reproducibility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.PFI.original_predictions">
+<span class="sig-name descname"><span class="pre">original_predictions</span></span><a class="headerlink" href="#ordinal_xai.interpretation.PFI.original_predictions" title="Link to this definition"></a></dt>
+<dd><p>Predictions from the original model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array-like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.PFI.original_results">
+<span class="sig-name descname"><span class="pre">original_results</span></span><a class="headerlink" href="#ordinal_xai.interpretation.PFI.original_results" title="Link to this definition"></a></dt>
+<dd><p>Evaluation results from the original model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If X is not a pandas DataFrame or if model predictions fail.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ordinal_xai.interpretation.PFI.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ordinal_xai/interpretation/pfi.html#PFI.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.interpretation.PFI.explain" title="Link to this definition"></a></dt>
+<dd><p>Generate Permutation Feature Importance explanations.</p>
+<p>This method computes feature importance by measuring how model performance
+changes when feature values are randomly permuted. The importance score
+represents the average change in model performance across multiple
+permutations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_idx</strong> (<em>int</em><em>, </em><em>optional</em>) – Ignored (Permutation Importance is a global method)</p></li>
+<li><p><strong>feature_subset</strong> (<em>list</em><em>, </em><em>optional</em>) – List of feature names or indices to consider (for permutation and output only)</p></li>
+<li><p><strong>plot</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to create visualizations</p></li>
+<li><p><strong>metrics</strong> (<em>list</em><em>, </em><em>optional</em>) – List of metrics to use for feature importance calculation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing feature importance scores for each metric:
+- ‘features’: List of feature names
+- ‘importances_mean’: Mean importance scores
+- ‘importances_std’: Standard deviation of importance scores
+- ‘importances’: Raw importance scores for each permutation</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If invalid metrics are specified</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ordinal XAI Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

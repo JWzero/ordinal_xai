@@ -1,0 +1,2 @@
+[console_scripts]
+ordinal_xai = ordinal_xai.__main__:main

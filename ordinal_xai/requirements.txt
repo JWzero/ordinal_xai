@@ -9,3 +9,5 @@ xgboost>=1.7.0,<2.0.0
 torch>=2.0.0,<3.0.0
 skorch>=0.13.0,<1.0.0
 dlordinal>=2.4.1
+sphinx>=7.0.0
+sphinx_rtd_theme>=1.2.0
