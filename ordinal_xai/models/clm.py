@@ -78,7 +78,7 @@ class CLM(BaseEstimator, BaseOrdinalModel):
         self._scaler = None
         self.is_fitted_ = False
 
-    def get_params(self, deep: bool = True) -> Dict[str, Any]:
+    def get_params(self, deep: bool = True) -> Dict[str, any]:
         """
         Get parameters for this estimator.
         
@@ -95,7 +95,7 @@ class CLM(BaseEstimator, BaseOrdinalModel):
         """
         return {"link": self.link}
 
-    def set_params(self, **params: Any) -> "CLM":
+    def set_params(self, **params: any) -> "CLM":
         """
         Set the parameters of this estimator.
         

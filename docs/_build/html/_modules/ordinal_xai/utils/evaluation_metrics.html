@@ -519,10 +519,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluate an ordinal regression model using multiple metrics.</span>
 <span class="sd">    </span>
-<span class="sd">    This function provides a comprehensive evaluation of ordinal regression models</span>
-<span class="sd">    by computing multiple metrics. It supports both hard-label metrics (based on</span>
-<span class="sd">    predicted class labels) and probability-based metrics (based on predicted</span>
-<span class="sd">    probabilities).</span>
+<span class="sd">    This function computes a comprehensive set of evaluation metrics for ordinal</span>
+<span class="sd">    regression models, including both hard-label metrics and probability-based metrics</span>
+<span class="sd">    if probability predictions are available.</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -531,26 +530,19 @@
 <span class="sd">    y_pred : array-like of shape (n_samples,)</span>
 <span class="sd">        Predicted ordinal labels</span>
 <span class="sd">    y_pred_proba : array-like of shape (n_samples, n_classes), optional</span>
-<span class="sd">        Predicted probabilities for each class</span>
+<span class="sd">        Predicted class probabilities</span>
 <span class="sd">    metrics : list of str, optional</span>
-<span class="sd">        List of metrics to compute. If None, all available metrics are computed.</span>
-<span class="sd">        Available metrics:</span>
-<span class="sd">        - Hard label metrics: accuracy, adjacent_accuracy, mze, mae, mse,</span>
-<span class="sd">          weighted_kappa_quadratic, weighted_kappa_linear, cem,</span>
-<span class="sd">          spearman_correlation, kendall_tau</span>
-<span class="sd">        - Probability-based metrics: ranked_probability_score,</span>
-<span class="sd">          ordinal_weighted_ce_linear, ordinal_weighted_ce_quadratic</span>
+<span class="sd">        List of metric names to compute. If None, all available metrics are used.</span>
 <span class="sd">        </span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
-<span class="sd">        Dictionary containing all computed evaluation metrics</span>
+<span class="sd">        Dictionary containing evaluation results for each metric</span>
 <span class="sd">        </span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    - Probability-based metrics are only computed if y_pred_proba is provided</span>
-<span class="sd">    - If a metric fails to compute, a warning is printed and the metric is skipped</span>
-<span class="sd">    - For probability-based metrics, probabilities are normalized to sum to 1</span>
+<span class="sd">    The function automatically selects appropriate metrics based on the available</span>
+<span class="sd">    predictions. Probability-based metrics are only computed if y_pred_proba is provided.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">available_hard_metrics</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="n">accuracy</span><span class="p">,</span>
@@ -704,7 +696,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024.
+      &#169;2025.
       
       |
       Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>

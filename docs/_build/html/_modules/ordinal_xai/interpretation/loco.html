@@ -237,20 +237,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
-<span class="sd">            Dictionary containing:</span>
-<span class="sd">            - &#39;feature_importance&#39;: Dictionary mapping features to their importance scores</span>
-<span class="sd">              for each metric</span>
-<span class="sd">            - &#39;metric_drops&#39;: Dictionary mapping metrics to feature importance scores</span>
-<span class="sd">            </span>
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        - In local mode, certain metrics (spearman_correlation, kendall_tau,</span>
-<span class="sd">          weighted_kappa_quadratic, weighted_kappa_linear, cem) are automatically excluded</span>
-<span class="sd">          as they are not suitable for single-instance evaluation</span>
-<span class="sd">        - For error metrics (mae, mse, mze, ranked_probability_score,</span>
-<span class="sd">          ordinal_weighted_ce_linear, ordinal_weighted_ce_quadratic), higher values</span>
-<span class="sd">          indicate higher importance</span>
-<span class="sd">        - For other metrics, higher drops indicate higher importance</span>
+<span class="sd">            Dictionary containing feature importance scores for each metric</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_is_local</span> <span class="o">=</span> <span class="n">observation_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">_is_local</span><span class="p">:</span>
@@ -478,7 +465,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024.
+      &#169;2025.
       
       |
       Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>

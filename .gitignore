@@ -16,9 +16,7 @@ venv/
 .ipynb_checkpoints/
 
 # Data and results
-data/
 results/
-*.csv
 *.tsv
 *.json
 *.xlsx
@@ -49,5 +47,8 @@ Thumbs.db
 .gitignore
 requirements.lock
 pip-wheel-metadata/
+
+# PyPI configuration
+.pypirc
 
 models/__pycache__/

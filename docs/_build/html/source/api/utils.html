@@ -144,43 +144,28 @@ scaler: Fitted StandardScaler (None if no_scaling=True)</p>
 <dt class="sig sig-object py" id="ordinal_xai.utils.evaluate_ordinal_model">
 <span class="sig-name descname"><span class="pre">evaluate_ordinal_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred_proba</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ordinal_xai/utils/evaluation_metrics.html#evaluate_ordinal_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.evaluate_ordinal_model" title="Link to this definition">¶</a></dt>
 <dd><p>Evaluate an ordinal regression model using multiple metrics.</p>
-<p>This function provides a comprehensive evaluation of ordinal regression models
-by computing multiple metrics. It supports both hard-label metrics (based on
-predicted class labels) and probability-based metrics (based on predicted
-probabilities).</p>
+<p>This function computes a comprehensive set of evaluation metrics for ordinal
+regression models, including both hard-label metrics and probability-based metrics
+if probability predictions are available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>y_true</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – True ordinal labels</p></li>
 <li><p><strong>y_pred</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted ordinal labels</p></li>
-<li><p><strong>y_pred_proba</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_classes</em><em>)</em><em>, </em><em>optional</em>) – Predicted probabilities for each class</p></li>
-<li><p><strong>metrics</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – <p>List of metrics to compute. If None, all available metrics are computed.
-Available metrics:
-- Hard label metrics: accuracy, adjacent_accuracy, mze, mae, mse,</p>
-<blockquote>
-<div><p>weighted_kappa_quadratic, weighted_kappa_linear, cem,
-spearman_correlation, kendall_tau</p>
-</div></blockquote>
-<ul>
-<li><p>Probability-based metrics: ranked_probability_score,
-ordinal_weighted_ce_linear, ordinal_weighted_ce_quadratic</p></li>
-</ul>
-</p></li>
+<li><p><strong>y_pred_proba</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_classes</em><em>)</em><em>, </em><em>optional</em>) – Predicted class probabilities</p></li>
+<li><p><strong>metrics</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – List of metric names to compute. If None, all available metrics are used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Dictionary containing all computed evaluation metrics</p>
+<dd class="field-even"><p>Dictionary containing evaluation results for each metric</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>Probability-based metrics are only computed if y_pred_proba is provided</p></li>
-<li><p>If a metric fails to compute, a warning is printed and the metric is skipped</p></li>
-<li><p>For probability-based metrics, probabilities are normalized to sum to 1</p></li>
-</ul>
+<p>The function automatically selects appropriate metrics based on the available
+predictions. Probability-based metrics are only computed if y_pred_proba is provided.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -271,7 +256,7 @@ grouping them into hard label metrics and probability-based metrics.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024.
+      &#169;2025.
       
       |
       Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>

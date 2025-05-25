@@ -28,7 +28,7 @@ import os
 import numpy as np
 import pandas as pd
 from typing import Tuple, Optional, Dict, Any, List, Union
-from .utils.evaluation_metrics import evaluate_ordinal_model, print_evaluation_results
+from ordinal_xai.utils.evaluation_metrics import evaluate_ordinal_model, print_evaluation_results
 import warnings
 import sys
 import json
@@ -58,7 +58,7 @@ def load_data(dataset_name: str) -> Tuple[pd.DataFrame, pd.Series]:
     """
     if not dataset_name.endswith(".csv"):
         dataset_name = dataset_name + ".csv"
-    data_path = os.path.join("data", dataset_name)
+    data_path = os.path.join("ordinal_xai/data", dataset_name)
     if not os.path.exists(data_path):
         raise FileNotFoundError(f"Dataset {dataset_name} not found in 'data/' folder.")
 
@@ -92,7 +92,7 @@ def load_model(model_name: str, **model_params) -> Any:
         AttributeError: If the model class is not found in the module
     """
     # Convert model_name to lowercase for file import
-    module_path = f"models.{model_name.lower()}"
+    module_path = f"ordinal_xai.models.{model_name.lower()}"
     module = importlib.import_module(module_path)
     
     # Map of file names to class names
@@ -163,7 +163,7 @@ def load_interpretation(method_name: str, model: Any, X: pd.DataFrame, y: pd.Ser
         AttributeError: If the interpretation class is not found in the module
     """
     # Convert method_name to lowercase for file import
-    module_path = f"interpretation.{method_name.lower()}"
+    module_path = f"ordinal_xai.interpretation.{method_name.lower()}"
     module = importlib.import_module(module_path)
     
     # Map of file names to class names
@@ -196,8 +196,8 @@ def parse_args() -> argparse.Namespace:
                         help="Dataset filename in 'data/' folder (default: 'dummy.csv').")
     parser.add_argument("--model", type=str, default="CLM",
                         help="Model filename (without .py) in 'models/' folder (default: 'CLM').")
-    parser.add_argument("--interpretation", type=str, default="DummyInterpretation",
-                        help="Interpretability method filename (without .py) in 'interpretation/' folder (default: 'DummyInterpretation').")
+    parser.add_argument("--interpretation", type=str, default="PDP",
+                        help="Interpretability method filename (without .py) in 'interpretation/' folder (default: 'PDP').")
     parser.add_argument("--model_params", type=str, default=None,
                         help="JSON string of model parameters (e.g., '{\"link\": \"probit\", \"hidden_layer_sizes\": [50, 20]}').")
     parser.add_argument("--interpretation_params", type=str, default=None,

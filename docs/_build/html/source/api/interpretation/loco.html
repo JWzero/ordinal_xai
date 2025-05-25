@@ -193,30 +193,12 @@ changes when each feature is removed. It can operate in two modes:
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p>Dictionary containing:
-- ‘feature_importance’: Dictionary mapping features to their importance scores</p>
-<blockquote>
-<div><p>for each metric</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>’metric_drops’: Dictionary mapping metrics to feature importance scores</p></li>
-</ul>
-</p>
+<dd class="field-even"><p>Dictionary containing feature importance scores for each metric</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>In local mode, certain metrics (spearman_correlation, kendall_tau,
-weighted_kappa_quadratic, weighted_kappa_linear, cem) are automatically excluded
-as they are not suitable for single-instance evaluation</p></li>
-<li><p>For error metrics (mae, mse, mze, ranked_probability_score,
-ordinal_weighted_ce_linear, ordinal_weighted_ce_quadratic), higher values
-indicate higher importance</p></li>
-<li><p>For other metrics, higher drops indicate higher importance</p></li>
-</ul>
 </dd></dl>
 
 </dd></dl>
@@ -292,7 +274,7 @@ indicate higher importance</p></li>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024.
+      &#169;2025.
       
       |
       Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
