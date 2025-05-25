@@ -1,3 +1,52 @@
+Metadata-Version: 2.4
+Name: ordinal_xai
+Version: 0.1.0
+Summary: A Python package for ordinal regression and model agnosticinterpretation methods
+Home-page: https://github.com/JWzero/ordinal_xai
+Author: Jakob Wankmüller
+Author-email: crjakobcr@gmail.com
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy<2.0.0,>=1.24.0
+Requires-Dist: pandas<3.0.0,>=2.0.0
+Requires-Dist: scikit-learn<2.0.0,>=1.3.0
+Requires-Dist: scipy<2.0.0,>=1.10.0
+Requires-Dist: matplotlib<4.0.0,>=3.7.0
+Requires-Dist: gower>=0.1.0
+Requires-Dist: statsmodels<0.15.0,>=0.14.0
+Requires-Dist: xgboost<2.0.0,>=1.7.0
+Requires-Dist: torch<3.0.0,>=2.0.0
+Requires-Dist: skorch<1.0.0,>=0.13.0
+Requires-Dist: dlordinal>=2.4.1
+Provides-Extra: dev
+Requires-Dist: pytest>=6.0; extra == "dev"
+Requires-Dist: pytest-cov>=2.0; extra == "dev"
+Requires-Dist: black>=21.0; extra == "dev"
+Requires-Dist: isort>=5.0; extra == "dev"
+Requires-Dist: flake8>=3.9; extra == "dev"
+Requires-Dist: mypy>=0.910; extra == "dev"
+Requires-Dist: sphinx>=4.0; extra == "dev"
+Requires-Dist: sphinx-rtd-theme>=1.0; extra == "dev"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
 # Ordinal XAI
 
 A Python package for explainable ordinal regression models and interpretation methods.
