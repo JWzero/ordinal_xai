@@ -13,4 +13,5 @@ A Python package for explainable ordinal regression models and interpretation me
    usage
    models/index
    interpretation/index
+   utils/index
    license 

@@ -150,9 +150,9 @@ class ONN(BaseEstimator, BaseOrdinalModel):
         output_layer: nn.Module = StickBreakingLayer,
         loss_function: nn.Module = CDWCELoss,
         dropout: float = 0.2,
-        max_epochs: int = 10000,
+        max_epochs: int = 1000,
         batch_size: int = 32,
-        lr: float = 0.001,
+        lr: float = 0.0001,
         optimizer: torch.optim.Optimizer = torch.optim.Adam,
         patience: int = 10,
         min_delta: float = 0.0001,
@@ -167,7 +167,7 @@ class ONN(BaseEstimator, BaseOrdinalModel):
             List of hidden layer sizes
         dropout : float, default=0.2
             Dropout rate for regularization
-        max_epochs : int, default=10000
+        max_epochs : int, default=1000
             Maximum number of training epochs
         batch_size : int, default=32
             Batch size for training

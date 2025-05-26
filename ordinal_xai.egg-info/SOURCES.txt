@@ -1,6 +1,7 @@
 LICENSE
 README.md
 main.py
+pyproject.toml
 setup.py
 ordinal_xai/__init__.py
 ordinal_xai/__main__.py

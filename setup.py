@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="ordinal_xai",
-    version="0.1.11",
+    version="0.1.0",
     author="Jakob Wankmüller",
     author_email="crjakobcr@gmail.com",
     description="A Python package for ordinal regression and model-agnostic interpretation methods",

@@ -1,0 +1,201 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Utilities &mdash; Ordinal XAI 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Evaluation Metrics" href="evaluation_metrics.html" />
+    <link rel="prev" title="Utils" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Ordinal XAI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models/index.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interpretation/index.html">Interpretation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Utils</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Data Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ordinal_xai.utils.data_utils.load_data"><code class="docutils literal notranslate"><span class="pre">load_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ordinal_xai.utils.data_utils.transform_features"><code class="docutils literal notranslate"><span class="pre">transform_features()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evaluation_metrics.html">Evaluation Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pdp_modified.html">Partial Dependence Plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="response_modified.html">Response Modification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Ordinal XAI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Utils</a></li>
+      <li class="breadcrumb-item active">Data Utilities</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/utils/data_utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ordinal_xai.utils.data_utils">
+<span id="data-utilities"></span><h1>Data Utilities<a class="headerlink" href="#module-ordinal_xai.utils.data_utils" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.data_utils.load_data">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.data_utils.</span></span><span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">';'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_nan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'drop'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Series</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ordinal_xai/utils/data_utils.html#load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.data_utils.load_data" title="Link to this definition"></a></dt>
+<dd><p>Load and preprocess a dataset from a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>str</em>) – Full path to the data file</p></li>
+<li><p><strong>target</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>str</em><em>]</em><em>, </em><em>default=-1</em>) – Target variable specification. Can be:
+- int: Index of target column (e.g., -1 for last column)
+- str: Name of target column</p></li>
+<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>default=';'</em>) – Delimiter to use when reading the file</p></li>
+<li><p><strong>label_map</strong> (<em>Optional</em><em>[</em><em>dict</em><em>]</em><em>, </em><em>default=None</em>) – Optional mapping to convert target labels to numeric values.
+If None, labels will be mapped to 0-based continuous indices.</p></li>
+<li><p><strong>drop</strong> (<em>Optional</em><em>[</em><em>list</em><em>]</em><em>, </em><em>default=None</em>) – List of feature indices or names to drop from the features DataFrame.</p></li>
+<li><p><strong>handle_nan</strong> (<em>str</em><em>, </em><em>default='drop'</em>) – How to handle NaN values. Options are:
+- ‘drop’: Drop rows containing any NaN values
+- ‘error’: Raise an error if NaN values are found
+- ‘warn’: Print a warning if NaN values are found but continue</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>X: Features DataFrame
+y: Target Series with mapped labels</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[pd.DataFrame, pd.Series]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If the data file doesn’t exist</p></li>
+<li><p><strong>ValueError</strong> – If target specification is invalid
+    If handle_nan is not one of [‘drop’, ‘error’, ‘warn’]
+    If handle_nan=’error’ and NaN values are found</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.data_utils.transform_features">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.data_utils.</span></span><span class="sig-name descname"><span class="pre">transform_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_scaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OneHotEncoder</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">StandardScaler</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_nan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'drop'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">OneHotEncoder</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">StandardScaler</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ordinal_xai/utils/data_utils.html#transform_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.data_utils.transform_features" title="Link to this definition"></a></dt>
+<dd><p>Transform input data using one-hot encoding for categoricals and scaling for numericals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Input data to transform</p></li>
+<li><p><strong>fit</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to fit new encoder/scaler or use existing ones</p></li>
+<li><p><strong>no_scaling</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Whether to skip scaling of numerical features</p></li>
+<li><p><strong>encoder</strong> (<em>Optional</em><em>[</em><em>OneHotEncoder</em><em>]</em><em>, </em><em>default=None</em>) – Existing encoder to use if fit=False</p></li>
+<li><p><strong>scaler</strong> (<em>Optional</em><em>[</em><em>StandardScaler</em><em>]</em><em>, </em><em>default=None</em>) – Existing scaler to use if fit=False</p></li>
+<li><p><strong>categorical_columns</strong> (<em>Optional</em><em>[</em><em>list</em><em>]</em><em>, </em><em>default=None</em>) – List of categorical column names. If None, inferred from data types</p></li>
+<li><p><strong>handle_nan</strong> (<em>str</em><em>, </em><em>default='drop'</em>) – How to handle NaN values. Options are:
+- ‘drop’: Drop rows containing any NaN values
+- ‘error’: Raise an error if NaN values are found
+- ‘warn’: Print a warning if NaN values are found but continue</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>X_transformed: Transformed DataFrame
+encoder: Fitted OneHotEncoder
+scaler: Fitted StandardScaler (None if no_scaling=True)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[pd.DataFrame, OneHotEncoder, Optional[StandardScaler]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If handle_nan is not one of [‘drop’, ‘error’, ‘warn’]
+    If handle_nan=’error’ and NaN values are found</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This module provides functions for data loading and preprocessing:
+- <code class="docutils literal notranslate"><span class="pre">load_data</span></code>: Load and prepare datasets for ordinal regression
+- <code class="docutils literal notranslate"><span class="pre">transform_features</span></code>: Transform features for model training</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="evaluation_metrics.html" class="btn btn-neutral float-right" title="Evaluation Metrics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jakob Wankmüller.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

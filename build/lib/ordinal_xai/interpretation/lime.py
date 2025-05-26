@@ -684,16 +684,34 @@ class LIME(BaseInterpretation):
             lower_coef = None
             
             if pred_class < n_classes - 1:
-                higher_model = LogisticRegression(random_state=42, class_weight="balanced")
-                higher_model.fit(X_transformed, higher_mask, sample_weight=weights)
-                higher_coef = higher_model.coef_[0]
-                result['higher_coef'] = higher_coef
+                # Check if we have any positive samples for higher class
+                if np.any(higher_mask):
+                    try:
+                        higher_model = LogisticRegression(random_state=42, class_weight="balanced")
+                        higher_model.fit(X_transformed, higher_mask, sample_weight=weights)
+                        higher_coef = higher_model.coef_[0]
+                        result['higher_coef'] = higher_coef
+                    except Exception as e:
+                        logger.warning(f"Failed to fit higher class model: {str(e)}")
+                        result['higher_coef'] = np.zeros(X_transformed.shape[1])
+                else:
+                    logger.warning("No positive samples for higher class comparison")
+                    result['higher_coef'] = np.zeros(X_transformed.shape[1])
                 
             if pred_class > 0:
-                lower_model = LogisticRegression(random_state=42, class_weight="balanced")
-                lower_model.fit(X_transformed, lower_mask, sample_weight=weights)
-                lower_coef = lower_model.coef_[0]
-                result['lower_coef'] = lower_coef
+                # Check if we have any positive samples for lower class
+                if np.any(lower_mask):
+                    try:
+                        lower_model = LogisticRegression(random_state=42, class_weight="balanced")
+                        lower_model.fit(X_transformed, lower_mask, sample_weight=weights)
+                        lower_coef = lower_model.coef_[0]
+                        result['lower_coef'] = lower_coef
+                    except Exception as e:
+                        logger.warning(f"Failed to fit lower class model: {str(e)}")
+                        result['lower_coef'] = np.zeros(X_transformed.shape[1])
+                else:
+                    logger.warning("No positive samples for lower class comparison")
+                    result['lower_coef'] = np.zeros(X_transformed.shape[1])
                 
             if plot:
                 self._plot_coefficients(higher_coef, lower_coef, feature_names, 
@@ -704,14 +722,28 @@ class LIME(BaseInterpretation):
             lower_model = None
             
             if pred_class < n_classes - 1:
-                higher_model = DecisionTreeClassifier(random_state=42, max_depth=3)
-                higher_model.fit(X_transformed, higher_mask, sample_weight=weights)
-                result['higher_model'] = higher_model
+                # Check if we have any positive samples for higher class
+                if np.any(higher_mask):
+                    try:
+                        higher_model = DecisionTreeClassifier(random_state=42, max_depth=3)
+                        higher_model.fit(X_transformed, higher_mask, sample_weight=weights)
+                        result['higher_model'] = higher_model
+                    except Exception as e:
+                        logger.warning(f"Failed to fit higher class model: {str(e)}")
+                else:
+                    logger.warning("No positive samples for higher class comparison")
                 
             if pred_class > 0:
-                lower_model = DecisionTreeClassifier(random_state=42, max_depth=3)
-                lower_model.fit(X_transformed, lower_mask, sample_weight=weights)
-                result['lower_model'] = lower_model
+                # Check if we have any positive samples for lower class
+                if np.any(lower_mask):
+                    try:
+                        lower_model = DecisionTreeClassifier(random_state=42, max_depth=3)
+                        lower_model.fit(X_transformed, lower_mask, sample_weight=weights)
+                        result['lower_model'] = lower_model
+                    except Exception as e:
+                        logger.warning(f"Failed to fit lower class model: {str(e)}")
+                else:
+                    logger.warning("No positive samples for lower class comparison")
                 
             if plot:
                 self._plot_decision_tree(higher_model, lower_model, feature_names,

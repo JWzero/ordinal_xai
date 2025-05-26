@@ -46,7 +46,6 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models/index.html">Models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="interpretation/index.html">Interpretation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 </ul>
 
@@ -76,6 +75,7 @@
              
   <section id="ordinal-xai-utils-package">
 <h1>ordinal_xai.utils package<a class="headerlink" href="#ordinal-xai-utils-package" title="Link to this heading"></a></h1>
+<p>The utils package provides various utility functions for ordinal regression and explainable AI tasks. This package includes tools for data handling, model evaluation, and partial dependence plot modifications.</p>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
@@ -154,6 +154,9 @@ scaler: Fitted StandardScaler (None if no_scaling=True)</p>
 </dl>
 </dd></dl>
 
+<p>This module provides functions for data loading and preprocessing:
+- <code class="docutils literal notranslate"><span class="pre">load_data</span></code>: Load and prepare datasets for ordinal regression
+- <code class="docutils literal notranslate"><span class="pre">transform_features</span></code>: Transform features for model training</p>
 </section>
 <section id="module-ordinal_xai.utils.evaluation_metrics">
 <span id="ordinal-xai-utils-evaluation-metrics-module"></span><h2>ordinal_xai.utils.evaluation_metrics module<a class="headerlink" href="#module-ordinal_xai.utils.evaluation_metrics" title="Link to this heading"></a></h2>
@@ -505,6 +508,9 @@ with quadratic weights penalizing larger misclassifications more heavily.</p>
 </dl>
 </dd></dl>
 
+<p>This module contains functions for evaluating ordinal regression models:
+- <code class="docutils literal notranslate"><span class="pre">evaluate_ordinal_model</span></code>: Comprehensive evaluation of ordinal models
+- <code class="docutils literal notranslate"><span class="pre">print_evaluation_results</span></code>: Display evaluation metrics in a readable format</p>
 </section>
 <section id="module-ordinal_xai.utils.pdp_modified">
 <span id="ordinal-xai-utils-pdp-modified-module"></span><h2>ordinal_xai.utils.pdp_modified module<a class="headerlink" href="#module-ordinal_xai.utils.pdp_modified" title="Link to this heading"></a></h2>
@@ -680,6 +686,17 @@ For classical regression and binary classification <cite>n_outputs==1</cite>.
 </div>
 </dd></dl>
 
+<p>This module provides modified partial dependence plot functionality for ordinal regression:
+- Custom implementations of PDP for ordinal models
+- Visualization tools for feature effects</p>
+</section>
+<section id="ordinal-xai-utils-response-modified-module">
+<h2>ordinal_xai.utils._response_modified module<a class="headerlink" href="#ordinal-xai-utils-response-modified-module" title="Link to this heading"></a></h2>
+<p id="module-ordinal_xai.utils._response_modified">Utilities to get the response values of a classifier or a regressor.</p>
+<p>It allows to make uniform checks and validation.</p>
+<p>This module contains internal utilities for response modification:
+- Helper functions for response transformation
+- Support for ordinal model predictions</p>
 </section>
 <section id="module-ordinal_xai.utils">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ordinal_xai.utils" title="Link to this heading"></a></h2>
@@ -804,6 +821,11 @@ scaler: Fitted StandardScaler (None if no_scaling=True)</p>
 </dl>
 </dd></dl>
 
+<p>The main utils package exports the following functions:
+- <code class="docutils literal notranslate"><span class="pre">load_data</span></code>: Load and prepare datasets
+- <code class="docutils literal notranslate"><span class="pre">transform_features</span></code>: Transform features for model training
+- <code class="docutils literal notranslate"><span class="pre">evaluate_ordinal_model</span></code>: Evaluate ordinal regression models
+- <code class="docutils literal notranslate"><span class="pre">print_evaluation_results</span></code>: Display evaluation metrics</p>
 </section>
 </section>
 
@@ -815,7 +837,7 @@ scaler: Fitted StandardScaler (None if no_scaling=True)</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Ordinal XAI Contributors.</p>
+    <p>&#169; Copyright 2025, Jakob Wankmüller.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
