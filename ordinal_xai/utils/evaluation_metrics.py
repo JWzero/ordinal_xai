@@ -304,7 +304,7 @@ def kendall_tau(y_true, y_pred):
     correlation, _ = kendalltau(y_true, y_pred)
     return correlation
 
-def _create_one_hot_encoding(y_true, n_classes=None):
+def _create_one_hot_encoding(y_true, n_classes=None, zero_indexed = False):
     """
     Create one-hot encoding for ordinal labels.
     
@@ -328,7 +328,10 @@ def _create_one_hot_encoding(y_true, n_classes=None):
     """
     y_true = np.asarray(y_true)
     unique_labels = np.unique(y_true)
-    min_label = np.min(unique_labels)
+    if zero_indexed:
+        min_label = 0
+    else:
+        min_label = np.min(unique_labels)
     
     if n_classes is None:
         n_classes = len(unique_labels)
@@ -342,7 +345,7 @@ def _create_one_hot_encoding(y_true, n_classes=None):
     
     return y_true_one_hot, min_label, n_classes
 
-def ranked_probability_score(y_true, y_pred_proba):
+def ranked_probability_score(y_true, y_pred_proba, zero_indexed = False):
     """
     Calculate Ranked Probability Score (RPS) for ordinal regression.
     
@@ -367,7 +370,7 @@ def ranked_probability_score(y_true, y_pred_proba):
     y_true = np.asarray(y_true)
     y_pred_proba = np.asarray(y_pred_proba)
     
-    y_true_one_hot, _, _ = _create_one_hot_encoding(y_true, n_classes=y_pred_proba.shape[1])
+    y_true_one_hot, _, _ = _create_one_hot_encoding(y_true, n_classes=y_pred_proba.shape[1], zero_indexed = zero_indexed)
     
     y_pred_cumsum = np.cumsum(y_pred_proba, axis=1)
     y_true_cumsum = np.cumsum(y_true_one_hot, axis=1)
@@ -376,7 +379,7 @@ def ranked_probability_score(y_true, y_pred_proba):
     
     return rps
 
-def ordinal_weighted_ce(y_true, y_pred_proba, alpha=1):
+def ordinal_weighted_ce(y_true, y_pred_proba, alpha=1, zero_indexed = False):
     """
     Calculate ordinal weighted cross-entropy loss.
     
@@ -406,14 +409,17 @@ def ordinal_weighted_ce(y_true, y_pred_proba, alpha=1):
     n_samples, n_classes = y_pred_proba.shape
     eps = 1e-15  # To avoid log(0)
 
-    min_label = np.min(y_true)
+    if zero_indexed:
+        min_label = 0
+    else:
+        min_label = np.min(y_true)
     y_true_shifted = y_true - min_label
 
     loss = 0.0
     for i in range(n_samples):
         for k in range(n_classes):
             pi_k = np.clip(y_pred_proba[i, k], eps, 1 - eps)
-            loss += np.log(1 - pi_k) * (abs(k - y_true_shifted[i]) ** alpha)
+            loss += (np.log(1 - pi_k) * np.power(abs(k - y_true_shifted[i]),alpha))
     loss = -loss / n_samples
     return loss
 
@@ -447,7 +453,7 @@ def adjacent_accuracy(y_true, y_pred):
     
     return correct_or_adjacent / len(y_true)
 
-def evaluate_ordinal_model(y_true, y_pred, y_pred_proba=None, metrics=None):
+def evaluate_ordinal_model(y_true, y_pred, y_pred_proba=None, metrics=None, class_counts=None, zero_indexed = False):
     """
     Evaluate an ordinal regression model using multiple metrics.
     
@@ -465,7 +471,11 @@ def evaluate_ordinal_model(y_true, y_pred, y_pred_proba=None, metrics=None):
         Predicted class probabilities
     metrics : list of str, optional
         List of metric names to compute. If None, all available metrics are used.
-        
+    class_counts : dict, optional
+        Dictionary mapping class labels to their counts. If None, calculated from y_true.
+        Useful for local explanations where class distribution might differ from training.
+    zero_indexed : bool, optional
+        Whether the labels are zero-indexed. If False, the labels are shifted to zero-indexed.
     Returns
     -------
     dict
@@ -484,14 +494,14 @@ def evaluate_ordinal_model(y_true, y_pred, y_pred_proba=None, metrics=None):
         'mse': mse,
         'weighted_kappa_quadratic': lambda yt, yp: weighted_kappa(yt, yp, weights='quadratic'),
         'weighted_kappa_linear': lambda yt, yp: weighted_kappa(yt, yp, weights='linear'),
-        'cem': cem,
+        'cem': lambda yt, yp: cem(yt, yp, class_counts=class_counts),
         'spearman_correlation': spearman_correlation,
         'kendall_tau': kendall_tau,
     }
     available_proba_metrics = {
-        'ranked_probability_score': ranked_probability_score,
-        'ordinal_weighted_ce_linear': lambda yt, yp: ordinal_weighted_ce(yt, yp, alpha=1),
-        'ordinal_weighted_ce_quadratic': lambda yt, yp: ordinal_weighted_ce(yt, yp, alpha=2),
+        'ranked_probability_score':     lambda yt, yp: ranked_probability_score(yt, yp, zero_indexed=zero_indexed),
+        'ordinal_weighted_ce_linear': lambda yt, yp: ordinal_weighted_ce(yt, yp, alpha=1, zero_indexed=zero_indexed),
+        'ordinal_weighted_ce_quadratic': lambda yt, yp: ordinal_weighted_ce(yt, yp, alpha=2, zero_indexed=zero_indexed),
     }
     
     if metrics is None:

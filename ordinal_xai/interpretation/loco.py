@@ -207,10 +207,10 @@ class LOCO(BaseInterpretation):
             # Restrict metrics for local explanation
             if metrics is None:
                 metrics_to_use = [m for m in self.available_metrics if m not in [
-                    'spearman_correlation', 'kendall_tau', 'weighted_kappa_quadratic', 'weighted_kappa_linear', 'cem']]
+                    'spearman_correlation', 'kendall_tau', 'weighted_kappa_quadratic', 'weighted_kappa_linear']]
             else:
                 metrics_to_use = [m for m in metrics if m not in [
-                    'spearman_correlation', 'kendall_tau', 'weighted_kappa_quadratic', 'weighted_kappa_linear', 'cem']]
+                    'spearman_correlation', 'kendall_tau', 'weighted_kappa_quadratic', 'weighted_kappa_linear']]
             metric_funcs = self.available_metrics
             X_test = self.X.iloc[[observation_idx]]
             y_test = self.y.iloc[[observation_idx]] if hasattr(self.y, 'iloc') else np.array([self.y[observation_idx]])
@@ -222,7 +222,8 @@ class LOCO(BaseInterpretation):
                 original_proba_predictions = model_to_use.predict_proba(X_test)
             except (AttributeError, NotImplementedError):
                 original_proba_predictions = None
-            original_results = evaluate_ordinal_model(y_test, original_predictions, original_proba_predictions, metrics=metrics_to_use)
+            whole_dataset_class_counts = _get_class_counts(self.y)
+            original_results = evaluate_ordinal_model(y_test, original_predictions, original_proba_predictions, metrics=metrics_to_use, class_counts=whole_dataset_class_counts,zero_indexed=True)
         else:
             if metrics is None:
                 metrics_to_use = list(self.available_metrics.keys())
@@ -264,7 +265,8 @@ class LOCO(BaseInterpretation):
                 proba_predictions = model_copy.predict_proba(X_test_without_feature)
             except (AttributeError, NotImplementedError):
                 proba_predictions = None
-            feature_results = evaluate_ordinal_model(y_test, predictions, proba_predictions, metrics=metrics_to_use)
+            whole_dataset_class_counts = _get_class_counts(self.y)
+            feature_results = evaluate_ordinal_model(y_test, predictions, proba_predictions, metrics=metrics_to_use, class_counts=whole_dataset_class_counts,zero_indexed=True)
             metric_drops = {}
             for metric in metrics_to_use:
                 if metric in original_results and metric in feature_results:
