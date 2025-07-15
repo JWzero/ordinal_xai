@@ -29,8 +29,9 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree
 from .base_interpretation import BaseInterpretation
 import matplotlib.pyplot as plt
 import gower
-from sklearn.model_selection import ParameterGrid
+from sklearn.model_selection import ParameterGrid, train_test_split
 import logging
+from sklearn.metrics import accuracy_score, log_loss
 import re
 logger = logging.getLogger(__name__)
 
@@ -123,15 +124,15 @@ class LIME(BaseInterpretation):
             Training data
         y : np.ndarray, optional
             Target labels
-        comparison_method : str, default='one_vs_following'
+        comparison_method : "one_vs_following" | "one_vs_next", default='one_vs_following'
             Method for comparing classes
-        model_type : str, default='logistic'
+        model_type : "logistic" | "decision_tree", default='logistic'
             Type of surrogate model to use
         kernel_width : float, default=0.75
             Width of the exponential kernel
         custom_kernel : callable, optional
             Custom kernel function
-        sampling : str, default='permute'
+        sampling : "grid" | "uniform" | "permute", default='permute'
             Sampling strategy
         max_samples : int, default=10000
             Maximum number of samples
@@ -144,11 +145,11 @@ class LIME(BaseInterpretation):
         """
         super().__init__(model, X, y)
         
-        if comparison_method not in ['one_vs_next', 'one_vs_following']:
+        if comparison_method not in ["one_vs_next", "one_vs_following"]:
             raise ValueError("comparison_method must be either 'one_vs_next' or 'one_vs_following'")
         if kernel_width <= 0:
             raise ValueError("kernel_width must be positive")
-        if sampling not in ['grid', 'uniform', 'permute']:
+        if sampling not in ["grid", "uniform", "permute"]:
             raise ValueError("sampling must be one of: 'grid', 'uniform', 'permute'")
             
         self.model = model
@@ -250,9 +251,13 @@ class LIME(BaseInterpretation):
                           feature_names: List[str], 
                           observation_idx: int, 
                           observation: pd.Series, 
-                          pred_class: int) -> None:
+                          pred_class: int,
+                          fidelity_in: Optional[float] = None,
+                          fidelity_out: Optional[float] = None,
+                          is_effect: bool = False) -> None:
         """
-        Plot feature coefficients for higher and lower class predictions.
+        Plot horizontal bars for either surrogate coefficients or predictor
+        effects (coefficient × value) for higher / lower class comparisons.
         
         This method creates horizontal bar plots showing the coefficients of the
         logistic regression surrogate model for both higher and lower class
@@ -280,56 +285,104 @@ class LIME(BaseInterpretation):
         - Uses blue for higher class and red for lower class
         - Includes observation details in the title
         """
-        # Determine which plots to show
+        # Determine availability of coefficient sets
         show_higher = higher_coef is not None
         show_lower = lower_coef is not None
-        n_plots = show_higher + show_lower
-        if n_plots == 0:
+        if not (show_higher or show_lower):
             logger.warning("No coefficients to plot.")
             return
-            
-        fig, axes = plt.subplots(n_plots, 1, figsize=(10, 6 * n_plots))
-        if n_plots == 1:
-            axes = [axes]
-            
-        # Compose observation info (multi-line, compact)
+
+        # Compose observation info and fidelity lines
         obs_header = f"Observation {observation_idx}  |  Predicted class: {pred_class}"
         obs_values = ",  ".join([f"{name}: {value}" for name, value in observation.items()])
+        fidelity_line = ""
+        if fidelity_in is not None or fidelity_out is not None:
+            parts = []
+            if fidelity_in is not None:
+                parts.append(f"Fidelity(in-sample): {fidelity_in:.3f}")
+            if fidelity_out is not None:
+                parts.append(f"Fidelity(out-of-sample): {fidelity_out:.3f}")
+            fidelity_line = " | ".join(parts)
         obs_info = f"{obs_header}  |  {obs_values}"
+        if fidelity_line:
+            obs_info = f"{obs_info}\n{fidelity_line}"
+
+        # CASE 1 – both coefficient vectors are present → create one stacked bar chart
+        if show_higher and show_lower:
+            # Interleave bars per feature: higher first, then lower, maintaining horizontal orientation
+            n_features = len(feature_names)
+            y_high = np.arange(0, n_features * 2, 2)
+            y_low = y_high + 1
+
+            fig_height = max(6, n_features)  # scale figure height with number of rows
+            fig, ax = plt.subplots(figsize=(10, fig_height))
+            fig.suptitle(obs_info, fontsize=8)
+
+            # Plot bars
+            ax.barh(y_high, higher_coef, color="#4682b4", label="Higher rank")
+            ax.barh(y_low, lower_coef, color="#b44646", label="Lower rank")
+            # X-axis label
+            xlabel = "Predictor effect" if is_effect else "Coefficient"
+            ax.set_xlabel(xlabel)
+
+            # Y-tick labels duplicated for high/low rows
+            yticks = np.concatenate([y_high, y_low])
+            ylabels = []
+            for name in feature_names:
+                ylabels.extend([f"{name} ↑"])
+            for name in feature_names:
+                ylabels.extend([f"{name} ↓"])
+            ax.set_yticks(yticks)
+            ax.set_yticklabels(ylabels, fontsize=9)
+
+
+            ax.set_xlabel("Predictor Effect Value" if is_effect else "Coefficient Value")
+            if self.comparison_method == "one_vs_next":
+                title = (
+                    f"Surrogate Model {'Predictor Effects' if is_effect else 'Coefficients'} – Class {pred_class - 1} & {pred_class + 1}"
+                )
+            else:
+                title = f"Surrogate Model {'Predictor Effects' if is_effect else 'Coefficients'} – Classes < {pred_class} & > {pred_class}"
+            ax.set_title(title, fontsize=13, pad=10)
+            ax.tick_params(axis="x", labelsize=10)
+            ax.tick_params(axis="y", labelsize=10)
+            ax.legend()
+
+            plt.tight_layout()
+            plt.subplots_adjust(top=0.9)
+            plt.show()
+            return
+
+        # CASE 2 – only one of the coefficient/effect sets is present → single-bar chart
+        coef = higher_coef if show_higher else lower_coef
+        color = "#4682b4" if show_higher else "#b44646"
+        label = "Higher rank" if show_higher else "Lower rank"
+
+        fig, ax = plt.subplots(figsize=(10, 6))
         fig.suptitle(obs_info, fontsize=8)
-        
-        plot_idx = 0
-        if show_higher:
-            ax = axes[plot_idx]
-            ax.barh(range(len(higher_coef)), higher_coef, color='#4682b4')
-            ax.set_yticks(range(len(higher_coef)))
-            ax.set_yticklabels(feature_names, fontsize=10)
-            if self.comparison_method == 'one_vs_next':
-                title = f'Surrogate Model Coefficients for Class {pred_class + 1}'
+
+        y_pos = np.arange(len(feature_names))
+        ax.barh(y_pos, coef, color=color, label=label)
+        ax.set_yticks(y_pos)
+        ax.set_yticklabels(feature_names, fontsize=10)
+        title = (
+            f"Surrogate Model Coefficients for Classes > {pred_class}"
+            if show_higher
+            else f"Surrogate Model Coefficients for Classes < {pred_class}"
+        )
+        if self.comparison_method == "one_vs_next":
+            if show_higher:
+                title = f"Surrogate Model Coefficients for Class {pred_class + 1}"
             else:
-                title = f'Surrogate Model Coefficients for Classes > {pred_class}'
-            ax.set_title(title, fontsize=13, pad=10)
-            ax.set_xlabel('Coefficient Value')
-            ax.tick_params(axis='x', labelsize=10)
-            ax.tick_params(axis='y', labelsize=10)
-            plot_idx += 1
-            
-        if show_lower:
-            ax = axes[plot_idx]
-            ax.barh(range(len(lower_coef)), lower_coef, color='#b44646')
-            ax.set_yticks(range(len(lower_coef)))
-            ax.set_yticklabels(feature_names, fontsize=10)
-            if self.comparison_method == 'one_vs_next':
-                title = f'Surrogate Model Coefficients for Class {pred_class - 1}'
-            else:
-                title = f'Surrogate Model Coefficients for Classes < {pred_class}'
-            ax.set_title(title, fontsize=13, pad=10)
-            ax.set_xlabel('Coefficient Value')
-            ax.tick_params(axis='x', labelsize=10)
-            ax.tick_params(axis='y', labelsize=10)
-            
-        plt.tight_layout(h_pad=4)
-        plt.subplots_adjust(top=0.92)
+                title = f"Surrogate Model Coefficients for Class {pred_class - 1}"
+        ax.set_title(title, fontsize=13, pad=10)
+        ax.set_xlabel("Coefficient Value")
+        ax.tick_params(axis="x", labelsize=10)
+        ax.tick_params(axis="y", labelsize=10)
+        ax.legend()
+
+        plt.tight_layout()
+        plt.subplots_adjust(top=0.9)
         plt.show()
 
     def _generate_grid_samples(self, X: pd.DataFrame) -> pd.DataFrame:
@@ -476,12 +529,15 @@ class LIME(BaseInterpretation):
         return samples
 
     def _plot_decision_tree(self,
-                          higher_model: Optional[DecisionTreeClassifier],
-                          lower_model: Optional[DecisionTreeClassifier],
-                          feature_names: List[str],
-                          observation_idx: int,
-                          observation: pd.Series,
-                          pred_class: int) -> None:
+                           higher_model: Optional[DecisionTreeClassifier],
+                           lower_model: Optional[DecisionTreeClassifier],
+                           feature_names: List[str],
+                           observation_idx: int,
+                           observation: pd.Series,
+                           pred_class: int,
+                           fidelity_in: Optional[float] = None,
+                           fidelity_out: Optional[float] = None,
+                           is_effect: bool = False) -> None:
         """
         Plot decision tree surrogate models.
         
@@ -503,6 +559,10 @@ class LIME(BaseInterpretation):
             The observation being explained
         pred_class : int
             Predicted class of the observation
+        fidelity_in : float, optional
+            Fidelity of the model on the training data
+        fidelity_out : float, optional
+            Fidelity of the model on the test data
             
         Notes
         -----
@@ -526,8 +586,18 @@ class LIME(BaseInterpretation):
         # Compose observation info (multi-line, compact)
         obs_header = f"Observation {observation_idx}  |  Predicted class: {pred_class}"
         obs_values = ",  ".join([f"{name}: {value}" for name, value in observation.items()])
-        obs_info = f"{obs_header}  |  {obs_values}"
-        fig.suptitle(obs_info, fontsize=8)
+        fidelity_line = ""
+        if fidelity_in is not None or fidelity_out is not None:
+            parts = []
+            if fidelity_in is not None:
+                parts.append(f"Fidelity(in-sample): {fidelity_in:.3f}")
+            if fidelity_out is not None:
+                parts.append(f"Fidelity(out-of-sample): {fidelity_out:.3f}")
+            fidelity_line = " | ".join(parts)
+        suptitle = f"{obs_header}  |  {obs_values}"
+        if fidelity_line:
+            suptitle = f"{suptitle}\n{fidelity_line}"
+        fig.suptitle(suptitle, fontsize=8)
         
         plot_idx = 0
         if show_higher:
@@ -587,9 +657,15 @@ class LIME(BaseInterpretation):
                 observation_idx: Optional[int] = None, 
                 feature_subset: Optional[List[Union[int, str]]] = None, 
                 plot: bool = False, 
+                show_coefficients: bool = False,
                 **kwargs) -> Dict[str, Union[List[str], np.ndarray, DecisionTreeClassifier]]:
         """
         Generate LIME explanations for a specific observation.
+
+        Depending on the `show_coefficients` flag the horizontal bar plot will
+        display either (a) raw surrogate coefficients or (b) *predictor effects*
+        defined as `coefficient × local feature value` for numerical features.
+        Categorical one-hot features always use the raw coefficient value.
         
         This method creates local explanations by:
         1. Generating perturbed samples around the observation
@@ -604,6 +680,10 @@ class LIME(BaseInterpretation):
         feature_subset : List[Union[int, str]], optional
             List of feature indices or names to include
         plot : bool, default=False
+            If True, visualise the explanation.
+        show_coefficients : bool, default=False
+            If False (default) plot predictor effects; if True plot raw
+            coefficients.
             Whether to create visualizations
         **kwargs : dict
             Additional keyword arguments
@@ -634,6 +714,7 @@ class LIME(BaseInterpretation):
             raise ValueError("observation_idx must be specified for LIME")
             
         if self.model_type not in ["logistic", "decision_tree"]:
+            
             raise ValueError("model_type must be either 'logistic' or 'decision_tree'")
             
         # Get the observation
@@ -667,6 +748,8 @@ class LIME(BaseInterpretation):
 
         # Transform features
         X_transformed = self.model.transform(samples, fit=False, no_scaling=True)
+        # Transformed observation for effect calculation (ensure correct dtypes)
+        obs_transformed = self.model.transform(self.X.iloc[[observation_idx]], fit=False, no_scaling=True).iloc[0].values
         feature_names = X_transformed.columns.tolist()
         
         if feature_subset is not None:
@@ -687,10 +770,28 @@ class LIME(BaseInterpretation):
                 # Check if we have any positive samples for higher class
                 if np.any(higher_mask):
                     try:
-                        higher_model = LogisticRegression(random_state=42, class_weight="balanced")
-                        higher_model.fit(X_transformed, higher_mask, sample_weight=weights)
+                        # Train/test split for fidelity estimation
+                        idx_train, idx_test = train_test_split(np.arange(len(higher_mask)), test_size=0.2, random_state=42, stratify=higher_mask)
+                        X_train, X_test = X_transformed.iloc[idx_train], X_transformed.iloc[idx_test]
+                        y_train, y_test = higher_mask[idx_train], higher_mask[idx_test]
+                        w_train, w_test = weights[idx_train], weights[idx_test]
+
+                        higher_model = LogisticRegression(random_state=42, class_weight="balanced", max_iter=10000)
+                        higher_model.fit(X_train, y_train, sample_weight=w_train)
                         higher_coef = higher_model.coef_[0]
+                        if not show_coefficients:
+                            num_mask = ~np.isin(obs_transformed, [0, 1])
+                            higher_effect = higher_coef * (obs_transformed * num_mask + (~num_mask) * 1)  # multiply only numeric
+                            result['higher_effect'] = higher_effect
                         result['higher_coef'] = higher_coef
+
+                        # Fidelity (binary cross-entropy) in and out of sample
+                        prob_train = higher_model.predict_proba(X_train)[:, 1]
+                        prob_test = higher_model.predict_proba(X_test)[:, 1]
+                        in_loss = log_loss(y_train, prob_train, sample_weight=w_train, labels=[0, 1])
+                        out_loss = log_loss(y_test, prob_test, sample_weight=w_test, labels=[0, 1])
+                        result['higher_fidelity_in'] = in_loss
+                        result['higher_fidelity_out'] = out_loss
                     except Exception as e:
                         logger.warning(f"Failed to fit higher class model: {str(e)}")
                         result['higher_coef'] = np.zeros(X_transformed.shape[1])
@@ -702,10 +803,25 @@ class LIME(BaseInterpretation):
                 # Check if we have any positive samples for lower class
                 if np.any(lower_mask):
                     try:
-                        lower_model = LogisticRegression(random_state=42, class_weight="balanced")
-                        lower_model.fit(X_transformed, lower_mask, sample_weight=weights)
+                        idx_train_l, idx_test_l = train_test_split(np.arange(len(lower_mask)), test_size=0.2, random_state=42, stratify=lower_mask)
+                        X_train_l, X_test_l = X_transformed.iloc[idx_train_l], X_transformed.iloc[idx_test_l]
+                        y_train_l, y_test_l = lower_mask[idx_train_l], lower_mask[idx_test_l]
+                        w_train_l, w_test_l = weights[idx_train_l], weights[idx_test_l]
+
+                        lower_model = LogisticRegression(random_state=42, class_weight="balanced", max_iter=10000)
+                        lower_model.fit(X_train_l, y_train_l, sample_weight=w_train_l)
                         lower_coef = lower_model.coef_[0]
+                        if not show_coefficients:
+                            num_mask = ~np.isin(obs_transformed, [0, 1])
+                            lower_effect = lower_coef * (obs_transformed * num_mask + (~num_mask) * 1)
+                            result['lower_effect'] = lower_effect
                         result['lower_coef'] = lower_coef
+                        prob_train_l = lower_model.predict_proba(X_train_l)[:, 1]
+                        prob_test_l = lower_model.predict_proba(X_test_l)[:, 1]
+                        in_loss_l = log_loss(y_train_l, prob_train_l, sample_weight=w_train_l, labels=[0, 1])
+                        out_loss_l = log_loss(y_test_l, prob_test_l, sample_weight=w_test_l, labels=[0, 1])
+                        result['lower_fidelity_in'] = in_loss_l
+                        result['lower_fidelity_out'] = out_loss_l
                     except Exception as e:
                         logger.warning(f"Failed to fit lower class model: {str(e)}")
                         result['lower_coef'] = np.zeros(X_transformed.shape[1])
@@ -713,9 +829,32 @@ class LIME(BaseInterpretation):
                     logger.warning("No positive samples for lower class comparison")
                     result['lower_coef'] = np.zeros(X_transformed.shape[1])
                 
+            # Aggregate in- and out-of-sample BCE losses
+            losses_in = []
+            losses_out = []
+            if 'higher_fidelity_in' in result:
+                losses_in.append(result['higher_fidelity_in'])
+            if 'lower_fidelity_in' in result:
+                losses_in.append(result['lower_fidelity_in'])
+            if 'higher_fidelity_out' in result:
+                losses_out.append(result['higher_fidelity_out'])
+            if 'lower_fidelity_out' in result:
+                losses_out.append(result['lower_fidelity_out'])
+            if losses_in:
+                result['fidelity_in'] = float(np.mean(losses_in))
+            if losses_out:
+                result['fidelity_out'] = float(np.mean(losses_out))
+
             if plot:
-                self._plot_coefficients(higher_coef, lower_coef, feature_names, 
-                                     observation_idx, observation, pred_class)
+                # Determine data to plot: coefficients or effects
+                plot_high = higher_coef if show_coefficients else result.get('higher_effect', higher_coef)
+                plot_low = lower_coef if show_coefficients else result.get('lower_effect', lower_coef)
+
+                self._plot_coefficients(plot_high, plot_low, feature_names,
+                                      observation_idx, observation, pred_class,
+                                      fidelity_in=result.get('fidelity_in'),
+                                      fidelity_out=result.get('fidelity_out'),
+                                      is_effect=not show_coefficients)
                                      
         elif self.model_type == "decision_tree":
             higher_model = None
@@ -725,9 +864,20 @@ class LIME(BaseInterpretation):
                 # Check if we have any positive samples for higher class
                 if np.any(higher_mask):
                     try:
+                        idx_train_h, idx_test_h = train_test_split(np.arange(len(higher_mask)), test_size=0.2, random_state=42, stratify=higher_mask)
+                        X_train_h, X_test_h = X_transformed.iloc[idx_train_h], X_transformed.iloc[idx_test_h]
+                        y_train_h, y_test_h = higher_mask[idx_train_h], higher_mask[idx_test_h]
+                        w_train_h, w_test_h = weights[idx_train_h], weights[idx_test_h]
+
                         higher_model = DecisionTreeClassifier(random_state=42, max_depth=3)
-                        higher_model.fit(X_transformed, higher_mask, sample_weight=weights)
+                        higher_model.fit(X_train_h, y_train_h, sample_weight=w_train_h)
                         result['higher_model'] = higher_model
+                        pred_train_h = higher_model.predict(X_train_h)
+                        pred_test_h = higher_model.predict(X_test_h)
+                        loss_in_h = 1.0 - accuracy_score(y_train_h, pred_train_h, sample_weight=w_train_h)
+                        loss_out_h = 1.0 - accuracy_score(y_test_h, pred_test_h, sample_weight=w_test_h)
+                        result['higher_fidelity_in'] = loss_in_h
+                        result['higher_fidelity_out'] = loss_out_h
                     except Exception as e:
                         logger.warning(f"Failed to fit higher class model: {str(e)}")
                 else:
@@ -737,16 +887,47 @@ class LIME(BaseInterpretation):
                 # Check if we have any positive samples for lower class
                 if np.any(lower_mask):
                     try:
+                        idx_train_l, idx_test_l = train_test_split(np.arange(len(lower_mask)), test_size=0.2, random_state=42, stratify=lower_mask)
+                        X_train_l, X_test_l = X_transformed.iloc[idx_train_l], X_transformed.iloc[idx_test_l]
+                        y_train_l, y_test_l = lower_mask[idx_train_l], lower_mask[idx_test_l]
+                        w_train_l, w_test_l = weights[idx_train_l], weights[idx_test_l]
+
                         lower_model = DecisionTreeClassifier(random_state=42, max_depth=3)
-                        lower_model.fit(X_transformed, lower_mask, sample_weight=weights)
+                        lower_model.fit(X_train_l, y_train_l, sample_weight=w_train_l)
                         result['lower_model'] = lower_model
+                        pred_train_l = lower_model.predict(X_train_l)
+                        pred_test_l = lower_model.predict(X_test_l)
+                        loss_in_l = 1.0 - accuracy_score(y_train_l, pred_train_l, sample_weight=w_train_l)
+                        loss_out_l = 1.0 - accuracy_score(y_test_l, pred_test_l, sample_weight=w_test_l)
+                        result['lower_fidelity_in'] = loss_in_l
+                        result['lower_fidelity_out'] = loss_out_l
                     except Exception as e:
                         logger.warning(f"Failed to fit lower class model: {str(e)}")
                 else:
                     logger.warning("No positive samples for lower class comparison")
                 
+            # Aggregate losses
+            losses_in = []
+            losses_out = []
+            if 'higher_fidelity_in' in result:
+                losses_in.append(result['higher_fidelity_in'])
+            if 'lower_fidelity_in' in result:
+                losses_in.append(result['lower_fidelity_in'])
+            if 'higher_fidelity_out' in result:
+                losses_out.append(result['higher_fidelity_out'])
+            if 'lower_fidelity_out' in result:
+                losses_out.append(result['lower_fidelity_out'])
+            if losses_in:
+                result['fidelity_in'] = float(np.mean(losses_in))
+            if losses_out:
+                result['fidelity_out'] = float(np.mean(losses_out))
+
             if plot:
+                # pass fidelity for trees if needed (uses 'fidelity')
                 self._plot_decision_tree(higher_model, lower_model, feature_names,
-                                      observation_idx, observation, pred_class)
+                                      observation_idx, observation, pred_class,
+                                      fidelity_in=result.get('fidelity_in'),
+                                      fidelity_out=result.get('fidelity_out'),
+                                      is_effect=not show_coefficients)
                     
         return result
