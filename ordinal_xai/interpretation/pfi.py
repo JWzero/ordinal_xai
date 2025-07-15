@@ -76,7 +76,7 @@ class PFI(BaseInterpretation):
         If X is not a pandas DataFrame or if model predictions fail.
     """
     
-    def __init__(self, model, X: pd.DataFrame, y: np.ndarray = None, n_repeats=5, random_state=42):
+    def __init__(self, model, X: pd.DataFrame, y: np.ndarray = None, n_repeats=5, random_state=42, show_intervals: bool = False):
         """
         Initialize the Permutation Feature Importance interpretation method.
         
@@ -117,6 +117,8 @@ class PFI(BaseInterpretation):
         }
         self.n_repeats = n_repeats
         self.random_state = random_state
+        # Whether to draw mean±std intervals on plots
+        self.show_intervals = show_intervals
         if self.y is not None:
             try:
                 self.original_predictions = self.model.predict(self.X)
@@ -177,39 +179,38 @@ class PFI(BaseInterpretation):
                 raise ValueError(f"Failed to calculate score for metric {metric_name}: {str(e)}")
         return scoring_func
     
-    def explain(self, observation_idx=None, feature_subset=None, plot=False, metrics=None):
+    def explain(self, observation_idx=None, feature_subset=None, plot=False, metrics=None, title = True):
         """
         Generate Permutation Feature Importance explanations.
-        
+
         This method computes feature importance by measuring how model performance
         changes when feature values are randomly permuted. The importance score
         represents the average change in model performance across multiple
         permutations.
-        
+
+        Two modes are supported:
+        1. Global mode (default): Evaluates feature importance across the entire dataset.
+        2. Local mode (when observation_idx is provided): Evaluates feature importance
+           for a specific instance by permuting feature values for that instance only.
+
         Parameters
         ----------
         observation_idx : int, optional
-            Ignored (Permutation Importance is a global method)
+            Index of specific instance to analyze (local explanation). If None, computes global PFI.
         feature_subset : list, optional
             List of feature names or indices to consider (for permutation and output only)
         plot : bool, default=False
             Whether to create visualizations
         metrics : list, optional
             List of metrics to use for feature importance calculation
-            
+        title : bool, default=True
+            Whether to add a suptitle to the visualization
+
         Returns
         -------
         dict
-            Dictionary containing feature importance scores for each metric:
-            - 'features': List of feature names
-            - 'importances_mean': Mean importance scores
-            - 'importances_std': Standard deviation of importance scores
-            - 'importances': Raw importance scores for each permutation
-            
-        Raises
-        ------
-        ValueError
-            If invalid metrics are specified
+            Dictionary containing feature importance scores for each metric.
+            In local mode, returns per-feature importance for the specified instance.
         """
         if not self.model.is_fitted_:
             self.model.fit(self.X, self.y) # Ensure model is fitted
@@ -232,33 +233,101 @@ class PFI(BaseInterpretation):
             if invalid_metrics:
                 raise ValueError(f"Invalid metrics: {invalid_metrics}. Available metrics: {list(self.available_metrics.keys())}")
             metrics_to_use = metrics
-        results = {}
-        for metric_name in metrics_to_use:
-            metric_func = self.available_metrics[metric_name]
-            scoring_func = self._create_scoring_func(metric_name, metric_func)
-            result = permutation_importance(
-                self.model, self.X, self.y,
-                n_repeats=self.n_repeats,
-                n_jobs=-1, # Use all available CPU cores
-                random_state=self.random_state,
-                scoring=scoring_func
-            )
-            importances_mean = result.importances_mean[feature_idxs]
-            importances_std = result.importances_std[feature_idxs]
-            importances = result.importances[feature_idxs]
-            results[metric_name] = {
-                'features': permute_features,
-                'importances_mean': importances_mean,
-                'importances_std': importances_std,
-                'importances': importances
-            }
-        if plot:
-            self._plot_feature_importance(results)
-        return results
+
+        if observation_idx is not None:
+            # Local (instance-level) PFI
+            # Exclude metrics not suitable for single-instance explanation
+            metrics_to_exclude = ['spearman_correlation', 'kendall_tau', 'quadratic_weighted_kappa', 'linear_weighted_kappa']
+            metrics_to_use = [m for m in metrics_to_use if m not in metrics_to_exclude]
+
+            from ..utils.evaluation_metrics import _get_class_counts
+            X_instance = self.X.iloc[[observation_idx]]
+            y_instance = self.y.iloc[[observation_idx]] if hasattr(self.y, 'iloc') else np.array([self.y[observation_idx]])
+            rng = np.random.RandomState(self.random_state)
+            results = {}
+            # For local explanation, some metrics require class counts from the whole dataset
+            whole_dataset_class_counts = _get_class_counts(self.y)
+
+            original_pred = self.model.predict(X_instance)
+            try:
+                original_pred_proba = self.model.predict_proba(X_instance)
+            except (AttributeError, NotImplementedError):
+                original_pred_proba = None
+
+            original_results = evaluate_ordinal_model(y_instance, original_pred, original_pred_proba, metrics=metrics_to_use, class_counts=whole_dataset_class_counts, zero_indexed=True)
+
+            importances = {metric: [] for metric in metrics_to_use}
+
+            for feature in permute_features:
+                feature_importances = {metric: [] for metric in metrics_to_use}
+                for _ in range(self.n_repeats*20):
+                    X_permuted = X_instance.copy()
+                    permuted_value = rng.choice(self.X[feature].values)
+                    X_permuted.loc[X_permuted.index[0], feature] = permuted_value
+
+                    permuted_pred = self.model.predict(X_permuted)
+                    try:
+                        permuted_pred_proba = self.model.predict_proba(X_permuted)
+                    except (AttributeError, NotImplementedError):
+                        permuted_pred_proba = None
+
+                    permuted_results = evaluate_ordinal_model(y_instance, permuted_pred, permuted_pred_proba, metrics=metrics_to_use, class_counts=whole_dataset_class_counts, zero_indexed=True)
+
+                    for metric in metrics_to_use:
+                        original_score = original_results[metric]
+                        permuted_score = permuted_results[metric]
+                        if metric in ['mae', 'mse', 'mze', 'ranked_probability_score', 'ordinal_weighted_ce_linear', 'ordinal_weighted_ce_quadratic']:
+                            drop = permuted_score - original_score
+                        else:
+                            drop = original_score - permuted_score
+                        feature_importances[metric].append(drop)
+                
+                for metric in metrics_to_use:
+                    importances[metric].append(feature_importances[metric])
+
+            results = {}
+            for metric in metrics_to_use:
+                metric_importances = np.array(importances[metric])
+                results[metric] = {
+                    'features': permute_features,
+                    'importances_mean': metric_importances.mean(axis=1),
+                    'importances_std': metric_importances.std(axis=1),
+                    'importances': metric_importances
+                }
+
+            if plot:
+                self._plot_feature_importance(results, metrics=metrics_to_use, title=title)
+            return results
+        else:
+            # Global PFI (existing logic)
+            results = {}
+            for metric_name in metrics_to_use:
+                metric_func = self.available_metrics[metric_name]
+                scoring_func = self._create_scoring_func(metric_name, metric_func)
+                result = permutation_importance(
+                    self.model, self.X, self.y,
+                    n_repeats=self.n_repeats,
+                    n_jobs=-1, # Use all available CPU cores
+                    random_state=self.random_state,
+                    scoring=scoring_func
+                )
+                importances_mean = result.importances_mean[feature_idxs]
+                importances_std = result.importances_std[feature_idxs]
+                importances = result.importances[feature_idxs]
+                results[metric_name] = {
+                    'features': permute_features,
+                    'importances_mean': importances_mean,
+                    'importances_std': importances_std,
+                    'importances': importances
+                }
+            if plot:
+                self._plot_feature_importance(results, metrics=metrics_to_use, title=title)
+            return results
+
     
-    def _plot_feature_importance(self, results, metrics=None):
+    def _plot_feature_importance(self, results, metrics=None, title=True):
         """
-        Plot feature importance scores for each metric.
+        Plot feature importance scores for each metric. 
         
         This method creates bar plots showing feature importance scores for each metric.
         The plots are arranged in a grid, with one subplot per metric. Features are
@@ -270,11 +339,9 @@ class PFI(BaseInterpretation):
         results : dict
             Dictionary containing all results from the PFI analysis
         metrics : list, optional
-            List of metrics to plot (defaults to all in results)
-            
-        Notes
-        -----
-        - Features are sorted by importance score
+             List of metrics to plot (defaults to all in results)
+        title : bool, default=True
+            Whether to add a suptitle to the visualization
         - Error metrics are shown in red with "Increase" in the title
         - Other metrics are shown in green with "Drop" in the title
         - Feature names are rotated 90 degrees for better readability
@@ -284,8 +351,8 @@ class PFI(BaseInterpretation):
 
         metric_abbr = {
             'adjacent_accuracy': 'AA',
-            'linear_weighted_kappa': 'LWK',
-            'quadratic_weighted_kappa': 'QWK',
+            'weighted_kappa_linear': 'LWK',
+            'weighted_kappa_quadratic': 'QWK',
             'spearman_correlation': 'Rho',
             'kendall_tau': 'Tau',
             'ranked_probability_score': 'RPS',
@@ -310,9 +377,12 @@ class PFI(BaseInterpretation):
 
         for i, metric in enumerate(metrics):
             metric_result = results[metric]
-            features = metric_result['features']
-            means = metric_result['importances_mean']
-            stds = metric_result['importances_std']
+        
+            # Sort features by importance
+            sorted_indices = np.argsort(metric_result['importances_mean'])[::-1]
+            features = np.array(metric_result['features'])[sorted_indices]
+            means = metric_result['importances_mean'][sorted_indices]
+            stds = metric_result['importances_std'][sorted_indices]
 
             abbr = metric_abbr.get(metric, metric)
             color = 'red' if metric in ['mae', 'mse', 'mze', 'ranked_probability_score',
@@ -321,9 +391,20 @@ class PFI(BaseInterpretation):
 
             ax = axes[i]
             bars = ax.bar(features, means, color=color, alpha=0.85)
+            # Add interval lines if requested
+            if self.show_intervals:
+                for bar, mean_val, std_val in zip(bars, means, stds):
+                    x_left = bar.get_x()
+                    x_right = x_left + bar.get_width()
+                    # Upper interval
+                    ax.hlines(y=mean_val + std_val, xmin=x_left, xmax=x_right,
+                              colors='black', linestyles='dashed', linewidth=1)
+                    # Lower interval
+                    ax.hlines(y=mean_val - std_val, xmin=x_left, xmax=x_right,
+                              colors='black', linestyles='dashed', linewidth=1)
             ax.set_ylabel(f'{abbr} {title_suffix}', fontsize=8, labelpad=10)
             ax.grid(axis='y', linestyle='--', alpha=0.5)
-            if len(features) > 10:
+            if len(features) > 12:
                 feature_fontsize = 5
             else:
                 feature_fontsize = 8
@@ -335,7 +416,8 @@ class PFI(BaseInterpretation):
                         f'{mean:.3f}', ha='center', va='center', fontsize=feature_fontsize, rotation=90, clip_on=True)
         for i in range(n_metrics, len(axes)):
             axes[i].set_visible(False)
-        fig.suptitle('Permutation Feature Importance Across Metrics', fontsize=18, y=0.995)
+        if title:
+            fig.suptitle('Permutation Feature Importance Across Metrics', fontsize=18, y=0.995)
         plt.tight_layout(h_pad=5,w_pad=5)
         plt.subplots_adjust(top=0.95,left=0.05)
         plt.show() 

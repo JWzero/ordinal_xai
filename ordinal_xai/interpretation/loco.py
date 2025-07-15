@@ -176,7 +176,7 @@ class LOCO(BaseInterpretation):
             self.y_test, self.original_predictions, self.original_proba_predictions
         )
     
-    def explain(self, observation_idx=None, feature_subset=None, plot=False, metrics=None):
+    def explain(self, observation_idx=None, feature_subset=None, plot=False, metrics=None, title=True):
         """
         Generate LOCO feature importance scores.
         
@@ -196,6 +196,8 @@ class LOCO(BaseInterpretation):
             Whether to create visualizations
         metrics : list, optional
             List of metrics to use for feature importance calculation
+        title : bool, default=True
+            Whether to add a suptitle to the visualization
             
         Returns
         -------
@@ -281,10 +283,10 @@ class LOCO(BaseInterpretation):
                     results['metric_drops'][metric] = {}
                 results['metric_drops'][metric][feature] = drop
         if plot:
-            self._plot_feature_importance(results, metrics=metrics_to_use)
+            self._plot_feature_importance(results, metrics=metrics_to_use, title=title)
         return results
     
-    def _plot_feature_importance(self, results, metrics=None):
+    def _plot_feature_importance(self, results, metrics=None, title=True):
         """
         Create visualizations for feature importance.
         
@@ -297,16 +299,20 @@ class LOCO(BaseInterpretation):
             Dictionary containing all results from the LOCO analysis
         metrics : list, optional
             List of metrics to plot (defaults to all in results)
+        title : bool, default=True
+            Whether to add a suptitle to the visualization
             
         Notes
         -----
-        - Features are sorted by absolute importance score
+        - Features are sorted by importance score
         - Error metrics are shown in red with "Increase" in the title
         - Other metrics are shown in green with "Drop" in the title
         - Feature names are rotated 90 degrees for better readability
         - Score values are displayed in the middle of each bar
         """
         import math
+        import matplotlib.pyplot as plt
+
         metric_abbr = {
             'adjacent_accuracy': 'AA',
             'weighted_kappa_linear': 'LWK',
@@ -331,17 +337,18 @@ class LOCO(BaseInterpretation):
             axes = [axes]
         else:
             axes = axes.flatten()
+
         for i, metric in enumerate(metrics):
             feature_scores = results['metric_drops'][metric]
             ax = axes[i]
             sorted_features = sorted(
-                feature_scores.items(), 
-                key=lambda x: abs(x[1]), 
+                feature_scores.items(),
+                key=lambda x: x[1],
                 reverse=True
             )
             features = [str(f[0]) for f in sorted_features]
             scores = [f[1] for f in sorted_features]
-            if metric in ['mae', 'mse', 'mze', 'ranked_probability_score', 
+            if metric in ['mae', 'mse', 'mze', 'ranked_probability_score',
                          'ordinal_weighted_ce_linear', 'ordinal_weighted_ce_quadratic']:
                 color = 'red'
                 title_suffix = "Increase"
@@ -352,7 +359,7 @@ class LOCO(BaseInterpretation):
             bars = ax.bar(features, scores, color=color, alpha=0.85)
             ax.set_ylabel(f'{abbr} {title_suffix}', fontsize=8, labelpad=3)
             ax.grid(axis='y', linestyle='--', alpha=0.5)
-            if len(features) > 10:
+            if len(features) > 12:
                 feature_fontsize = 5
             else:
                 feature_fontsize = 8
@@ -362,11 +369,11 @@ class LOCO(BaseInterpretation):
             for bar, score in zip(bars, scores):
                 ax.text(bar.get_x() + bar.get_width()/2, y_mid,
                         f'{score:.3f}', ha='center', va='center', fontsize=feature_fontsize, rotation=90, clip_on=True)
+
         for i in range(n_metrics, len(axes)):
             axes[i].set_visible(False)
-        fig.suptitle('LOCO Feature Importance Across Metrics', fontsize=18, y=0.995)
+        if title:
+            fig.suptitle('LOCO Feature Importance Across Metrics', fontsize=18, y=0.995)
         plt.tight_layout(h_pad=5,w_pad=5)
         plt.subplots_adjust(top=0.95,left=0.05)
         plt.show()
-        
-        
