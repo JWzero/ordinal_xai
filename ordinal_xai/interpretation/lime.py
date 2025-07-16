@@ -252,8 +252,10 @@ class LIME(BaseInterpretation):
                           observation_idx: int, 
                           observation: pd.Series, 
                           pred_class: int,
-                          fidelity_in: Optional[float] = None,
-                          fidelity_out: Optional[float] = None,
+                          higher_fidelity_in: Optional[float] = None,
+                          higher_fidelity_out: Optional[float] = None,
+                          lower_fidelity_in: Optional[float] = None,
+                          lower_fidelity_out: Optional[float] = None,
                           is_effect: bool = False) -> None:
         """
         Plot horizontal bars for either surrogate coefficients or predictor
@@ -296,16 +298,20 @@ class LIME(BaseInterpretation):
         obs_header = f"Observation {observation_idx}  |  Predicted class: {pred_class}"
         obs_values = ",  ".join([f"{name}: {value}" for name, value in observation.items()])
         fidelity_line = ""
-        if fidelity_in is not None or fidelity_out is not None:
+        if any(v is not None for v in [higher_fidelity_in, higher_fidelity_out, lower_fidelity_in, lower_fidelity_out]):
             parts = []
-            if fidelity_in is not None:
-                parts.append(f"Fidelity(in-sample): {fidelity_in:.3f}")
-            if fidelity_out is not None:
-                parts.append(f"Fidelity(out-of-sample): {fidelity_out:.3f}")
+            if higher_fidelity_in is not None:
+                parts.append(f"Higher(in): {higher_fidelity_in[0]:.3f}/{higher_fidelity_in[1]:.3f}")
+            if higher_fidelity_out is not None:
+                parts.append(f"Higher(out): {higher_fidelity_out[0]:.3f}/{higher_fidelity_out[1]:.3f}")
+            if lower_fidelity_in is not None:
+                parts.append(f"Lower(in): {lower_fidelity_in[0]:.3f}/{lower_fidelity_in[1]:.3f}")
+            if lower_fidelity_out is not None:
+                parts.append(f"Lower(out): {lower_fidelity_out[0]:.3f}/{lower_fidelity_out[1]:.3f}")
             fidelity_line = " | ".join(parts)
         obs_info = f"{obs_header}  |  {obs_values}"
         if fidelity_line:
-            obs_info = f"{obs_info}\n{fidelity_line}"
+            obs_info = f"{obs_info}\n Fidelity: {fidelity_line}"
 
         # CASE 1 – both coefficient vectors are present → create one stacked bar chart
         if show_higher and show_lower:
@@ -535,8 +541,10 @@ class LIME(BaseInterpretation):
                            observation_idx: int,
                            observation: pd.Series,
                            pred_class: int,
-                           fidelity_in: Optional[float] = None,
-                           fidelity_out: Optional[float] = None,
+                           higher_fidelity_in: Optional[float] = None,
+                           higher_fidelity_out: Optional[float] = None,
+                           lower_fidelity_in: Optional[float] = None,
+                           lower_fidelity_out: Optional[float] = None,
                            is_effect: bool = False) -> None:
         """
         Plot decision tree surrogate models.
@@ -587,16 +595,20 @@ class LIME(BaseInterpretation):
         obs_header = f"Observation {observation_idx}  |  Predicted class: {pred_class}"
         obs_values = ",  ".join([f"{name}: {value}" for name, value in observation.items()])
         fidelity_line = ""
-        if fidelity_in is not None or fidelity_out is not None:
+        if any(v is not None for v in [higher_fidelity_in, higher_fidelity_out, lower_fidelity_in, lower_fidelity_out]):
             parts = []
-            if fidelity_in is not None:
-                parts.append(f"Fidelity(in-sample): {fidelity_in:.3f}")
-            if fidelity_out is not None:
-                parts.append(f"Fidelity(out-of-sample): {fidelity_out:.3f}")
+            if higher_fidelity_in is not None:
+                parts.append(f"Higher(in): {higher_fidelity_in[0]:.3f}/{higher_fidelity_in[1]:.3f}")
+            if higher_fidelity_out is not None:
+                parts.append(f"Higher(out): {higher_fidelity_out[0]:.3f}/{higher_fidelity_out[1]:.3f}")
+            if lower_fidelity_in is not None:
+                parts.append(f"Lower(in): {lower_fidelity_in[0]:.3f}/{lower_fidelity_in[1]:.3f}")
+            if lower_fidelity_out is not None:
+                parts.append(f"Lower(out): {lower_fidelity_out[0]:.3f}/{lower_fidelity_out[1]:.3f}")
             fidelity_line = " | ".join(parts)
         suptitle = f"{obs_header}  |  {obs_values}"
         if fidelity_line:
-            suptitle = f"{suptitle}\n{fidelity_line}"
+            suptitle = f"{suptitle}\n Fidelity: {fidelity_line}"
         fig.suptitle(suptitle, fontsize=8)
         
         plot_idx = 0
@@ -785,13 +797,15 @@ class LIME(BaseInterpretation):
                             result['higher_effect'] = higher_effect
                         result['higher_coef'] = higher_coef
 
-                        # Fidelity (binary cross-entropy) in and out of sample
+                        # Fidelity (binary cross-entropy and zero-one loss) in and out of sample
                         prob_train = higher_model.predict_proba(X_train)[:, 1]
                         prob_test = higher_model.predict_proba(X_test)[:, 1]
-                        in_loss = log_loss(y_train, prob_train, sample_weight=w_train, labels=[0, 1])
-                        out_loss = log_loss(y_test, prob_test, sample_weight=w_test, labels=[0, 1])
-                        result['higher_fidelity_in'] = in_loss
-                        result['higher_fidelity_out'] = out_loss
+                        in_BCE = log_loss(y_train, prob_train, sample_weight=w_train, labels=[0, 1])
+                        out_BCE = log_loss(y_test, prob_test, sample_weight=w_test, labels=[0, 1])
+                        zero_one_in = 1.0 - (higher_model.predict(X_train) == y_train).mean()
+                        zero_one_out = 1.0 - (higher_model.predict(X_test) == y_test).mean()
+                        result['higher_fidelity_in'] = (in_BCE, zero_one_in)
+                        result['higher_fidelity_out'] = (out_BCE, zero_one_out)
                     except Exception as e:
                         logger.warning(f"Failed to fit higher class model: {str(e)}")
                         result['higher_coef'] = np.zeros(X_transformed.shape[1])
@@ -818,10 +832,12 @@ class LIME(BaseInterpretation):
                         result['lower_coef'] = lower_coef
                         prob_train_l = lower_model.predict_proba(X_train_l)[:, 1]
                         prob_test_l = lower_model.predict_proba(X_test_l)[:, 1]
-                        in_loss_l = log_loss(y_train_l, prob_train_l, sample_weight=w_train_l, labels=[0, 1])
-                        out_loss_l = log_loss(y_test_l, prob_test_l, sample_weight=w_test_l, labels=[0, 1])
-                        result['lower_fidelity_in'] = in_loss_l
-                        result['lower_fidelity_out'] = out_loss_l
+                        in_BCE_l = log_loss(y_train_l, prob_train_l, sample_weight=w_train_l, labels=[0, 1])
+                        out_BCE_l = log_loss(y_test_l, prob_test_l, sample_weight=w_test_l, labels=[0, 1])
+                        zero_one_in_l = 1.0 - (lower_model.predict(X_train_l) == y_train_l).mean()
+                        zero_one_out_l = 1.0 - (lower_model.predict(X_test_l) == y_test_l).mean()
+                        result['lower_fidelity_in'] = (in_BCE_l, zero_one_in_l)
+                        result['lower_fidelity_out'] = (out_BCE_l, zero_one_out_l)
                     except Exception as e:
                         logger.warning(f"Failed to fit lower class model: {str(e)}")
                         result['lower_coef'] = np.zeros(X_transformed.shape[1])
@@ -840,21 +856,25 @@ class LIME(BaseInterpretation):
                 losses_out.append(result['higher_fidelity_out'])
             if 'lower_fidelity_out' in result:
                 losses_out.append(result['lower_fidelity_out'])
-            if losses_in:
-                result['fidelity_in'] = float(np.mean(losses_in))
-            if losses_out:
-                result['fidelity_out'] = float(np.mean(losses_out))
 
             if plot:
                 # Determine data to plot: coefficients or effects
                 plot_high = higher_coef if show_coefficients else result.get('higher_effect', higher_coef)
                 plot_low = lower_coef if show_coefficients else result.get('lower_effect', lower_coef)
 
-                self._plot_coefficients(plot_high, plot_low, feature_names,
-                                      observation_idx, observation, pred_class,
-                                      fidelity_in=result.get('fidelity_in'),
-                                      fidelity_out=result.get('fidelity_out'),
-                                      is_effect=not show_coefficients)
+                self._plot_coefficients(
+                    plot_high,
+                    plot_low,
+                    feature_names,
+                    observation_idx,
+                    observation,
+                    pred_class,
+                    higher_fidelity_in=result.get('higher_fidelity_in'),
+                    higher_fidelity_out=result.get('higher_fidelity_out'),
+                    lower_fidelity_in=result.get('lower_fidelity_in'),
+                    lower_fidelity_out=result.get('lower_fidelity_out'),
+                    is_effect=not show_coefficients,
+                )
                                      
         elif self.model_type == "decision_tree":
             higher_model = None
@@ -869,15 +889,17 @@ class LIME(BaseInterpretation):
                         y_train_h, y_test_h = higher_mask[idx_train_h], higher_mask[idx_test_h]
                         w_train_h, w_test_h = weights[idx_train_h], weights[idx_test_h]
 
-                        higher_model = DecisionTreeClassifier(random_state=42, max_depth=3)
+                        higher_model = DecisionTreeClassifier(random_state=42, max_depth=3,class_weight='balanced')
                         higher_model.fit(X_train_h, y_train_h, sample_weight=w_train_h)
                         result['higher_model'] = higher_model
-                        pred_train_h = higher_model.predict(X_train_h)
-                        pred_test_h = higher_model.predict(X_test_h)
-                        loss_in_h = 1.0 - accuracy_score(y_train_h, pred_train_h, sample_weight=w_train_h)
-                        loss_out_h = 1.0 - accuracy_score(y_test_h, pred_test_h, sample_weight=w_test_h)
-                        result['higher_fidelity_in'] = loss_in_h
-                        result['higher_fidelity_out'] = loss_out_h
+                        prob_train_h = higher_model.predict_proba(X_train_h)[:, 1]
+                        prob_test_h = higher_model.predict_proba(X_test_h)[:, 1]
+                        BCE_in_h = log_loss(y_train_h, prob_train_h, sample_weight=w_train_h, labels=[0, 1])
+                        BCE_out_h = log_loss(y_test_h, prob_test_h, sample_weight=w_test_h, labels=[0, 1])
+                        zero_one_in_h = 1.0 - (higher_model.predict(X_train_h) == y_train_h).mean()
+                        zero_one_out_h = 1.0 - (higher_model.predict(X_test_h) == y_test_h).mean()
+                        result['higher_fidelity_in'] = (BCE_in_h, zero_one_in_h)
+                        result['higher_fidelity_out'] = (BCE_out_h, zero_one_out_h)
                     except Exception as e:
                         logger.warning(f"Failed to fit higher class model: {str(e)}")
                 else:
@@ -892,15 +914,17 @@ class LIME(BaseInterpretation):
                         y_train_l, y_test_l = lower_mask[idx_train_l], lower_mask[idx_test_l]
                         w_train_l, w_test_l = weights[idx_train_l], weights[idx_test_l]
 
-                        lower_model = DecisionTreeClassifier(random_state=42, max_depth=3)
+                        lower_model = DecisionTreeClassifier(random_state=42, max_depth=3, class_weight='balanced')
                         lower_model.fit(X_train_l, y_train_l, sample_weight=w_train_l)
                         result['lower_model'] = lower_model
-                        pred_train_l = lower_model.predict(X_train_l)
-                        pred_test_l = lower_model.predict(X_test_l)
-                        loss_in_l = 1.0 - accuracy_score(y_train_l, pred_train_l, sample_weight=w_train_l)
-                        loss_out_l = 1.0 - accuracy_score(y_test_l, pred_test_l, sample_weight=w_test_l)
-                        result['lower_fidelity_in'] = loss_in_l
-                        result['lower_fidelity_out'] = loss_out_l
+                        prob_train_l = lower_model.predict_proba(X_train_l)[:, 1]
+                        prob_test_l = lower_model.predict_proba(X_test_l)[:, 1]
+                        BCE_in_l = log_loss(y_train_l, prob_train_l, sample_weight=w_train_l, labels=[0, 1])
+                        BCE_out_l = log_loss(y_test_l, prob_test_l, sample_weight=w_test_l, labels=[0, 1])
+                        zero_one_in_l = 1.0 - (lower_model.predict(X_train_l) == y_train_l).mean()
+                        zero_one_out_l = 1.0 - (lower_model.predict(X_test_l) == y_test_l).mean()
+                        result['lower_fidelity_in'] = (BCE_in_l, zero_one_in_l)
+                        result['lower_fidelity_out'] = (BCE_out_l, zero_one_out_l)
                     except Exception as e:
                         logger.warning(f"Failed to fit lower class model: {str(e)}")
                 else:
@@ -917,17 +941,21 @@ class LIME(BaseInterpretation):
                 losses_out.append(result['higher_fidelity_out'])
             if 'lower_fidelity_out' in result:
                 losses_out.append(result['lower_fidelity_out'])
-            if losses_in:
-                result['fidelity_in'] = float(np.mean(losses_in))
-            if losses_out:
-                result['fidelity_out'] = float(np.mean(losses_out))
 
             if plot:
                 # pass fidelity for trees if needed (uses 'fidelity')
-                self._plot_decision_tree(higher_model, lower_model, feature_names,
-                                      observation_idx, observation, pred_class,
-                                      fidelity_in=result.get('fidelity_in'),
-                                      fidelity_out=result.get('fidelity_out'),
-                                      is_effect=not show_coefficients)
+                self._plot_decision_tree(
+                    higher_model,
+                    lower_model,
+                    feature_names,
+                    observation_idx,
+                    observation,
+                    pred_class,
+                    higher_fidelity_in=result.get('higher_fidelity_in'),
+                    higher_fidelity_out=result.get('higher_fidelity_out'),
+                    lower_fidelity_in=result.get('lower_fidelity_in'),
+                    lower_fidelity_out=result.get('lower_fidelity_out'),
+                    is_effect=not show_coefficients,
+                )
                     
         return result
