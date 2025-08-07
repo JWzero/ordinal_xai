@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.abspath('..'))
 project = 'Ordinal XAI'
 copyright = '2025, Jakob Wankmüller'
 author = 'Jakob Wankmüller'
-release = '0.1.0'
+release = '0.2.0'
 
 # -- General configuration ---------------------------------------------------
 extensions = [

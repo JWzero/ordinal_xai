@@ -1,0 +1,723 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ordinal_xai.utils.evaluation_metrics &mdash; Ordinal XAI 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Ordinal XAI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models/index.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../interpretation/index.html">Interpretation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils/index.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Ordinal XAI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">ordinal_xai.utils.evaluation_metrics</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ordinal_xai.utils.evaluation_metrics</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Evaluation metrics for ordinal regression and classification.</span>
+
+<span class="sd">This module provides a comprehensive set of metrics specifically designed for evaluating</span>
+<span class="sd">ordinal regression and classification models. It includes both hard-label metrics (based on</span>
+<span class="sd">predicted class labels) and probability-based metrics (based on predicted probabilities).</span>
+
+<span class="sd">The metrics are designed to account for the ordinal nature of the data, where classes</span>
+<span class="sd">have a natural ordering and misclassification costs increase with the distance between</span>
+<span class="sd">predicted and true classes.</span>
+
+<span class="sd">Available Metrics:</span>
+<span class="sd">-----------------</span>
+<span class="sd">Hard Label Metrics:</span>
+<span class="sd">- accuracy: Standard classification accuracy</span>
+<span class="sd">- adjacent_accuracy: Proportion of predictions within one class of true label</span>
+<span class="sd">- mze: Mean Zero-One Error (1 - accuracy)</span>
+<span class="sd">- mae: Mean Absolute Error</span>
+<span class="sd">- mse: Mean Squared Error</span>
+<span class="sd">- weighted_kappa: Cohen&#39;s Kappa with linear or quadratic weights</span>
+<span class="sd">- cem: Closeness Evaluation Measure</span>
+<span class="sd">- spearman_correlation: Spearman&#39;s rank correlation</span>
+<span class="sd">- kendall_tau: Kendall&#39;s Tau correlation</span>
+
+<span class="sd">Probability-Based Metrics:</span>
+<span class="sd">- ranked_probability_score: RPS for probabilistic predictions</span>
+<span class="sd">- ordinal_weighted_ce: Ordinal weighted cross-entropy loss (Ordinal Log Loss)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">mean_absolute_error</span><span class="p">,</span> <span class="n">mean_squared_error</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">spearmanr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">cohen_kappa_score</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">kendalltau</span>
+
+<div class="viewcode-block" id="accuracy">
+<a class="viewcode-back" href="../../../utils/evaluation_metrics.html#ordinal_xai.utils.evaluation_metrics.accuracy">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate accuracy for ordinal regression.</span>
+<span class="sd">    </span>
+<span class="sd">    This is the standard classification accuracy, measuring the proportion of</span>
+<span class="sd">    correct predictions. While simple, it doesn&#39;t account for the ordinal nature</span>
+<span class="sd">    of the data.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_true : array-like of shape (n_samples,)</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like of shape (n_samples,)</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Accuracy score between 0 and 1, where 1 indicates perfect predictions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mze">
+<a class="viewcode-back" href="../../../utils/evaluation_metrics.html#ordinal_xai.utils.evaluation_metrics.mze">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">mze</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Mean Zero-One Error (MZE) for ordinal regression.</span>
+<span class="sd">    </span>
+<span class="sd">    MZE is the complement of accuracy (1 - accuracy). It measures the proportion</span>
+<span class="sd">    of incorrect predictions, treating all misclassifications equally regardless</span>
+<span class="sd">    of their distance from the true class.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_true : array-like of shape (n_samples,)</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like of shape (n_samples,)</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Mean Zero-One Error between 0 and 1, where 0 indicates perfect predictions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mae">
+<a class="viewcode-back" href="../../../utils/evaluation_metrics.html#ordinal_xai.utils.evaluation_metrics.mae">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">mae</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Mean Absolute Error (MAE) for ordinal regression.</span>
+<span class="sd">    </span>
+<span class="sd">    MAE measures the average absolute difference between predicted and true labels.</span>
+<span class="sd">    Unlike accuracy, it accounts for the ordinal nature of the data by penalizing</span>
+<span class="sd">    predictions based on their distance from the true class.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_true : array-like of shape (n_samples,)</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like of shape (n_samples,)</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Mean Absolute Error, where 0 indicates perfect predictions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">mean_absolute_error</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mse">
+<a class="viewcode-back" href="../../../utils/evaluation_metrics.html#ordinal_xai.utils.evaluation_metrics.mse">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">mse</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Mean Squared Error (MSE) for ordinal regression.</span>
+<span class="sd">    </span>
+<span class="sd">    MSE measures the average squared difference between predicted and true labels.</span>
+<span class="sd">    It penalizes larger errors more heavily than MAE due to the squaring operation.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_true : array-like of shape (n_samples,)</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like of shape (n_samples,)</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Mean Squared Error, where 0 indicates perfect predictions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="weighted_kappa">
+<a class="viewcode-back" href="../../../utils/evaluation_metrics.html#ordinal_xai.utils.evaluation_metrics.weighted_kappa">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">weighted_kappa</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="s1">&#39;quadratic&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate weighted kappa for ordinal regression.</span>
+<span class="sd">    </span>
+<span class="sd">    Weighted kappa extends Cohen&#39;s kappa to account for the ordinal nature of the data</span>
+<span class="sd">    by applying weights to the confusion matrix (Cohen (1968)). The weights can be linear or quadratic,</span>
+<span class="sd">    with quadratic weights penalizing larger misclassifications more heavily.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_true : array-like of shape (n_samples,)</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like of shape (n_samples,)</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">    weights : {&#39;linear&#39;, &#39;quadratic&#39;, &#39;none&#39;}, default=&#39;quadratic&#39;</span>
+<span class="sd">        Weighting scheme for the confusion matrix:</span>
+<span class="sd">        - &#39;linear&#39;: Linear weights based on distance</span>
+<span class="sd">        - &#39;quadratic&#39;: Quadratic weights (squared distance)</span>
+<span class="sd">        - &#39;none&#39;: No weights (standard kappa)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Weighted kappa score between -1 and 1, where:</span>
+<span class="sd">        - 1 indicates perfect agreement</span>
+<span class="sd">        - 0 indicates agreement equivalent to chance</span>
+<span class="sd">        - -1 indicates perfect disagreement</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">cohen_kappa_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span></div>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_class_counts</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the count of items per class.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y : array-like of shape (n_samples,)</span>
+<span class="sd">        Array of class labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary mapping class labels to their counts</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">unique_labels</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">unique_labels</span><span class="p">,</span> <span class="n">counts</span><span class="p">))</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_calculate_proximity</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">class_counts</span><span class="p">,</span> <span class="n">total_items</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate proximity between two classes.</span>
+<span class="sd">    </span>
+<span class="sd">    This is a helper function for the CEM metric that calculates the proximity</span>
+<span class="sd">    between two classes based on their positions and the distribution of classes</span>
+<span class="sd">    in the dataset.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    c1 : int</span>
+<span class="sd">        First class label</span>
+<span class="sd">    c2 : int</span>
+<span class="sd">        Second class label</span>
+<span class="sd">    class_counts : dict</span>
+<span class="sd">        Dictionary mapping class labels to their counts</span>
+<span class="sd">    total_items : int</span>
+<span class="sd">        Total number of items in the dataset</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Proximity value between the two classes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">c1</span> <span class="o">==</span> <span class="n">c2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">class_counts</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">total_items</span><span class="p">))</span>
+    
+    <span class="k">if</span> <span class="n">c1</span> <span class="o">&gt;</span> <span class="n">c2</span><span class="p">:</span>
+        <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c1</span>
+    
+    <span class="n">sum_counts</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">c1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">sum_counts</span> <span class="o">+=</span> <span class="n">class_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="n">class_counts</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">sum_counts</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_items</span><span class="p">)</span>
+
+<div class="viewcode-block" id="cem">
+<a class="viewcode-back" href="../../../utils/evaluation_metrics.html#ordinal_xai.utils.evaluation_metrics.cem">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">cem</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">class_counts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Closeness Evaluation Measure (CEM) for ordinal classification.</span>
+<span class="sd">    </span>
+<span class="sd">    CEM is a metric proposed by Amigo et al. (2020) that evaluates the performance of ordinal classifiers based on measure and information theory. It uses a proximity-based</span>
+<span class="sd">    approach that penalizes misclassifications based on their distance from the true class</span>
+<span class="sd">    and the distribution of classes in the dataset.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_true : array-like of shape (n_samples,)</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like of shape (n_samples,)</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">    class_counts : dict, optional</span>
+<span class="sd">        Dictionary mapping class labels to their counts. If None, calculated from y_true.</span>
+<span class="sd">        Useful for local explanations where class distribution might differ from training.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        CEM score between 0 and 1, where:</span>
+<span class="sd">        - 1 indicates perfect predictions</span>
+<span class="sd">        - 0 indicates worst possible predictions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">class_counts</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">class_counts</span> <span class="o">=</span> <span class="n">_get_class_counts</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+        <span class="n">total_items</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">total_items</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">class_counts</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    
+    <span class="n">sum_pred_proximities</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">sum_true_proximities</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">for</span> <span class="n">true_label</span><span class="p">,</span> <span class="n">pred_label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+        <span class="n">pred_prox</span> <span class="o">=</span> <span class="n">_calculate_proximity</span><span class="p">(</span><span class="n">pred_label</span><span class="p">,</span> <span class="n">true_label</span><span class="p">,</span> <span class="n">class_counts</span><span class="p">,</span> <span class="n">total_items</span><span class="p">)</span>
+        <span class="n">sum_pred_proximities</span> <span class="o">+=</span> <span class="n">pred_prox</span>
+        
+        <span class="n">true_prox</span> <span class="o">=</span> <span class="n">_calculate_proximity</span><span class="p">(</span><span class="n">true_label</span><span class="p">,</span> <span class="n">true_label</span><span class="p">,</span> <span class="n">class_counts</span><span class="p">,</span> <span class="n">total_items</span><span class="p">)</span>
+        <span class="n">sum_true_proximities</span> <span class="o">+=</span> <span class="n">true_prox</span>
+    
+    <span class="k">if</span> <span class="n">sum_true_proximities</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+    
+    <span class="k">return</span> <span class="n">sum_pred_proximities</span> <span class="o">/</span> <span class="n">sum_true_proximities</span></div>
+
+
+<div class="viewcode-block" id="spearman_correlation">
+<a class="viewcode-back" href="../../../utils/evaluation_metrics.html#ordinal_xai.utils.evaluation_metrics.spearman_correlation">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">spearman_correlation</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Spearman rank correlation for ordinal regression.</span>
+<span class="sd">    </span>
+<span class="sd">    Spearman (1904)&#39;s rank correlation measures the monotonic relationship between predicted and</span>
+<span class="sd">    true labels. It&#39;s particularly useful for ordinal data as it only considers</span>
+<span class="sd">    the ranking of values, not their absolute differences.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_true : array-like of shape (n_samples,)</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like of shape (n_samples,)</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Spearman rank correlation coefficient between -1 and 1, where:</span>
+<span class="sd">        - 1 indicates perfect positive correlation</span>
+<span class="sd">        - 0 indicates no correlation</span>
+<span class="sd">        - -1 indicates perfect negative correlation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">correlation</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">spearmanr</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">correlation</span></div>
+
+
+<div class="viewcode-block" id="kendall_tau">
+<a class="viewcode-back" href="../../../utils/evaluation_metrics.html#ordinal_xai.utils.evaluation_metrics.kendall_tau">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">kendall_tau</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Kendall&#39;s Tau correlation coefficient for ordinal data.</span>
+<span class="sd">    </span>
+<span class="sd">    Kendall(1945)&#39;s Tau-b measures the ordinal association between two rankings. It&#39;s</span>
+<span class="sd">    particularly suitable for ordinal data as it considers the concordance of</span>
+<span class="sd">    pairs of observations and the number of tied ranks.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_true : array-like of shape (n_samples,)</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like of shape (n_samples,)</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Kendall&#39;s Tau correlation coefficient between -1 and 1, where:</span>
+<span class="sd">        - 1 indicates perfect agreement in rankings</span>
+<span class="sd">        - 0 indicates no association between rankings</span>
+<span class="sd">        - -1 indicates perfect disagreement in rankings</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">correlation</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">kendalltau</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">correlation</span></div>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_create_one_hot_encoding</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zero_indexed</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create one-hot encoding for ordinal labels.</span>
+<span class="sd">    </span>
+<span class="sd">    This helper function converts ordinal labels to one-hot encoded format,</span>
+<span class="sd">    handling arbitrary label ranges by shifting to 0-based indexing.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_true : array-like of shape (n_samples,)</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    n_classes : int, optional</span>
+<span class="sd">        Number of classes. If None, inferred from unique labels.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        (one_hot_matrix, min_label, n_classes)</span>
+<span class="sd">        - one_hot_matrix: 2D array of shape (n_samples, n_classes)</span>
+<span class="sd">        - min_label: Minimum label value in the original data</span>
+<span class="sd">        - n_classes: Number of unique classes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">unique_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">zero_indexed</span><span class="p">:</span>
+        <span class="n">min_label</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">min_label</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">unique_labels</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">n_classes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">unique_labels</span><span class="p">)</span>
+    
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">y_true_one_hot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">))</span>
+    
+    <span class="n">shifted_labels</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">-</span> <span class="n">min_label</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">shifted_labels</span><span class="p">):</span>
+        <span class="n">y_true_one_hot</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">label</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+    
+    <span class="k">return</span> <span class="n">y_true_one_hot</span><span class="p">,</span> <span class="n">min_label</span><span class="p">,</span> <span class="n">n_classes</span>
+
+<div class="viewcode-block" id="ranked_probability_score">
+<a class="viewcode-back" href="../../../utils/evaluation_metrics.html#ordinal_xai.utils.evaluation_metrics.ranked_probability_score">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ranked_probability_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred_proba</span><span class="p">,</span> <span class="n">zero_indexed</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Ranked Probability Score (RPS) for ordinal regression.</span>
+<span class="sd">    </span>
+<span class="sd">    Epstein (1969)&#39;s Ranked Probability Score (RPS) evaluates probabilistic predictions for ordinal data by comparing the</span>
+<span class="sd">    cumulative predicted probabilities with the cumulative observed probabilities.</span>
+<span class="sd">    It penalizes predictions that deviate from the true class distribution.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_true : array-like of shape (n_samples,)</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred_proba : array-like of shape (n_samples, n_classes)</span>
+<span class="sd">        Predicted probabilities for each class</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Ranked Probability Score, where:</span>
+<span class="sd">        - 0 indicates perfect predictions</span>
+<span class="sd">        - Higher values indicate worse predictions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">y_pred_proba</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_pred_proba</span><span class="p">)</span>
+    
+    <span class="n">y_true_one_hot</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_create_one_hot_encoding</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="n">y_pred_proba</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">zero_indexed</span> <span class="o">=</span> <span class="n">zero_indexed</span><span class="p">)</span>
+    
+    <span class="n">y_pred_cumsum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">y_pred_proba</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">y_true_cumsum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">y_true_one_hot</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="n">rps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">y_pred_cumsum</span> <span class="o">-</span> <span class="n">y_true_cumsum</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">rps</span></div>
+
+
+<div class="viewcode-block" id="ordinal_weighted_ce">
+<a class="viewcode-back" href="../../../utils/evaluation_metrics.html#ordinal_xai.utils.evaluation_metrics.ordinal_weighted_ce">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ordinal_weighted_ce</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred_proba</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">zero_indexed</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate ordinal weighted cross-entropy loss.</span>
+<span class="sd">    </span>
+<span class="sd">    This loss function extends standard cross-entropy to account for the ordinal</span>
+<span class="sd">    nature of the data by weighting the loss based on the distance between</span>
+<span class="sd">    predicted and true classes, see Polat et al. (2025). Also known as ordinal log loss (Castagnos et al. (2022)).</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_true : array-like of shape (n_samples,)</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred_proba : array-like of shape (n_samples, n_classes)</span>
+<span class="sd">        Predicted probabilities for each class</span>
+<span class="sd">    alpha : float, default=1</span>
+<span class="sd">        Exponent for the absolute difference. Higher values increase the penalty</span>
+<span class="sd">        for predictions far from the true class.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Loss value, where:</span>
+<span class="sd">        - Lower values indicate better predictions</span>
+<span class="sd">        - The loss is always non-negative</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">y_pred_proba</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_pred_proba</span><span class="p">)</span>
+    <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_classes</span> <span class="o">=</span> <span class="n">y_pred_proba</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-15</span>  <span class="c1"># To avoid log(0)</span>
+
+    <span class="k">if</span> <span class="n">zero_indexed</span><span class="p">:</span>
+        <span class="n">min_label</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">min_label</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">y_true_shifted</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">-</span> <span class="n">min_label</span>
+
+    <span class="n">loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_classes</span><span class="p">):</span>
+            <span class="n">pi_k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">y_pred_proba</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">],</span> <span class="n">eps</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span><span class="p">)</span>
+            <span class="n">loss</span> <span class="o">+=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pi_k</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="n">y_true_shifted</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="n">alpha</span><span class="p">))</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="n">loss</span> <span class="o">/</span> <span class="n">n_samples</span>
+    <span class="k">return</span> <span class="n">loss</span></div>
+
+
+<div class="viewcode-block" id="adjacent_accuracy">
+<a class="viewcode-back" href="../../../utils/evaluation_metrics.html#ordinal_xai.utils.evaluation_metrics.adjacent_accuracy">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">adjacent_accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate Adjacent Accuracy for ordinal regression.</span>
+<span class="sd">    </span>
+<span class="sd">    Adjacent accuracy measures the proportion of predictions that are either</span>
+<span class="sd">    correct or off by one class. This is particularly useful for ordinal data</span>
+<span class="sd">    where predictions close to the true class are more acceptable than those</span>
+<span class="sd">    far away.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_true : array-like of shape (n_samples,)</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like of shape (n_samples,)</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Adjacent accuracy score between 0 and 1, where:</span>
+<span class="sd">        - 1 indicates all predictions are either correct or off by one class</span>
+<span class="sd">        - 0 indicates all predictions are off by more than one class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span>
+    
+    <span class="n">correct_or_adjacent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_true</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">correct_or_adjacent</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="evaluate_ordinal_model">
+<a class="viewcode-back" href="../../../utils/evaluation_metrics.html#ordinal_xai.utils.evaluation_metrics.evaluate_ordinal_model">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">evaluate_ordinal_model</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_pred_proba</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">class_counts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zero_indexed</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evaluate an ordinal regression model using multiple metrics.</span>
+<span class="sd">    </span>
+<span class="sd">    This function computes a comprehensive set of evaluation metrics for ordinal</span>
+<span class="sd">    regression models, including both hard-label metrics and probability-based metrics</span>
+<span class="sd">    if probability predictions are available.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y_true : array-like of shape (n_samples,)</span>
+<span class="sd">        True ordinal labels</span>
+<span class="sd">    y_pred : array-like of shape (n_samples,)</span>
+<span class="sd">        Predicted ordinal labels</span>
+<span class="sd">    y_pred_proba : array-like of shape (n_samples, n_classes), optional</span>
+<span class="sd">        Predicted class probabilities</span>
+<span class="sd">    metrics : list of str, optional</span>
+<span class="sd">        List of metric names to compute. If None, all available metrics are used.</span>
+<span class="sd">    class_counts : dict, optional</span>
+<span class="sd">        Dictionary mapping class labels to their counts. If None, calculated from y_true.</span>
+<span class="sd">        Useful for local explanations where class distribution might differ from training.</span>
+<span class="sd">    zero_indexed : bool, optional</span>
+<span class="sd">        Whether the labels are zero-indexed. If False, the labels are shifted to zero-indexed.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary containing evaluation results for each metric</span>
+<span class="sd">        </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The function automatically selects appropriate metrics based on the available</span>
+<span class="sd">    predictions. Probability-based metrics are only computed if y_pred_proba is provided.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">available_hard_metrics</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="n">accuracy</span><span class="p">,</span>
+        <span class="s1">&#39;adjacent_accuracy&#39;</span><span class="p">:</span> <span class="n">adjacent_accuracy</span><span class="p">,</span>
+        <span class="s1">&#39;mze&#39;</span><span class="p">:</span> <span class="n">mze</span><span class="p">,</span>
+        <span class="s1">&#39;mae&#39;</span><span class="p">:</span> <span class="n">mae</span><span class="p">,</span>
+        <span class="s1">&#39;mse&#39;</span><span class="p">:</span> <span class="n">mse</span><span class="p">,</span>
+        <span class="s1">&#39;weighted_kappa_quadratic&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">yt</span><span class="p">,</span> <span class="n">yp</span><span class="p">:</span> <span class="n">weighted_kappa</span><span class="p">(</span><span class="n">yt</span><span class="p">,</span> <span class="n">yp</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="s1">&#39;quadratic&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;weighted_kappa_linear&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">yt</span><span class="p">,</span> <span class="n">yp</span><span class="p">:</span> <span class="n">weighted_kappa</span><span class="p">(</span><span class="n">yt</span><span class="p">,</span> <span class="n">yp</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;cem&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">yt</span><span class="p">,</span> <span class="n">yp</span><span class="p">:</span> <span class="n">cem</span><span class="p">(</span><span class="n">yt</span><span class="p">,</span> <span class="n">yp</span><span class="p">,</span> <span class="n">class_counts</span><span class="o">=</span><span class="n">class_counts</span><span class="p">),</span>
+        <span class="s1">&#39;spearman_correlation&#39;</span><span class="p">:</span> <span class="n">spearman_correlation</span><span class="p">,</span>
+        <span class="s1">&#39;kendall_tau&#39;</span><span class="p">:</span> <span class="n">kendall_tau</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">available_proba_metrics</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;ranked_probability_score&#39;</span><span class="p">:</span>     <span class="k">lambda</span> <span class="n">yt</span><span class="p">,</span> <span class="n">yp</span><span class="p">:</span> <span class="n">ranked_probability_score</span><span class="p">(</span><span class="n">yt</span><span class="p">,</span> <span class="n">yp</span><span class="p">,</span> <span class="n">zero_indexed</span><span class="o">=</span><span class="n">zero_indexed</span><span class="p">),</span>
+        <span class="s1">&#39;ordinal_weighted_ce_linear&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">yt</span><span class="p">,</span> <span class="n">yp</span><span class="p">:</span> <span class="n">ordinal_weighted_ce</span><span class="p">(</span><span class="n">yt</span><span class="p">,</span> <span class="n">yp</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">zero_indexed</span><span class="o">=</span><span class="n">zero_indexed</span><span class="p">),</span>
+        <span class="s1">&#39;ordinal_weighted_ce_quadratic&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">yt</span><span class="p">,</span> <span class="n">yp</span><span class="p">:</span> <span class="n">ordinal_weighted_ce</span><span class="p">(</span><span class="n">yt</span><span class="p">,</span> <span class="n">yp</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">zero_indexed</span><span class="o">=</span><span class="n">zero_indexed</span><span class="p">),</span>
+    <span class="p">}</span>
+    
+    <span class="k">if</span> <span class="n">metrics</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">available_hard_metrics</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">available_proba_metrics</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="k">for</span> <span class="n">metric</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">available_hard_metrics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Could not calculate </span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">y_pred_proba</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">y_pred_proba</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_pred_proba</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_pred_proba</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">y_true_one_hot</span><span class="p">,</span> <span class="n">min_label</span><span class="p">,</span> <span class="n">n_classes</span> <span class="o">=</span> <span class="n">_create_one_hot_encoding</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+                <span class="n">one_hot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">y_pred</span><span class="p">),</span> <span class="n">n_classes</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pred</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">y_pred</span><span class="p">):</span>
+                    <span class="n">one_hot</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">pred</span> <span class="o">-</span> <span class="n">min_label</span><span class="p">)]</span> <span class="o">=</span> <span class="n">y_pred_proba</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">y_pred_proba</span> <span class="o">=</span> <span class="n">one_hot</span>
+            <span class="n">row_sums</span> <span class="o">=</span> <span class="n">y_pred_proba</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">row_sums</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">):</span>
+                <span class="n">y_pred_proba</span> <span class="o">=</span> <span class="n">y_pred_proba</span> <span class="o">/</span> <span class="n">row_sums</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Could not preprocess y_pred_proba: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">y_pred_proba</span> <span class="o">=</span> <span class="kc">None</span>
+        
+        <span class="k">if</span> <span class="n">y_pred_proba</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">metric</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">available_proba_metrics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">results</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred_proba</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Could not calculate </span><span class="si">{</span><span class="n">metric</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="print_evaluation_results">
+<a class="viewcode-back" href="../../../utils/evaluation_metrics.html#ordinal_xai.utils.evaluation_metrics.print_evaluation_results">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">print_evaluation_results</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print evaluation results in a formatted way.</span>
+<span class="sd">    </span>
+<span class="sd">    This function provides a clear, formatted output of the evaluation metrics,</span>
+<span class="sd">    grouping them into hard label metrics and probability-based metrics.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    results : dict</span>
+<span class="sd">        Dictionary containing evaluation metrics as returned by evaluate_ordinal_model</span>
+<span class="sd">        </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - Metrics are printed with 4 decimal places</span>
+<span class="sd">    - Hard label metrics are printed first, followed by probability-based metrics</span>
+<span class="sd">    - Metric names are formatted for better readability</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Ordinal Regression Evaluation Results:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hard Label Metrics:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">,</span> <span class="s1">&#39;adjacent_accuracy&#39;</span><span class="p">,</span> <span class="s1">&#39;mze&#39;</span><span class="p">,</span> <span class="s1">&#39;mae&#39;</span><span class="p">,</span> <span class="s1">&#39;mse&#39;</span><span class="p">,</span> <span class="s1">&#39;weighted_kappa_quadratic&#39;</span><span class="p">,</span> <span class="s1">&#39;weighted_kappa_linear&#39;</span><span class="p">,</span> <span class="s1">&#39;cem&#39;</span><span class="p">,</span> 
+                  <span class="s1">&#39;spearman_correlation&#39;</span><span class="p">,</span> <span class="s1">&#39;kendall_tau&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">metric</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="s1">&#39;ranked_probability_score&#39;</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Probability-Based Metrics:&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ranked_probability_score&#39;</span><span class="p">,</span> <span class="s1">&#39;ordinal_weighted_ce_linear&#39;</span><span class="p">,</span> <span class="s1">&#39;ordinal_weighted_ce_quadratic&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">metric</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span> </div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jakob Wankmüller.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

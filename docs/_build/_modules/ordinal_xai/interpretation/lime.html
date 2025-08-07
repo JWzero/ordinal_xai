@@ -1,0 +1,1150 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ordinal_xai.interpretation.lime &mdash; Ordinal XAI 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Ordinal XAI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models/index.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../interpretation/index.html">Interpretation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils/index.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Ordinal XAI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">ordinal_xai.interpretation.lime</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ordinal_xai.interpretation.lime</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Local Interpretable Model-agnostic Explanations (LIME) for ordinal regression models.</span>
+
+<span class="sd">This module implements LIME for ordinal regression models, providing local explanations</span>
+<span class="sd">by fitting interpretable surrogate models to explain individual predictions. The implementation</span>
+<span class="sd">extends standard LIME to handle ordinal data by comparing predictions with adjacent or</span>
+<span class="sd">following classes.</span>
+
+<span class="sd">Key Features:</span>
+<span class="sd">- Local explanations for individual predictions</span>
+<span class="sd">- Support for both logistic regression and decision tree surrogate models</span>
+<span class="sd">- Multiple sampling strategies (grid, uniform, permutation)</span>
+<span class="sd">- Customizable kernel functions for sample weighting</span>
+<span class="sd">- Visualization of feature importance through coefficients or decision trees</span>
+<span class="sd">- Support for both numerical and categorical features</span>
+
+<span class="sd">The implementation is particularly useful for:</span>
+<span class="sd">- Understanding individual predictions in ordinal regression models</span>
+<span class="sd">- Identifying key features that influence specific predictions</span>
+<span class="sd">- Comparing feature importance across different classes</span>
+<span class="sd">- Providing interpretable explanations for model decisions</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">DecisionTreeClassifier</span><span class="p">,</span> <span class="n">plot_tree</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base_interpretation</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseInterpretation</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">gower</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParameterGrid</span><span class="p">,</span> <span class="n">train_test_split</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">log_loss</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LIME">
+<a class="viewcode-back" href="../../../ordinal_xai.interpretation.html#ordinal_xai.interpretation.lime.LIME">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LIME</span><span class="p">(</span><span class="n">BaseInterpretation</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Local Interpretable Model-agnostic Explanations for ordinal regression models.</span>
+<span class="sd">    </span>
+<span class="sd">    This class implements LIME for ordinal regression models, providing local explanations</span>
+<span class="sd">    by fitting interpretable surrogate models to explain individual predictions. The implementation</span>
+<span class="sd">    extends standard LIME to handle ordinal data by comparing predictions with adjacent or</span>
+<span class="sd">    following classes.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : object</span>
+<span class="sd">        The trained ordinal regression model. Must implement predict and transform methods.</span>
+<span class="sd">    X : pd.DataFrame</span>
+<span class="sd">        Dataset used for interpretation. Should contain the same features used</span>
+<span class="sd">        during model training.</span>
+<span class="sd">    y : np.ndarray, optional</span>
+<span class="sd">        Target labels. Not required for interpretation but useful for reference.</span>
+<span class="sd">    comparison_method : str, default=&#39;one_vs_following&#39;</span>
+<span class="sd">        Method for comparing classes:</span>
+<span class="sd">        - &#39;one_vs_next&#39;: Compare with adjacent classes only</span>
+<span class="sd">        - &#39;one_vs_following&#39;: Compare with all higher/lower classes</span>
+<span class="sd">    model_type : str, default=&#39;logistic&#39;</span>
+<span class="sd">        Type of surrogate model to use:</span>
+<span class="sd">        - &#39;logistic&#39;: Logistic regression model</span>
+<span class="sd">        - &#39;decision_tree&#39;: Decision tree model</span>
+<span class="sd">    kernel_width : float, default=0.75</span>
+<span class="sd">        Width of the exponential kernel for sample weighting. Controls how quickly</span>
+<span class="sd">        the weight of samples decreases with distance.</span>
+<span class="sd">    custom_kernel : callable, optional</span>
+<span class="sd">        Custom kernel function for sample weighting. Should take distances as input</span>
+<span class="sd">        and return weights.</span>
+<span class="sd">    sampling : str, default=&#39;permute&#39;</span>
+<span class="sd">        Sampling strategy for generating perturbed samples:</span>
+<span class="sd">        - &#39;grid&#39;: Generate samples on a grid (for small feature spaces)</span>
+<span class="sd">        - &#39;uniform&#39;: Sample uniformly from feature ranges</span>
+<span class="sd">        - &#39;permute&#39;: Permute feature values from the dataset</span>
+<span class="sd">    max_samples : int, default=10000</span>
+<span class="sd">        Maximum number of samples to generate for surrogate model training.</span>
+<span class="sd">        </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : object</span>
+<span class="sd">        The trained ordinal regression model</span>
+<span class="sd">    X : pd.DataFrame</span>
+<span class="sd">        Training data</span>
+<span class="sd">    y : np.ndarray</span>
+<span class="sd">        Target labels</span>
+<span class="sd">    comparison_method : str</span>
+<span class="sd">        Method for comparing classes</span>
+<span class="sd">    model_type : str</span>
+<span class="sd">        Type of surrogate model</span>
+<span class="sd">    kernel_width : float</span>
+<span class="sd">        Width of the exponential kernel</span>
+<span class="sd">    custom_kernel : callable</span>
+<span class="sd">        Custom kernel function</span>
+<span class="sd">    sampling : str</span>
+<span class="sd">        Sampling strategy</span>
+<span class="sd">    max_samples : int</span>
+<span class="sd">        Maximum number of samples</span>
+<span class="sd">        </span>
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If comparison_method is invalid, kernel_width is non-positive,</span>
+<span class="sd">        or sampling strategy is invalid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                 <span class="n">model</span><span class="p">,</span> 
+                 <span class="n">X</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> 
+                 <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+                 <span class="n">comparison_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;one_vs_following&#39;</span><span class="p">,</span>
+                 <span class="n">model_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;logistic&quot;</span><span class="p">,</span>
+                 <span class="n">kernel_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.75</span><span class="p">,</span>
+                 <span class="n">custom_kernel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">sampling</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;permute&quot;</span><span class="p">,</span>
+                 <span class="n">max_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span>
+                 <span class="n">random_state</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">42</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">surrogate_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize LIME interpretation.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        model : object</span>
+<span class="sd">            The trained ordinal regression model</span>
+<span class="sd">        X : pd.DataFrame</span>
+<span class="sd">            Training data</span>
+<span class="sd">        y : np.ndarray, optional</span>
+<span class="sd">            Target labels</span>
+<span class="sd">        comparison_method : &quot;one_vs_following&quot; | &quot;one_vs_next&quot;, default=&#39;one_vs_following&#39;</span>
+<span class="sd">            Method for comparing classes</span>
+<span class="sd">        model_type : &quot;logistic&quot; | &quot;decision_tree&quot;, default=&#39;logistic&#39;</span>
+<span class="sd">            Type of surrogate model to use</span>
+<span class="sd">        kernel_width : float, default=0.75</span>
+<span class="sd">            Width of the exponential kernel</span>
+<span class="sd">        custom_kernel : callable, optional</span>
+<span class="sd">            Custom kernel function</span>
+<span class="sd">        sampling : &quot;grid&quot; | &quot;uniform&quot; | &quot;permute&quot;, default=&#39;permute&#39;</span>
+<span class="sd">            Sampling strategy</span>
+<span class="sd">        max_samples : int, default=10000</span>
+<span class="sd">            Maximum number of samples</span>
+<span class="sd">            </span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If comparison_method is invalid, kernel_width is non-positive,</span>
+<span class="sd">            or sampling strategy is invalid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">comparison_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;one_vs_next&quot;</span><span class="p">,</span> <span class="s2">&quot;one_vs_following&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;comparison_method must be either &#39;one_vs_next&#39; or &#39;one_vs_following&#39;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kernel_width</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;kernel_width must be positive&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sampling</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="s2">&quot;uniform&quot;</span><span class="p">,</span> <span class="s2">&quot;permute&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;sampling must be one of: &#39;grid&#39;, &#39;uniform&#39;, &#39;permute&#39;&quot;</span><span class="p">)</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comparison_method</span> <span class="o">=</span> <span class="n">comparison_method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span> <span class="o">=</span> <span class="n">model_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_width</span> <span class="o">=</span> <span class="n">kernel_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">custom_kernel</span> <span class="o">=</span> <span class="n">custom_kernel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampling</span> <span class="o">=</span> <span class="n">sampling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_samples</span> <span class="o">=</span> <span class="n">max_samples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">surrogate_kwargs</span> <span class="o">=</span> <span class="n">surrogate_kwargs</span>
+        
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initialized LIME with </span><span class="si">{</span><span class="n">comparison_method</span><span class="si">}</span><span class="s2"> comparison method and </span><span class="si">{</span><span class="n">sampling</span><span class="si">}</span><span class="s2"> sampling&quot;</span><span class="p">)</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                        <span class="n">samples</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> 
+                        <span class="n">observation</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> 
+                        <span class="n">kernel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute sample weights using exponential kernel with Gower&#39;s distance.</span>
+<span class="sd">        </span>
+<span class="sd">        This method calculates weights for perturbed samples based on their distance</span>
+<span class="sd">        from the observation being explained. It uses Gower&#39;s distance to handle</span>
+<span class="sd">        both numerical and categorical features.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        samples : pd.DataFrame</span>
+<span class="sd">            DataFrame containing perturbed samples</span>
+<span class="sd">        observation : pd.Series</span>
+<span class="sd">            Series containing the observation to explain</span>
+<span class="sd">        kernel : callable, optional</span>
+<span class="sd">            Custom kernel function for weight calculation</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            Array of weights for each sample</span>
+<span class="sd">            </span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - Uses Gower&#39;s distance to handle mixed data types</span>
+<span class="sd">        - Applies exponential kernel by default</span>
+<span class="sd">        - Weights decrease exponentially with distance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Convert observation to DataFrame</span>
+        <span class="n">observation_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">observation</span><span class="p">])</span>
+        
+        <span class="c1"># Calculate Gower&#39;s distances from observation to all samples</span>
+        <span class="n">distances</span> <span class="o">=</span> <span class="n">gower</span><span class="o">.</span><span class="n">gower_matrix</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">observation_df</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="n">kernel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Apply exponential kernel</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">distances</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_width</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">kernel</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">weights</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_comparison_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                             <span class="n">pred_class</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
+                             <span class="n">samples_preds</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get binary labels for comparison based on method.</span>
+<span class="sd">        </span>
+<span class="sd">        This method creates binary labels for the surrogate model based on the</span>
+<span class="sd">        comparison method chosen. It identifies which samples are in higher or</span>
+<span class="sd">        lower classes than the prediction.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pred_class : int</span>
+<span class="sd">            Predicted class of the observation</span>
+<span class="sd">        samples_preds : np.ndarray</span>
+<span class="sd">            Array of predictions for all samples</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Tuple[np.ndarray, np.ndarray]</span>
+<span class="sd">            Tuple of (higher_mask, lower_mask) arrays indicating which samples</span>
+<span class="sd">            are in higher/lower classes than the prediction</span>
+<span class="sd">            </span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - For &#39;one_vs_next&#39;, only compares with adjacent classes</span>
+<span class="sd">        - For &#39;one_vs_following&#39;, compares with all higher/lower classes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparison_method</span> <span class="o">==</span> <span class="s1">&#39;one_vs_next&#39;</span><span class="p">:</span>
+            <span class="c1"># Compare with next class</span>
+            <span class="n">higher_mask</span> <span class="o">=</span> <span class="n">samples_preds</span> <span class="o">==</span> <span class="n">pred_class</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">lower_mask</span> <span class="o">=</span> <span class="n">samples_preds</span> <span class="o">==</span> <span class="n">pred_class</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># one_vs_following</span>
+            <span class="c1"># Compare with all higher/lower classes</span>
+            <span class="n">higher_mask</span> <span class="o">=</span> <span class="n">samples_preds</span> <span class="o">&gt;</span> <span class="n">pred_class</span>
+            <span class="n">lower_mask</span> <span class="o">=</span> <span class="n">samples_preds</span> <span class="o">&lt;</span> <span class="n">pred_class</span>
+            
+        <span class="k">return</span> <span class="n">higher_mask</span><span class="p">,</span> <span class="n">lower_mask</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_plot_coefficients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                          <span class="n">higher_coef</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> 
+                          <span class="n">lower_coef</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> 
+                          <span class="n">feature_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> 
+                          <span class="n">observation_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
+                          <span class="n">observation</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> 
+                          <span class="n">pred_class</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                          <span class="n">higher_fidelity_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">higher_fidelity_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">lower_fidelity_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">lower_fidelity_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">is_effect</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot horizontal bars for either surrogate coefficients or predictor</span>
+<span class="sd">        effects (coefficient × value) for higher / lower class comparisons.</span>
+<span class="sd">        </span>
+<span class="sd">        This method creates horizontal bar plots showing the coefficients of the</span>
+<span class="sd">        logistic regression surrogate model for both higher and lower class</span>
+<span class="sd">        comparisons.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        higher_coef : np.ndarray, optional</span>
+<span class="sd">            Coefficients for higher class comparison</span>
+<span class="sd">        lower_coef : np.ndarray, optional</span>
+<span class="sd">            Coefficients for lower class comparison</span>
+<span class="sd">        feature_names : List[str]</span>
+<span class="sd">            List of feature names</span>
+<span class="sd">        observation_idx : int</span>
+<span class="sd">            Index of the observation being explained</span>
+<span class="sd">        observation : pd.Series</span>
+<span class="sd">            The observation being explained</span>
+<span class="sd">        pred_class : int</span>
+<span class="sd">            Predicted class of the observation</span>
+<span class="sd">            </span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - Creates separate plots for higher and lower class comparisons</span>
+<span class="sd">        - Shows feature values in the title</span>
+<span class="sd">        - Uses blue for higher class and red for lower class</span>
+<span class="sd">        - Includes observation details in the title</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Determine availability of coefficient sets</span>
+        <span class="n">show_higher</span> <span class="o">=</span> <span class="n">higher_coef</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">show_lower</span> <span class="o">=</span> <span class="n">lower_coef</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">show_higher</span> <span class="ow">or</span> <span class="n">show_lower</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No coefficients to plot.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Compose observation info and fidelity lines</span>
+        <span class="n">obs_header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Observation </span><span class="si">{</span><span class="n">observation_idx</span><span class="si">}</span><span class="s2">  |  Predicted class: </span><span class="si">{</span><span class="n">pred_class</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">obs_values</span> <span class="o">=</span> <span class="s2">&quot;,  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">observation</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+        <span class="n">fidelity_line</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">[</span><span class="n">higher_fidelity_in</span><span class="p">,</span> <span class="n">higher_fidelity_out</span><span class="p">,</span> <span class="n">lower_fidelity_in</span><span class="p">,</span> <span class="n">lower_fidelity_out</span><span class="p">]):</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">higher_fidelity_in</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Higher(in-sample): </span><span class="si">{</span><span class="n">higher_fidelity_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">higher_fidelity_in</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">higher_fidelity_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Higher(out-of-sample): </span><span class="si">{</span><span class="n">higher_fidelity_out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">higher_fidelity_out</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">lower_fidelity_in</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lower(in-sample): </span><span class="si">{</span><span class="n">lower_fidelity_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">lower_fidelity_in</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">lower_fidelity_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lower(out-of-sample): </span><span class="si">{</span><span class="n">lower_fidelity_out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">lower_fidelity_out</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">fidelity_line</span> <span class="o">=</span> <span class="s2">&quot; | &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+        <span class="n">obs_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obs_header</span><span class="si">}</span><span class="s2">  |  </span><span class="si">{</span><span class="n">obs_values</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">fidelity_line</span><span class="p">:</span>
+            <span class="n">obs_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obs_info</span><span class="si">}</span><span class="se">\n</span><span class="s2"> Fidelity (BCE/MZE): </span><span class="si">{</span><span class="n">fidelity_line</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="c1"># CASE 1 – both coefficient vectors are present → create one stacked bar chart</span>
+        <span class="k">if</span> <span class="n">show_higher</span> <span class="ow">and</span> <span class="n">show_lower</span><span class="p">:</span>
+            <span class="c1"># Interleave bars per feature: higher first, then lower, maintaining horizontal orientation</span>
+            <span class="n">n_features</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">feature_names</span><span class="p">)</span>
+            <span class="n">y_high</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">y_low</span> <span class="o">=</span> <span class="n">y_high</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="n">fig_height</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">n_features</span><span class="p">)</span>  <span class="c1"># scale figure height with number of rows</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">fig_height</span><span class="p">))</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">obs_info</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+            <span class="c1"># Plot bars</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">y_high</span><span class="p">,</span> <span class="n">higher_coef</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#4682b4&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Higher rank&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">y_low</span><span class="p">,</span> <span class="n">lower_coef</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#b44646&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Lower rank&quot;</span><span class="p">)</span>
+            <span class="c1"># X-axis label</span>
+            <span class="n">xlabel</span> <span class="o">=</span> <span class="s2">&quot;Predictor effect&quot;</span> <span class="k">if</span> <span class="n">is_effect</span> <span class="k">else</span> <span class="s2">&quot;Coefficient&quot;</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
+
+            <span class="c1"># Y-tick labels duplicated for high/low rows</span>
+            <span class="n">yticks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">y_high</span><span class="p">,</span> <span class="n">y_low</span><span class="p">])</span>
+            <span class="n">ylabels</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">feature_names</span><span class="p">:</span>
+                <span class="n">ylabels</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> ↑&quot;</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">feature_names</span><span class="p">:</span>
+                <span class="n">ylabels</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> ↓&quot;</span><span class="p">])</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">yticks</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">ylabels</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+
+
+            <span class="n">xlabel</span> <span class="o">=</span> <span class="s2">&quot;Predictor effect&quot;</span> <span class="k">if</span> <span class="n">is_effect</span> <span class="k">else</span> <span class="s2">&quot;Coefficient&quot;</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparison_method</span> <span class="o">==</span> <span class="s2">&quot;one_vs_next&quot;</span><span class="p">:</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Surrogate Model </span><span class="si">{</span><span class="s1">&#39;Predictor Effects&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_effect</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Coefficients&#39;</span><span class="si">}</span><span class="s2"> – Class </span><span class="si">{</span><span class="n">pred_class</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> &amp; </span><span class="si">{</span><span class="n">pred_class</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Surrogate Model </span><span class="si">{</span><span class="s1">&#39;Predictor Effects&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_effect</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Coefficients&#39;</span><span class="si">}</span><span class="s2"> – Classes &lt; </span><span class="si">{</span><span class="n">pred_class</span><span class="si">}</span><span class="s2"> &amp; &gt; </span><span class="si">{</span><span class="n">pred_class</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+            <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="c1"># CASE 2 – only one of the coefficient/effect sets is present → single-bar chart</span>
+        <span class="n">coef</span> <span class="o">=</span> <span class="n">higher_coef</span> <span class="k">if</span> <span class="n">show_higher</span> <span class="k">else</span> <span class="n">lower_coef</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#4682b4&quot;</span> <span class="k">if</span> <span class="n">show_higher</span> <span class="k">else</span> <span class="s2">&quot;#b44646&quot;</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Higher rank&quot;</span> <span class="k">if</span> <span class="n">show_higher</span> <span class="k">else</span> <span class="s2">&quot;Lower rank&quot;</span>
+
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">obs_info</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+        <span class="n">y_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">feature_names</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">y_pos</span><span class="p">,</span> <span class="n">coef</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">y_pos</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">feature_names</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Surrogate Model </span><span class="si">{</span><span class="s1">&#39;Predictor Effects&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_effect</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Coefficients&#39;</span><span class="si">}</span><span class="s2"> for Classes &gt; </span><span class="si">{</span><span class="n">pred_class</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">show_higher</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;Surrogate Model </span><span class="si">{</span><span class="s1">&#39;Predictor Effects&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_effect</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Coefficients&#39;</span><span class="si">}</span><span class="s2"> for Classes &lt; </span><span class="si">{</span><span class="n">pred_class</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparison_method</span> <span class="o">==</span> <span class="s2">&quot;one_vs_next&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">show_higher</span><span class="p">:</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Surrogate Model </span><span class="si">{</span><span class="s1">&#39;Predictor Effects&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_effect</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Coefficients&#39;</span><span class="si">}</span><span class="s2"> for Class </span><span class="si">{</span><span class="n">pred_class</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Surrogate Model </span><span class="si">{</span><span class="s1">&#39;Predictor Effects&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_effect</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Coefficients&#39;</span><span class="si">}</span><span class="s2"> for Class </span><span class="si">{</span><span class="n">pred_class</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">xlabel</span> <span class="o">=</span> <span class="s2">&quot;Predictor effect&quot;</span> <span class="k">if</span> <span class="n">is_effect</span> <span class="k">else</span> <span class="s2">&quot;Coefficient&quot;</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_grid_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate samples using grid sampling strategy.</span>
+<span class="sd">        </span>
+<span class="sd">        This method creates a grid of samples by:</span>
+<span class="sd">        1. Identifying categorical and numerical columns</span>
+<span class="sd">        2. Using all unique values for categorical features</span>
+<span class="sd">        3. Creating evenly spaced points for numerical features</span>
+<span class="sd">        4. Combining all possible combinations</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : pd.DataFrame</span>
+<span class="sd">            Original dataset</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing grid samples</span>
+<span class="sd">            </span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If grid size would exceed max_samples</span>
+<span class="sd">            </span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - For numerical features, uses linspace between min and max values</span>
+<span class="sd">        - For categorical features, uses all unique values</span>
+<span class="sd">        - Caps number of points per numerical feature at 100</span>
+<span class="sd">        - Samples randomly if grid size exceeds max_samples</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Identify categorical and numerical columns</span>
+        <span class="n">cat_cols</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;category&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">num_cols</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">])</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">n_features</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        
+        <span class="c1"># Throw error if 2^n_features &gt; max_samples (for binary features, grid explosion)</span>
+        <span class="k">if</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">n_features</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_samples</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Grid would have </span><span class="si">{</span><span class="mi">2</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="n">n_features</span><span class="si">}</span><span class="s2"> rows, which exceeds max_samples=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_samples</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Reduce the number of features or increase max_samples.&quot;</span>
+            <span class="p">)</span>
+            
+        <span class="c1"># For each categorical, use all unique values</span>
+        <span class="n">cat_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">X</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">cat_cols</span><span class="p">]</span>
+        
+        <span class="c1"># For each numerical, use linspace across min/max</span>
+        <span class="n">num_ranges</span> <span class="o">=</span> <span class="p">[(</span><span class="n">X</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">X</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">num_cols</span><span class="p">]</span>
+        <span class="n">n_cats</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span> <span class="k">for</span> <span class="n">vals</span> <span class="ow">in</span> <span class="n">cat_values</span><span class="p">]</span>
+        <span class="n">n_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">num_cols</span><span class="p">)</span>
+        
+        <span class="n">grid_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">n_num</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">n_cats</span><span class="p">:</span>  <span class="c1"># Only numerical features</span>
+            <span class="n">n_per_num</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_samples</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">n_num</span><span class="p">))))</span>
+            <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">num_cols</span><span class="p">,</span> <span class="n">num_ranges</span><span class="p">):</span>
+                <span class="n">grid_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">n_per_num</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_grid_num</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_samples</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">n_cats</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">n_num</span><span class="p">)))</span> <span class="k">if</span> <span class="n">n_cats</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_samples</span><span class="p">)</span>
+            <span class="n">num_grids</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">n_grid_num</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">num_cols</span><span class="p">]</span>  <span class="c1"># cap at 100 per feature for safety</span>
+            <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">),</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">num_cols</span><span class="p">,</span> <span class="n">num_ranges</span><span class="p">,</span> <span class="n">num_grids</span><span class="p">):</span>
+                <span class="n">grid_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+                
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cat_cols</span><span class="p">,</span> <span class="n">cat_values</span><span class="p">):</span>
+            <span class="n">grid_dict</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span>
+            
+        <span class="c1"># Use sklearn&#39;s ParameterGrid for grid creation</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ParameterGrid</span><span class="p">(</span><span class="n">grid_dict</span><span class="p">))</span>
+        <span class="n">X_grid</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        
+        <span class="c1"># If grid is too large, sample max_samples rows</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_grid</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_samples</span><span class="p">:</span>
+            <span class="n">X_grid</span> <span class="o">=</span> <span class="n">X_grid</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_samples</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">X_grid</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_uniform_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate samples using uniform sampling strategy.</span>
+<span class="sd">        </span>
+<span class="sd">        This method creates samples by drawing uniformly from the range of each</span>
+<span class="sd">        feature. For numerical features, samples from the min-max range. For</span>
+<span class="sd">        categorical features, samples from unique values.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : pd.DataFrame</span>
+<span class="sd">            Original dataset</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing uniformly sampled points</span>
+<span class="sd">            </span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - Numerical features: uniform sampling between min and max</span>
+<span class="sd">        - Categorical features: random choice from unique values</span>
+<span class="sd">        - Number of samples controlled by max_samples parameter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_samples</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+        <span class="c1">#set seed for reproducibility</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_numeric_dtype</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">col</span><span class="p">]):</span>
+                <span class="n">samples</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">X</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">n_samples</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">samples</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">(),</span> <span class="n">n_samples</span><span class="p">)</span>
+                
+        <span class="k">return</span> <span class="n">samples</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_permute_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate samples using permutation sampling strategy.</span>
+<span class="sd">        </span>
+<span class="sd">        This method creates samples by randomly permuting the values of each</span>
+<span class="sd">        feature from the original dataset. This preserves the marginal</span>
+<span class="sd">        distribution of each feature.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : pd.DataFrame</span>
+<span class="sd">            Original dataset</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            DataFrame containing permuted samples</span>
+<span class="sd">            </span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - Preserves marginal distributions of features</span>
+<span class="sd">        - Breaks correlations between features</span>
+<span class="sd">        - Number of samples controlled by max_samples parameter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_samples</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+        <span class="c1">#set seed for reproducibility</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">samples</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">samples</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_plot_decision_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                           <span class="n">higher_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DecisionTreeClassifier</span><span class="p">],</span>
+                           <span class="n">lower_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DecisionTreeClassifier</span><span class="p">],</span>
+                           <span class="n">feature_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                           <span class="n">observation_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                           <span class="n">observation</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+                           <span class="n">pred_class</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                           <span class="n">higher_fidelity_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">higher_fidelity_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">lower_fidelity_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">lower_fidelity_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">is_effect</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot decision tree surrogate models.</span>
+<span class="sd">        </span>
+<span class="sd">        This method creates visualizations of the decision tree surrogate models</span>
+<span class="sd">        for both higher and lower class comparisons. The trees show the decision</span>
+<span class="sd">        rules learned by the surrogate model.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        higher_model : DecisionTreeClassifier, optional</span>
+<span class="sd">            Fitted decision tree model for higher class comparison</span>
+<span class="sd">        lower_model : DecisionTreeClassifier, optional</span>
+<span class="sd">            Fitted decision tree model for lower class comparison</span>
+<span class="sd">        feature_names : List[str]</span>
+<span class="sd">            List of feature names</span>
+<span class="sd">        observation_idx : int</span>
+<span class="sd">            Index of the observation being explained</span>
+<span class="sd">        observation : pd.Series</span>
+<span class="sd">            The observation being explained</span>
+<span class="sd">        pred_class : int</span>
+<span class="sd">            Predicted class of the observation</span>
+<span class="sd">        fidelity_in : float, optional</span>
+<span class="sd">            Fidelity of the model on the training data</span>
+<span class="sd">        fidelity_out : float, optional</span>
+<span class="sd">            Fidelity of the model on the test data</span>
+<span class="sd">            </span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - Creates separate plots for higher and lower class comparisons</span>
+<span class="sd">        - Shows feature values in the title</span>
+<span class="sd">        - Uses simplified node text for better readability</span>
+<span class="sd">        - Includes observation details in the title</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Determine which plots to show</span>
+        <span class="n">show_higher</span> <span class="o">=</span> <span class="n">higher_model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">show_lower</span> <span class="o">=</span> <span class="n">lower_model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">n_plots</span> <span class="o">=</span> <span class="n">show_higher</span> <span class="o">+</span> <span class="n">show_lower</span>
+        <span class="k">if</span> <span class="n">n_plots</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No trees to plot.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+            
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_plots</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">n_plots</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">n_plots</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="p">[</span><span class="n">axes</span><span class="p">]</span>
+            
+        <span class="c1"># Compose observation info (multi-line, compact)</span>
+        <span class="n">obs_header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Observation </span><span class="si">{</span><span class="n">observation_idx</span><span class="si">}</span><span class="s2">  |  Predicted class: </span><span class="si">{</span><span class="n">pred_class</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">obs_values</span> <span class="o">=</span> <span class="s2">&quot;,  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">observation</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+        <span class="n">fidelity_line</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">[</span><span class="n">higher_fidelity_in</span><span class="p">,</span> <span class="n">higher_fidelity_out</span><span class="p">,</span> <span class="n">lower_fidelity_in</span><span class="p">,</span> <span class="n">lower_fidelity_out</span><span class="p">]):</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">higher_fidelity_in</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Higher(in-sample): </span><span class="si">{</span><span class="n">higher_fidelity_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">higher_fidelity_in</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">higher_fidelity_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Higher(out-of-sample): </span><span class="si">{</span><span class="n">higher_fidelity_out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">higher_fidelity_out</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">lower_fidelity_in</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lower(in-sample): </span><span class="si">{</span><span class="n">lower_fidelity_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">lower_fidelity_in</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">lower_fidelity_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lower(out-of-sample): </span><span class="si">{</span><span class="n">lower_fidelity_out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">lower_fidelity_out</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">fidelity_line</span> <span class="o">=</span> <span class="s2">&quot; | &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+        <span class="n">suptitle</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obs_header</span><span class="si">}</span><span class="s2">  |  </span><span class="si">{</span><span class="n">obs_values</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">fidelity_line</span><span class="p">:</span>
+            <span class="n">suptitle</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">suptitle</span><span class="si">}</span><span class="se">\n</span><span class="s2"> Fidelity (BCE/MZE): </span><span class="si">{</span><span class="n">fidelity_line</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">suptitle</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.97</span><span class="p">)</span>
+        
+        <span class="n">plot_idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">show_higher</span><span class="p">:</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">plot_idx</span><span class="p">]</span>
+            <span class="n">tree</span><span class="o">=</span> <span class="n">plot_tree</span><span class="p">(</span><span class="n">higher_model</span><span class="p">,</span> 
+                     <span class="n">feature_names</span><span class="o">=</span><span class="n">feature_names</span><span class="p">,</span>
+                     <span class="n">class_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Same&quot;</span><span class="p">,</span> <span class="s2">&quot;Higher&quot;</span><span class="p">],</span>
+                     <span class="n">filled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">rounded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">impurity</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">proportion</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">label</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+                     <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                     <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+            <span class="c1">#modify node texts</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">texts</span><span class="p">):</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="s2">&quot;True&quot;</span> <span class="ow">in</span> <span class="n">text</span> <span class="ow">and</span> <span class="ow">not</span> <span class="s2">&quot;False&quot;</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+                    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span><span class="o">+</span><span class="p">[</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                    <span class="n">t</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparison_method</span> <span class="o">==</span> <span class="s1">&#39;one_vs_next&#39;</span><span class="p">:</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Decision Tree for Class </span><span class="si">{</span><span class="n">pred_class</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Decision Tree for Classes &gt; </span><span class="si">{</span><span class="n">pred_class</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.94</span><span class="p">)</span>
+            <span class="n">plot_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+        <span class="k">if</span> <span class="n">show_lower</span><span class="p">:</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">plot_idx</span><span class="p">]</span>
+            <span class="n">tree</span> <span class="o">=</span> <span class="n">plot_tree</span><span class="p">(</span><span class="n">lower_model</span><span class="p">,</span> 
+                     <span class="n">feature_names</span><span class="o">=</span><span class="n">feature_names</span><span class="p">,</span>
+                     <span class="n">class_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Same&quot;</span><span class="p">,</span> <span class="s2">&quot;Lower&quot;</span><span class="p">],</span>
+                     <span class="n">filled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">rounded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">impurity</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">proportion</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                     <span class="n">label</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+                     <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+            <span class="c1">#modify node texts</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">texts</span><span class="p">):</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="s2">&quot;True&quot;</span> <span class="ow">in</span> <span class="n">text</span> <span class="ow">and</span> <span class="ow">not</span> <span class="s2">&quot;False&quot;</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+                    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span><span class="o">+</span><span class="p">[</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                    <span class="n">t</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparison_method</span> <span class="o">==</span> <span class="s1">&#39;one_vs_next&#39;</span><span class="p">:</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Decision Tree for Class </span><span class="si">{</span><span class="n">pred_class</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Decision Tree for Classes &lt; </span><span class="si">{</span><span class="n">pred_class</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.94</span><span class="p">)</span>
+            
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">h_pad</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.95</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<div class="viewcode-block" id="LIME.explain">
+<a class="viewcode-back" href="../../../ordinal_xai.interpretation.html#ordinal_xai.interpretation.lime.LIME.explain">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                <span class="n">observation_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+                <span class="n">feature_subset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+                <span class="n">plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+                <span class="n">show_coefficients</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">DecisionTreeClassifier</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate LIME explanations for a specific observation.</span>
+
+<span class="sd">        Depending on the `show_coefficients` flag the horizontal bar plot will</span>
+<span class="sd">        display either (a) raw surrogate coefficients or (b) *predictor effects*</span>
+<span class="sd">        defined as `coefficient × local feature value` for numerical features.</span>
+<span class="sd">        Categorical one-hot features always use the raw coefficient value.</span>
+<span class="sd">        </span>
+<span class="sd">        This method creates local explanations by:</span>
+<span class="sd">        1. Generating perturbed samples around the observation</span>
+<span class="sd">        2. Computing sample weights based on distance</span>
+<span class="sd">        3. Fitting surrogate models to explain the prediction</span>
+<span class="sd">        4. Visualizing the results if requested</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        observation_idx : int, optional</span>
+<span class="sd">            Index of the observation to explain</span>
+<span class="sd">        feature_subset : List[Union[int, str]], optional</span>
+<span class="sd">            List of feature indices or names to include</span>
+<span class="sd">        plot : bool, default=False</span>
+<span class="sd">            If True, visualise the explanation.</span>
+<span class="sd">        show_coefficients : bool, default=False</span>
+<span class="sd">            If False (default) plot predictor effects; if True plot raw</span>
+<span class="sd">            coefficients.</span>
+<span class="sd">            Whether to create visualizations</span>
+<span class="sd">        **kwargs : dict</span>
+<span class="sd">            Additional keyword arguments</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict[str, Union[List[str], np.ndarray, DecisionTreeClassifier]]</span>
+<span class="sd">            Dictionary containing:</span>
+<span class="sd">            - features: List of feature names</span>
+<span class="sd">            - higher_model: Decision tree model for higher class comparison (if model_type=&quot;decision_tree&quot;)</span>
+<span class="sd">            - lower_model: Decision tree model for lower class comparison (if model_type=&quot;decision_tree&quot;)</span>
+<span class="sd">            - higher_coef: Coefficients for higher class comparison (if model_type=&quot;logistic&quot;)</span>
+<span class="sd">            - lower_coef: Coefficients for lower class comparison (if model_type=&quot;logistic&quot;)</span>
+<span class="sd">            </span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If observation_idx is not specified or model_type is invalid</span>
+<span class="sd">            </span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - Requires observation_idx to be specified</span>
+<span class="sd">        - Supports both logistic regression and decision tree surrogate models</span>
+<span class="sd">        - Can focus on specific features using feature_subset</span>
+<span class="sd">        - Provides visualizations of coefficients or decision trees</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">observation_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;observation_idx must be specified for LIME&quot;</span><span class="p">)</span>
+            
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;logistic&quot;</span><span class="p">,</span> <span class="s2">&quot;decision_tree&quot;</span><span class="p">]:</span>
+            
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;model_type must be either &#39;logistic&#39; or &#39;decision_tree&#39;&quot;</span><span class="p">)</span>
+            
+        <span class="c1"># Get the observation</span>
+        <span class="n">observation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">observation_idx</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">feature_subset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">observation</span> <span class="o">=</span> <span class="n">observation</span><span class="p">[</span><span class="n">feature_subset</span><span class="p">]</span>
+
+        <span class="c1"># Choose samples for surrogate model fitting</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling</span> <span class="o">==</span> <span class="s2">&quot;grid&quot;</span><span class="p">:</span>
+            <span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_grid_samples</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling</span> <span class="o">==</span> <span class="s2">&quot;uniform&quot;</span><span class="p">:</span>
+            <span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_uniform_samples</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling</span> <span class="o">==</span> <span class="s2">&quot;permute&quot;</span><span class="p">:</span>
+            <span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_permute_samples</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span>
+        
+        <span class="c1"># Get predictions for all data points</span>
+        <span class="n">samples_preds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+        
+        <span class="c1"># Get original prediction</span>
+        <span class="n">pred_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">)[</span><span class="n">observation_idx</span><span class="p">]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original prediction class: </span><span class="si">{</span><span class="n">pred_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">samples_preds</span><span class="p">))</span>
+        
+        <span class="c1"># Compute sample weights</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_weights</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">observation</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_kernel</span><span class="p">)</span>
+        
+        <span class="c1"># Get comparison labels</span>
+        <span class="n">higher_mask</span><span class="p">,</span> <span class="n">lower_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_comparison_labels</span><span class="p">(</span><span class="n">pred_class</span><span class="p">,</span> <span class="n">samples_preds</span><span class="p">)</span>
+
+        <span class="c1"># Transform features</span>
+        <span class="n">X_transformed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">fit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_scaling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Transformed observation for effect calculation (ensure correct dtypes)</span>
+        <span class="n">obs_transformed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[[</span><span class="n">observation_idx</span><span class="p">]],</span> <span class="n">fit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_scaling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">feature_names</span> <span class="o">=</span> <span class="n">X_transformed</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="n">feature_subset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">feature_subset</span><span class="p">):</span>
+                <span class="n">idxs</span> <span class="o">=</span> <span class="n">feature_subset</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">idxs</span> <span class="o">=</span> <span class="p">[</span><span class="n">feature_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">feature_subset</span><span class="p">]</span>
+            <span class="n">feature_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">feature_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">idxs</span><span class="p">]</span>
+            <span class="n">X_transformed</span> <span class="o">=</span> <span class="n">X_transformed</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="n">idxs</span><span class="p">]</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;features&#39;</span><span class="p">:</span> <span class="n">feature_names</span><span class="p">}</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span> <span class="o">==</span> <span class="s2">&quot;logistic&quot;</span><span class="p">:</span>
+            <span class="n">higher_coef</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">lower_coef</span> <span class="o">=</span> <span class="kc">None</span>
+            
+            <span class="k">if</span> <span class="n">pred_class</span> <span class="o">&lt;</span> <span class="n">n_classes</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Check if we have any positive samples for higher class</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">higher_mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="c1"># Train/test split for fidelity estimation</span>
+                        <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">higher_mask</span><span class="p">)),</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">higher_mask</span><span class="p">)</span>
+                        <span class="c1"># Ensure at least 2 samples in each split</span>
+                        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">higher_mask</span><span class="p">[</span><span class="n">idx_train</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                            <span class="n">idx_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">higher_mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">higher_mask</span><span class="p">[</span><span class="n">idx_test</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                            <span class="n">idx_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx_test</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">higher_mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span> <span class="o">=</span> <span class="n">X_transformed</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_train</span><span class="p">],</span> <span class="n">X_transformed</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_test</span><span class="p">]</span>
+                        <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">higher_mask</span><span class="p">[</span><span class="n">idx_train</span><span class="p">],</span> <span class="n">higher_mask</span><span class="p">[</span><span class="n">idx_test</span><span class="p">]</span>
+                        <span class="n">w_train</span><span class="p">,</span> <span class="n">w_test</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="n">idx_train</span><span class="p">],</span> <span class="n">weights</span><span class="p">[</span><span class="n">idx_test</span><span class="p">]</span>
+
+                        <span class="n">higher_model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">surrogate_kwargs</span><span class="p">)</span>
+                        <span class="n">higher_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">w_train</span><span class="p">)</span>
+                        <span class="n">higher_coef</span> <span class="o">=</span> <span class="n">higher_model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">show_coefficients</span><span class="p">:</span>
+                            <span class="n">num_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">obs_transformed</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                            <span class="n">higher_effect</span> <span class="o">=</span> <span class="n">higher_coef</span> <span class="o">*</span> <span class="p">(</span><span class="n">obs_transformed</span> <span class="o">*</span> <span class="n">num_mask</span> <span class="o">+</span> <span class="p">(</span><span class="o">~</span><span class="n">num_mask</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># multiply only numeric</span>
+                            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_effect&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">higher_effect</span>
+
+                        <span class="c1"># Fidelity (binary cross-entropy and zero-one loss) in and out of sample</span>
+                        <span class="n">prob_train</span> <span class="o">=</span> <span class="n">higher_model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_train</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="n">prob_test</span> <span class="o">=</span> <span class="n">higher_model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="n">in_BCE</span> <span class="o">=</span> <span class="n">log_loss</span><span class="p">(</span><span class="n">y_train</span><span class="p">,</span> <span class="n">prob_train</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">w_train</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                        <span class="n">out_BCE</span> <span class="o">=</span> <span class="n">log_loss</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">prob_test</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">w_test</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                        <span class="n">zero_one_in</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">higher_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_train</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                        <span class="n">zero_one_out</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">higher_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_test</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_fidelity_in&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">in_BCE</span><span class="p">,</span> <span class="n">zero_one_in</span><span class="p">)</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_fidelity_out&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">out_BCE</span><span class="p">,</span> <span class="n">zero_one_out</span><span class="p">)</span>
+
+                        <span class="c1"># Refit surrogate on the FULL data for final explanation coefficients</span>
+                        <span class="n">higher_model_full</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">surrogate_kwargs</span><span class="p">)</span>
+                        <span class="n">higher_model_full</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_transformed</span><span class="p">,</span> <span class="n">higher_mask</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+                        <span class="n">higher_coef</span> <span class="o">=</span> <span class="n">higher_model_full</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">show_coefficients</span><span class="p">:</span>
+                            <span class="n">num_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">obs_transformed</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                            <span class="n">higher_effect</span> <span class="o">=</span> <span class="n">higher_coef</span> <span class="o">*</span> <span class="p">(</span><span class="n">obs_transformed</span> <span class="o">*</span> <span class="n">num_mask</span> <span class="o">+</span> <span class="p">(</span><span class="o">~</span><span class="n">num_mask</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span>
+                            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_effect&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">higher_effect</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_coef&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">higher_coef</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_intercept&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">higher_model_full</span><span class="o">.</span><span class="n">intercept_</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to fit higher class model: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_coef&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">X_transformed</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_intercept&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No positive samples for higher class comparison&quot;</span><span class="p">)</span>
+                    <span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_coef&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">X_transformed</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_intercept&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                
+            <span class="k">if</span> <span class="n">pred_class</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Check if we have any positive samples for lower class</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lower_mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">idx_train_l</span><span class="p">,</span> <span class="n">idx_test_l</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lower_mask</span><span class="p">)),</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">lower_mask</span><span class="p">)</span>
+                        <span class="c1"># Ensure at least 2 samples in each split</span>
+                        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lower_mask</span><span class="p">[</span><span class="n">idx_train_l</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                            <span class="n">idx_train_l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx_train_l</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lower_mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lower_mask</span><span class="p">[</span><span class="n">idx_test_l</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                            <span class="n">idx_test_l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx_test_l</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lower_mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="n">X_train_l</span><span class="p">,</span> <span class="n">X_test_l</span> <span class="o">=</span> <span class="n">X_transformed</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_train_l</span><span class="p">],</span> <span class="n">X_transformed</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_test_l</span><span class="p">]</span>
+                        <span class="n">y_train_l</span><span class="p">,</span> <span class="n">y_test_l</span> <span class="o">=</span> <span class="n">lower_mask</span><span class="p">[</span><span class="n">idx_train_l</span><span class="p">],</span> <span class="n">lower_mask</span><span class="p">[</span><span class="n">idx_test_l</span><span class="p">]</span>
+                        <span class="n">w_train_l</span><span class="p">,</span> <span class="n">w_test_l</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="n">idx_train_l</span><span class="p">],</span> <span class="n">weights</span><span class="p">[</span><span class="n">idx_test_l</span><span class="p">]</span>
+
+                        <span class="n">lower_model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">surrogate_kwargs</span><span class="p">)</span>
+                        <span class="n">lower_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_l</span><span class="p">,</span> <span class="n">y_train_l</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">w_train_l</span><span class="p">)</span>
+                        <span class="n">lower_coef</span> <span class="o">=</span> <span class="n">lower_model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">show_coefficients</span><span class="p">:</span>
+                            <span class="n">num_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">obs_transformed</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                            <span class="n">lower_effect</span> <span class="o">=</span> <span class="n">lower_coef</span> <span class="o">*</span> <span class="p">(</span><span class="n">obs_transformed</span> <span class="o">*</span> <span class="n">num_mask</span> <span class="o">+</span> <span class="p">(</span><span class="o">~</span><span class="n">num_mask</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span>
+                            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_effect&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lower_effect</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_coef&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lower_coef</span>
+                        <span class="n">prob_train_l</span> <span class="o">=</span> <span class="n">lower_model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_train_l</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="n">prob_test_l</span> <span class="o">=</span> <span class="n">lower_model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test_l</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="n">in_BCE_l</span> <span class="o">=</span> <span class="n">log_loss</span><span class="p">(</span><span class="n">y_train_l</span><span class="p">,</span> <span class="n">prob_train_l</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">w_train_l</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                        <span class="n">out_BCE_l</span> <span class="o">=</span> <span class="n">log_loss</span><span class="p">(</span><span class="n">y_test_l</span><span class="p">,</span> <span class="n">prob_test_l</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">w_test_l</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                        <span class="n">zero_one_in_l</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">lower_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_train_l</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_train_l</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                        <span class="n">zero_one_out_l</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">lower_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test_l</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_test_l</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_fidelity_in&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">in_BCE_l</span><span class="p">,</span> <span class="n">zero_one_in_l</span><span class="p">)</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_fidelity_out&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">out_BCE_l</span><span class="p">,</span> <span class="n">zero_one_out_l</span><span class="p">)</span>
+
+                        <span class="c1"># Refit surrogate on the FULL data for final explanation coefficients</span>
+                        <span class="n">lower_model_full</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">surrogate_kwargs</span><span class="p">)</span>
+                        <span class="n">lower_model_full</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_transformed</span><span class="p">,</span> <span class="n">lower_mask</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+                        <span class="n">lower_coef</span> <span class="o">=</span> <span class="n">lower_model_full</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">show_coefficients</span><span class="p">:</span>
+                            <span class="n">num_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">obs_transformed</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                            <span class="n">lower_effect</span> <span class="o">=</span> <span class="n">lower_coef</span> <span class="o">*</span> <span class="p">(</span><span class="n">obs_transformed</span> <span class="o">*</span> <span class="n">num_mask</span> <span class="o">+</span> <span class="p">(</span><span class="o">~</span><span class="n">num_mask</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span>
+                            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_effect&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lower_effect</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_coef&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lower_coef</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_intercept&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lower_model_full</span><span class="o">.</span><span class="n">intercept_</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to fit lower class model: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_coef&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">X_transformed</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_intercept&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No positive samples for lower class comparison&quot;</span><span class="p">)</span>
+                    <span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_coef&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">X_transformed</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_intercept&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                
+            <span class="c1"># Aggregate in- and out-of-sample BCE losses</span>
+            <span class="n">losses_in</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">losses_out</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="s1">&#39;higher_fidelity_in&#39;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">losses_in</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_fidelity_in&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s1">&#39;lower_fidelity_in&#39;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">losses_in</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_fidelity_in&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s1">&#39;higher_fidelity_out&#39;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">losses_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_fidelity_out&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s1">&#39;lower_fidelity_out&#39;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">losses_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_fidelity_out&#39;</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
+                <span class="c1"># Determine data to plot: coefficients or effects</span>
+                <span class="n">plot_high</span> <span class="o">=</span> <span class="n">higher_coef</span> <span class="k">if</span> <span class="n">show_coefficients</span> <span class="k">else</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;higher_effect&#39;</span><span class="p">,</span> <span class="n">higher_coef</span><span class="p">)</span>
+                <span class="n">plot_low</span> <span class="o">=</span> <span class="n">lower_coef</span> <span class="k">if</span> <span class="n">show_coefficients</span> <span class="k">else</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lower_effect&#39;</span><span class="p">,</span> <span class="n">lower_coef</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_plot_coefficients</span><span class="p">(</span>
+                    <span class="n">plot_high</span><span class="p">,</span>
+                    <span class="n">plot_low</span><span class="p">,</span>
+                    <span class="n">feature_names</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;features&#39;</span><span class="p">),</span>
+                    <span class="n">observation_idx</span><span class="o">=</span><span class="n">observation_idx</span><span class="p">,</span>
+                    <span class="n">observation</span><span class="o">=</span><span class="n">observation</span><span class="p">,</span>
+                    <span class="n">pred_class</span><span class="o">=</span><span class="n">pred_class</span><span class="p">,</span>
+                    <span class="n">higher_fidelity_in</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;higher_fidelity_in&#39;</span><span class="p">),</span>
+                    <span class="n">higher_fidelity_out</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;higher_fidelity_out&#39;</span><span class="p">),</span>
+                    <span class="n">lower_fidelity_in</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lower_fidelity_in&#39;</span><span class="p">),</span>
+                    <span class="n">lower_fidelity_out</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lower_fidelity_out&#39;</span><span class="p">),</span>
+                    <span class="n">is_effect</span><span class="o">=</span><span class="ow">not</span> <span class="n">show_coefficients</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                                     
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span> <span class="o">==</span> <span class="s2">&quot;decision_tree&quot;</span><span class="p">:</span>
+            <span class="n">higher_model</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">lower_model</span> <span class="o">=</span> <span class="kc">None</span>
+            
+            <span class="k">if</span> <span class="n">pred_class</span> <span class="o">&lt;</span> <span class="n">n_classes</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Check if we have any positive samples for higher class</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">higher_mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">idx_train_h</span><span class="p">,</span> <span class="n">idx_test_h</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">higher_mask</span><span class="p">)),</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">higher_mask</span><span class="p">)</span>
+                        <span class="c1"># Ensure at least 2 samples in each split</span>
+                        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">higher_mask</span><span class="p">[</span><span class="n">idx_train_h</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                            <span class="n">idx_train_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx_train_h</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">higher_mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">higher_mask</span><span class="p">[</span><span class="n">idx_test_h</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                            <span class="n">idx_test_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx_test_h</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">higher_mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="n">X_train_h</span><span class="p">,</span> <span class="n">X_test_h</span> <span class="o">=</span> <span class="n">X_transformed</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_train_h</span><span class="p">],</span> <span class="n">X_transformed</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_test_h</span><span class="p">]</span>
+                        <span class="n">y_train_h</span><span class="p">,</span> <span class="n">y_test_h</span> <span class="o">=</span> <span class="n">higher_mask</span><span class="p">[</span><span class="n">idx_train_h</span><span class="p">],</span> <span class="n">higher_mask</span><span class="p">[</span><span class="n">idx_test_h</span><span class="p">]</span>
+                        <span class="n">w_train_h</span><span class="p">,</span> <span class="n">w_test_h</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="n">idx_train_h</span><span class="p">],</span> <span class="n">weights</span><span class="p">[</span><span class="n">idx_test_h</span><span class="p">]</span>
+
+                        <span class="n">tree_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;random_state&#39;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span> <span class="s1">&#39;class_weight&#39;</span><span class="p">:</span> <span class="s1">&#39;balanced&#39;</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">surrogate_kwargs</span><span class="p">}</span>
+                        <span class="n">tree_kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;max_depth&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+                        <span class="n">higher_model</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="o">**</span><span class="n">tree_kwargs</span><span class="p">)</span>
+                        <span class="n">higher_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_h</span><span class="p">,</span> <span class="n">y_train_h</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">w_train_h</span><span class="p">)</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">higher_model</span>
+                        <span class="n">prob_train_h</span> <span class="o">=</span> <span class="n">higher_model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_train_h</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="n">prob_test_h</span> <span class="o">=</span> <span class="n">higher_model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test_h</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="n">BCE_in_h</span> <span class="o">=</span> <span class="n">log_loss</span><span class="p">(</span><span class="n">y_train_h</span><span class="p">,</span> <span class="n">prob_train_h</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">w_train_h</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                        <span class="n">BCE_out_h</span> <span class="o">=</span> <span class="n">log_loss</span><span class="p">(</span><span class="n">y_test_h</span><span class="p">,</span> <span class="n">prob_test_h</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">w_test_h</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                        <span class="n">zero_one_in_h</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">higher_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_train_h</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_train_h</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                        <span class="n">zero_one_out_h</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">higher_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test_h</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_test_h</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_fidelity_in&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">BCE_in_h</span><span class="p">,</span> <span class="n">zero_one_in_h</span><span class="p">)</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_fidelity_out&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">BCE_out_h</span><span class="p">,</span> <span class="n">zero_one_out_h</span><span class="p">)</span>
+
+                        <span class="c1"># Refit decision tree on the FULL data for final explanation</span>
+                        <span class="n">tree_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;random_state&#39;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span> <span class="s1">&#39;class_weight&#39;</span><span class="p">:</span> <span class="s1">&#39;balanced&#39;</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">surrogate_kwargs</span><span class="p">}</span>
+                        <span class="n">tree_kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;max_depth&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+                        <span class="n">higher_model</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="o">**</span><span class="n">tree_kwargs</span><span class="p">)</span>
+                        <span class="n">higher_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_transformed</span><span class="p">,</span> <span class="n">higher_mask</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">higher_model</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to fit higher class model: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No positive samples for higher class comparison&quot;</span><span class="p">)</span>
+                
+            <span class="k">if</span> <span class="n">pred_class</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Check if we have any positive samples for lower class</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lower_mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">idx_train_l</span><span class="p">,</span> <span class="n">idx_test_l</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lower_mask</span><span class="p">)),</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">lower_mask</span><span class="p">)</span>
+                        <span class="c1"># Ensure at least 2 samples in each split</span>
+                        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lower_mask</span><span class="p">[</span><span class="n">idx_train_l</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                            <span class="n">idx_train_l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx_train_l</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lower_mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lower_mask</span><span class="p">[</span><span class="n">idx_test_l</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                            <span class="n">idx_test_l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx_test_l</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lower_mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="n">X_train_l</span><span class="p">,</span> <span class="n">X_test_l</span> <span class="o">=</span> <span class="n">X_transformed</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_train_l</span><span class="p">],</span> <span class="n">X_transformed</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_test_l</span><span class="p">]</span>
+                        <span class="n">y_train_l</span><span class="p">,</span> <span class="n">y_test_l</span> <span class="o">=</span> <span class="n">lower_mask</span><span class="p">[</span><span class="n">idx_train_l</span><span class="p">],</span> <span class="n">lower_mask</span><span class="p">[</span><span class="n">idx_test_l</span><span class="p">]</span>
+                        <span class="n">w_train_l</span><span class="p">,</span> <span class="n">w_test_l</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="n">idx_train_l</span><span class="p">],</span> <span class="n">weights</span><span class="p">[</span><span class="n">idx_test_l</span><span class="p">]</span>
+
+                        <span class="n">tree_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;random_state&#39;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span> <span class="s1">&#39;class_weight&#39;</span><span class="p">:</span> <span class="s1">&#39;balanced&#39;</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">surrogate_kwargs</span><span class="p">}</span>
+                        <span class="n">tree_kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;max_depth&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+                        <span class="n">lower_model</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="o">**</span><span class="n">tree_kwargs</span><span class="p">)</span>
+                        <span class="n">lower_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_l</span><span class="p">,</span> <span class="n">y_train_l</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">w_train_l</span><span class="p">)</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lower_model</span>
+                        <span class="n">prob_train_l</span> <span class="o">=</span> <span class="n">lower_model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_train_l</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="n">prob_test_l</span> <span class="o">=</span> <span class="n">lower_model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test_l</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="n">BCE_in_l</span> <span class="o">=</span> <span class="n">log_loss</span><span class="p">(</span><span class="n">y_train_l</span><span class="p">,</span> <span class="n">prob_train_l</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">w_train_l</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                        <span class="n">BCE_out_l</span> <span class="o">=</span> <span class="n">log_loss</span><span class="p">(</span><span class="n">y_test_l</span><span class="p">,</span> <span class="n">prob_test_l</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">w_test_l</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+                        <span class="n">zero_one_in_l</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">lower_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_train_l</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_train_l</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                        <span class="n">zero_one_out_l</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">lower_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test_l</span><span class="p">)</span> <span class="o">==</span> <span class="n">y_test_l</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_fidelity_in&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">BCE_in_l</span><span class="p">,</span> <span class="n">zero_one_in_l</span><span class="p">)</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_fidelity_out&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">BCE_out_l</span><span class="p">,</span> <span class="n">zero_one_out_l</span><span class="p">)</span>
+
+                        <span class="c1"># Refit decision tree on the FULL data for final explanation</span>
+                        <span class="n">tree_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;random_state&#39;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span> <span class="s1">&#39;class_weight&#39;</span><span class="p">:</span> <span class="s1">&#39;balanced&#39;</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">surrogate_kwargs</span><span class="p">}</span>
+                        <span class="n">tree_kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;max_depth&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+                        <span class="n">lower_model</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="o">**</span><span class="n">tree_kwargs</span><span class="p">)</span>
+                        <span class="n">lower_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_transformed</span><span class="p">,</span> <span class="n">lower_mask</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+                        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lower_model</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to fit lower class model: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No positive samples for lower class comparison&quot;</span><span class="p">)</span>
+                
+            <span class="c1"># Aggregate losses</span>
+            <span class="n">losses_in</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">losses_out</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="s1">&#39;higher_fidelity_in&#39;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">losses_in</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_fidelity_in&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s1">&#39;lower_fidelity_in&#39;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">losses_in</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_fidelity_in&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s1">&#39;higher_fidelity_out&#39;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">losses_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;higher_fidelity_out&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s1">&#39;lower_fidelity_out&#39;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">losses_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;lower_fidelity_out&#39;</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
+                <span class="c1"># pass fidelity for trees if needed (uses &#39;fidelity&#39;)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_plot_decision_tree</span><span class="p">(</span>
+                    <span class="n">higher_model</span><span class="p">,</span>
+                    <span class="n">lower_model</span><span class="p">,</span>
+                    <span class="n">feature_names</span><span class="p">,</span>
+                    <span class="n">observation_idx</span><span class="p">,</span>
+                    <span class="n">observation</span><span class="p">,</span>
+                    <span class="n">pred_class</span><span class="p">,</span>
+                    <span class="n">higher_fidelity_in</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;higher_fidelity_in&#39;</span><span class="p">),</span>
+                    <span class="n">higher_fidelity_out</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;higher_fidelity_out&#39;</span><span class="p">),</span>
+                    <span class="n">lower_fidelity_in</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lower_fidelity_in&#39;</span><span class="p">),</span>
+                    <span class="n">lower_fidelity_out</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lower_fidelity_out&#39;</span><span class="p">),</span>
+                    <span class="n">is_effect</span><span class="o">=</span><span class="ow">not</span> <span class="n">show_coefficients</span><span class="p">,</span>
+                <span class="p">)</span>
+                    
+        <span class="k">return</span> <span class="n">result</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jakob Wankmüller.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

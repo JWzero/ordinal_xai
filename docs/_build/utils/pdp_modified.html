@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Partial Dependence Plots &mdash; Ordinal XAI 0.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Response Modification" href="response_modified.html" />
+    <link rel="prev" title="Evaluation Metrics" href="evaluation_metrics.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Ordinal XAI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models/index.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interpretation/index.html">Interpretation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Utils</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data_utils.html">Data Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evaluation_metrics.html">Evaluation Metrics</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Partial Dependence Plots</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ordinal_xai.utils.pdp_modified.partial_dependence"><code class="docutils literal notranslate"><span class="pre">partial_dependence()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="response_modified.html">Response Modification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Ordinal XAI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Utils</a></li>
+      <li class="breadcrumb-item active">Partial Dependence Plots</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/utils/pdp_modified.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="partial-dependence-plots">
+<h1>Partial Dependence Plots<a class="headerlink" href="#partial-dependence-plots" title="Link to this heading"></a></h1>
+<p id="module-ordinal_xai.utils.pdp_modified">Partial dependence plots for regression and classification models.</p>
+<p>Modification of the existing scikit-learn pdp module thats is compatible with ordinal regression estimators.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils.pdp_modified.partial_dependence">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils.pdp_modified.</span></span><span class="sig-name descname"><span class="pre">partial_dependence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percentiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.05,</span> <span class="pre">0.95)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'average'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ordinal_xai/utils/pdp_modified.html#partial_dependence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils.pdp_modified.partial_dependence" title="Link to this definition"></a></dt>
+<dd><p>Partial dependence of <code class="docutils literal notranslate"><span class="pre">features</span></code>.</p>
+<p>Partial dependence of a feature (or a set of features) corresponds to
+the average response of an estimator for each possible value of the
+feature.</p>
+<p>Read more in the <span class="xref std std-ref">User Guide</span>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>For <code class="xref py py-class docutils literal notranslate"><span class="pre">GradientBoostingClassifier</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">GradientBoostingRegressor</span></code>, the
+<cite>‘recursion’</cite> method (used by default) will not account for the <cite>init</cite>
+predictor of the boosting process. In practice, this will produce
+the same values as <cite>‘brute’</cite> up to a constant offset in the target
+response, provided that <cite>init</cite> is a constant estimator (which is the
+default). However, if <cite>init</cite> is not a constant estimator, the
+partial dependence values are incorrect for <cite>‘recursion’</cite> because the
+offset will be sample-dependent. It is preferable to use the <cite>‘brute’</cite>
+method. Note that this only applies to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">GradientBoostingClassifier</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">GradientBoostingRegressor</span></code>, not to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">HistGradientBoostingClassifier</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">HistGradientBoostingRegressor</span></code>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>estimator</strong> (<em>BaseEstimator</em>) – A fitted estimator object implementing predict, predict_proba, or decision_function.
+Multioutput-multiclass classifiers are not supported.</p></li>
+<li><p><strong>X</strong> (<em>{array-like</em><em>, </em><em>sparse matrix</em><em> or </em><em>dataframe}</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – <code class="docutils literal notranslate"><span class="pre">X</span></code> is used to generate a grid of values for the target
+<code class="docutils literal notranslate"><span class="pre">features</span></code> (where the partial dependence will be evaluated), and
+also to generate values for the complement features when the
+<cite>method</cite> is ‘brute’.</p></li>
+<li><p><strong>features</strong> (<em>array-like</em><em> of </em><em>{int</em><em>, </em><em>str</em><em>, </em><em>bool}</em><em> or </em><em>int</em><em> or </em><em>str</em>) – The feature (e.g. <cite>[0]</cite>) or pair of interacting features
+(e.g. <cite>[(0, 1)]</cite>) for which the partial dependency should be computed.</p></li>
+<li><p><strong>sample_weight</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em><em>, </em><em>default=None</em>) – <p>Sample weights are used to calculate weighted means when averaging the
+model output. If <cite>None</cite>, then samples are equally weighted. If
+<cite>sample_weight</cite> is not <cite>None</cite>, then <cite>method</cite> will be set to <cite>‘brute’</cite>.
+Note that <cite>sample_weight</cite> is ignored for <cite>kind=’individual’</cite>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.3.</span></p>
+</div>
+</p></li>
+<li><p><strong>categorical_features</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_features</em><em>,</em><em>) or </em><em>shape</em><em>             (</em><em>n_categorical_features</em><em>,</em><em>)</em><em>, </em><em>dtype={bool</em><em>, </em><em>int</em><em>, </em><em>str}</em><em>, </em><em>default=None</em>) – <p>Indicates the categorical features.</p>
+<ul>
+<li><p><cite>None</cite>: no feature will be considered categorical;</p></li>
+<li><dl class="simple">
+<dt>boolean array-like: boolean mask of shape <cite>(n_features,)</cite></dt><dd><p>indicating which features are categorical. Thus, this array has
+the same shape has <cite>X.shape[1]</cite>;</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>integer or string array-like: integer indices or strings</dt><dd><p>indicating categorical features.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.2.</span></p>
+</div>
+</p></li>
+<li><p><strong>feature_names</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_features</em><em>,</em><em>)</em><em>, </em><em>dtype=str</em><em>, </em><em>default=None</em>) – <p>Name of each feature; <cite>feature_names[i]</cite> holds the name of the feature
+with index <cite>i</cite>.
+By default, the name of the feature corresponds to their numerical
+index for NumPy array and their column name for pandas dataframe.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.2.</span></p>
+</div>
+</p></li>
+<li><p><strong>response_method</strong> (<em>{'auto'</em><em>, </em><em>'predict_proba'</em><em>, </em><em>'decision_function'}</em><em>,             </em><em>default='auto'</em>) – Specifies whether to use predict_proba or decision_function as the target response. For regressors
+this parameter is ignored and the response is always the output of predict. By default, predict_proba is tried first
+and we revert to decision_function if it doesn’t exist.</p></li>
+<li><p><strong>percentiles</strong> (<em>tuple</em><em> of </em><em>float</em><em>, </em><em>default=</em><em>(</em><em>0.05</em><em>, </em><em>0.95</em><em>)</em>) – The lower and upper percentile used to create the extreme values
+for the grid. Must be in [0, 1].</p></li>
+<li><p><strong>grid_resolution</strong> (<em>int</em><em>, </em><em>default=100</em>) – The number of equally spaced points on the grid, for each target
+feature.</p></li>
+<li><p><strong>method</strong> (<em>{'auto'</em><em>, </em><em>'recursion'</em><em>, </em><em>'brute'}</em><em>, </em><em>default='auto'</em>) – <p>The method used to calculate the averaged predictions:</p>
+<ul>
+<li><p><cite>’recursion’</cite> is only supported for some tree-based estimators
+(namely
+<code class="xref py py-class docutils literal notranslate"><span class="pre">GradientBoostingClassifier</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">GradientBoostingRegressor</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">HistGradientBoostingClassifier</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">HistGradientBoostingRegressor</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DecisionTreeRegressor</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">RandomForestRegressor</span></code>,
+) when <cite>kind=’average’</cite>.
+This is more efficient in terms of speed.
+With this method, the target response of a
+classifier is always the decision function, not the predicted
+probabilities. Since the <cite>‘recursion’</cite> method implicitly computes
+the average of the Individual Conditional Expectation (ICE) by
+design, it is not compatible with ICE and thus <cite>kind</cite> must be
+<cite>‘average’</cite>.</p></li>
+<li><p><cite>’brute’</cite> is supported for any estimator, but is more
+computationally intensive.</p></li>
+<li><p><cite>’auto’</cite>: the <cite>‘recursion’</cite> is used for estimators that support it,
+and <cite>‘brute’</cite> is used otherwise. If <cite>sample_weight</cite> is not <cite>None</cite>,
+then <cite>‘brute’</cite> is used regardless of the estimator.</p></li>
+</ul>
+</p></li>
+<li><p><strong>kind</strong> (<em>{'average'</em><em>, </em><em>'individual'</em><em>, </em><em>'both'}</em><em>, </em><em>default='average'</em>) – <p>Whether to return the partial dependence averaged across all the
+samples in the dataset or one value per sample or both.
+See Returns below.</p>
+<p>Note that the fast <cite>method=’recursion’</cite> option is only available for
+<cite>kind=’average’</cite> and <cite>sample_weights=None</cite>. Computing individual
+dependencies and doing weighted averages requires using the slower
+<cite>method=’brute’</cite>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.24.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>predictions</strong> – Dictionary-like object, with the following attributes.</p>
+<dl>
+<dt>individual<span class="classifier">ndarray of shape (n_outputs, n_instances,                 len(values[0]), len(values[1]), …)</span></dt><dd><p>The predictions for all the points in the grid for all
+samples in X. This is also known as Individual
+Conditional Expectation (ICE).
+Only available when <cite>kind=’individual’</cite> or <cite>kind=’both’</cite>.</p>
+</dd>
+<dt>average<span class="classifier">ndarray of shape (n_outputs, len(values[0]),                 len(values[1]), …)</span></dt><dd><p>The predictions for all the points in the grid, averaged
+over all samples in X (or over the training data if
+<cite>method</cite> is ‘recursion’).
+Only available when <cite>kind=’average’</cite> or <cite>kind=’both’</cite>.</p>
+</dd>
+<dt>grid_values<span class="classifier">seq of 1d ndarrays</span></dt><dd><p>The values with which the grid has been created. The generated
+grid is a cartesian product of the arrays in <cite>grid_values</cite> where
+<cite>len(grid_values) == len(features)</cite>. The size of each array
+<cite>grid_values[j]</cite> is either <cite>grid_resolution</cite>, or the number of
+unique values in <cite>X[:, j]</cite>, whichever is smaller.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.3.</span></p>
+</div>
+</dd>
+</dl>
+<p><cite>n_outputs</cite> corresponds to the number of classes in a multi-class
+setting, or to the number of tasks for multi-output regression.
+For classical regression and binary classification <cite>n_outputs==1</cite>.
+<cite>n_values_feature_j</cite> corresponds to the size <cite>grid_values[j]</cite>.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Bunch</span></code></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">PartialDependenceDisplay.from_estimator</span></code></dt><dd><p>Plot Partial Dependence.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">PartialDependenceDisplay</span></code></dt><dd><p>Partial Dependence visualization.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">GradientBoostingClassifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gb</span> <span class="o">=</span> <span class="n">GradientBoostingClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">partial_dependence</span><span class="p">(</span><span class="n">gb</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">percentiles</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span>                   <span class="n">grid_resolution</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> 
+<span class="go">(array([[-4.52...,  4.52...]]), [array([ 0.,  1.])])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<p>This module provides modified partial dependence plot functionality for ordinal regression:
+- Custom implementations of PDP for ordinal models
+- Visualization tools for feature effects</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="evaluation_metrics.html" class="btn btn-neutral float-left" title="Evaluation Metrics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="response_modified.html" class="btn btn-neutral float-right" title="Response Modification" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Jakob Wankmüller.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

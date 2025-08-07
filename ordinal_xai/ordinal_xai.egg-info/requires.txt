@@ -1,0 +1,8 @@
+numpy
+pandas
+scikit-learn
+matplotlib
+torch
+gower
+sphinx
+sphinx_rtd_theme
