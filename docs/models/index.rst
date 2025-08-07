@@ -6,4 +6,5 @@ Models
 
    clm
    obd
-   onn 
+   onn
+   ogboost

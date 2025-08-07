@@ -8,7 +8,7 @@ Quick Start
 
 .. code-block:: python
 
-    from ordinal_xai.models import CLM, ONN, OBD
+    from ordinal_xai.models import CLM, ONN, OBD, OGBoost
     from ordinal_xai.interpretation import LIME, LOCO, ICE, ICEProb, PDP, PDPProb, PFI
     import pandas as pd
     import numpy as np
@@ -59,6 +59,8 @@ The following models are currently implemented:
     The Ordinal Neural Network (ONN) is a fully connected neural network that uses a softmax activation function in the output layer to ensure that the output is a valid probability distribution over the categories.
 - Ordinal Binary Decomposition (OBD):
     The Ordinal Binary Decomposition (OBD) is a model for ordinal regression that decomposes the ordinal response into a set of binary responses. It uses a series of binary classifiers to model the relationship between the predictors and the binary responses.
+- OGBoost:
+    OGBoost is a gradient boosting model specifically designed for ordinal classification. It's a wrapper around the GradientBoostingOrdinal from the ogboost package, providing powerful ensemble learning capabilities for ordinal data. It supports various hyperparameters for fine-tuning model performance.
 
 
 Interpretation Methods
@@ -108,7 +110,7 @@ You can specify various arguments to control the dataset, model, interpretation 
     Dataset filename in 'data/' folder (default: 'dummy.csv')
 
 ``--model``
-    Model to use: CLM, ONN, or OBD (default: 'CLM')
+    Model to use: CLM, ONN, OBD, or OGBoost (default: 'CLM')
 
 ``--interpretation``
     Interpretation method: PDP, ICE, LIME, LOCO, PFI, etc. (default: 'PDP')
