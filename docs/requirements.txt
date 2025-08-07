@@ -11,3 +11,4 @@ torch
 skorch
 dlordinal
 xgboost
+ogboost

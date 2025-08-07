@@ -10,7 +10,7 @@ have a natural ordering and misclassification costs increase with the distance b
 predicted and true classes.
 
 Available Metrics:
------------------
+------------------
 Hard Label Metrics:
 - accuracy: Standard classification accuracy
 - adjacent_accuracy: Proportion of predictions within one class of true label

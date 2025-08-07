@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ordinal_xai.interpretation.loco &mdash; Ordinal XAI 0.1.0 documentation</title>
+  <title>ordinal_xai.interpretation.loco &mdash; Ordinal XAI 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
       <script src="../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -112,7 +112,7 @@
 <span class="p">)</span>
 
 <div class="viewcode-block" id="LOCO">
-<a class="viewcode-back" href="../../../ordinal_xai.interpretation.html#ordinal_xai.interpretation.loco.LOCO">[docs]</a>
+<a class="viewcode-back" href="../../../interpretation/feature_importance/loco.html#ordinal_xai.interpretation.loco.LOCO">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LOCO</span><span class="p">(</span><span class="n">BaseInterpretation</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Leave-One-Covariate-Out (LOCO) interpretation method for feature importance.</span>
@@ -255,7 +255,7 @@
         <span class="p">)</span>
     
 <div class="viewcode-block" id="LOCO.explain">
-<a class="viewcode-back" href="../../../ordinal_xai.interpretation.html#ordinal_xai.interpretation.loco.LOCO.explain">[docs]</a>
+<a class="viewcode-back" href="../../../interpretation/feature_importance/loco.html#ordinal_xai.interpretation.loco.LOCO.explain">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">feature_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate LOCO feature importance scores.</span>
@@ -264,7 +264,7 @@
 <span class="sd">        changes when each feature is removed. It can operate in two modes:</span>
 <span class="sd">        1. Global mode (default): Evaluates feature importance across the entire dataset</span>
 <span class="sd">        2. Local mode (when observation_idx is provided): Evaluates feature importance</span>
-<span class="sd">           for a specific instance</span>
+<span class="sd">        for a specific instance</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>

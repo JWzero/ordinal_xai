@@ -1,5 +1,5 @@
 Partial Dependence Plots
-=======================
+========================
 
 .. automodule:: ordinal_xai.utils.pdp_modified
    :members:

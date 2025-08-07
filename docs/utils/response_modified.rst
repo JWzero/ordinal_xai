@@ -1,5 +1,5 @@
 Response Modification
-====================
+=====================
 
 .. automodule:: ordinal_xai.utils._response_modified
    :members:

@@ -52,7 +52,13 @@
 <li class="toctree-l2"><a class="reference internal" href="data_utils.html">Data Utilities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="evaluation_metrics.html">Evaluation Metrics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pdp_modified.html">Partial Dependence Plots</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Response Modification</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Response Modification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ordinal_xai.utils._response_modified._process_predict_proba"><code class="docutils literal notranslate"><span class="pre">_process_predict_proba()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ordinal_xai.utils._response_modified._process_decision_function"><code class="docutils literal notranslate"><span class="pre">_process_decision_function()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ordinal_xai.utils._response_modified._get_response_values"><code class="docutils literal notranslate"><span class="pre">_get_response_values()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ordinal_xai.utils._response_modified._get_response_values_binary"><code class="docutils literal notranslate"><span class="pre">_get_response_values_binary()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
@@ -86,7 +92,193 @@
   <section id="response-modification">
 <h1>Response Modification<a class="headerlink" href="#response-modification" title="Link to this heading"></a></h1>
 <p id="module-ordinal_xai.utils._response_modified">Utilities to get the response values of a classifier or a regressor.</p>
+<p>Modification of the existing scikit-learn module thats is compatible with ordinal regression estimators.</p>
 <p>It allows to make uniform checks and validation.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils._response_modified._process_predict_proba">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils._response_modified.</span></span><span class="sig-name descname"><span class="pre">_process_predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ordinal_xai/utils/_response_modified.html#_process_predict_proba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils._response_modified._process_predict_proba" title="Link to this definition"></a></dt>
+<dd><p>Get the response values when the response method is <cite>predict_proba</cite>.</p>
+<p>This function process the <cite>y_pred</cite> array in the binary and multi-label cases.
+In the binary case, it selects the column corresponding to the positive
+class. In the multi-label case, it stacks the predictions if they are not
+in the “compressed” format <cite>(n_samples, n_outputs)</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_pred</strong> (<em>ndarray</em>) – <p>Output of <cite>estimator.predict_proba</cite>. The shape depends on the target type:</p>
+<ul>
+<li><p>for binary classification, it is a 2d array of shape <cite>(n_samples, 2)</cite>;</p></li>
+<li><p>for multiclass classification, it is a 2d array of shape
+<cite>(n_samples, n_classes)</cite>;</p></li>
+<li><p>for multilabel classification, it is either a list of 2d arrays of shape
+<cite>(n_samples, 2)</cite> (e.g. <cite>RandomForestClassifier</cite> or <cite>KNeighborsClassifier</cite>) or
+an array of shape <cite>(n_samples, n_outputs)</cite> (e.g. <cite>MLPClassifier</cite> or
+<cite>RidgeClassifier</cite>).</p></li>
+</ul>
+</p></li>
+<li><p><strong>target_type</strong> (<em>{&quot;binary&quot;</em><em>, </em><em>&quot;multiclass&quot;</em><em>, </em><em>&quot;multilabel-indicator&quot;}</em>) – Type of the target.</p></li>
+<li><p><strong>classes</strong> (<em>ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_classes</em><em>,</em><em>) or </em><em>list</em><em> of </em><em>such arrays</em>) – Class labels as reported by <cite>estimator.classes_</cite>.</p></li>
+<li><p><strong>pos_label</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><em>bool</em><em> or </em><em>str</em>) – Only used with binary and multiclass targets.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>y_pred</strong> – Compressed predictions format as requested by the metrics.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray of shape (n_samples,), (n_samples, n_classes) or             (n_samples, n_output)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils._response_modified._process_decision_function">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils._response_modified.</span></span><span class="sig-name descname"><span class="pre">_process_decision_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ordinal_xai/utils/_response_modified.html#_process_decision_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils._response_modified._process_decision_function" title="Link to this definition"></a></dt>
+<dd><p>Get the response values when the response method is <cite>decision_function</cite>.</p>
+<p>This function process the <cite>y_pred</cite> array in the binary and multi-label cases.
+In the binary case, it inverts the sign of the score if the positive label
+is not <cite>classes[1]</cite>. In the multi-label case, it stacks the predictions if
+they are not in the “compressed” format <cite>(n_samples, n_outputs)</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_pred</strong> (<em>ndarray</em>) – <p>Output of <cite>estimator.decision_function</cite>. The shape depends on the target type:</p>
+<ul>
+<li><p>for binary classification, it is a 1d array of shape <cite>(n_samples,)</cite> where the
+sign is assuming that <cite>classes[1]</cite> is the positive class;</p></li>
+<li><p>for multiclass classification, it is a 2d array of shape
+<cite>(n_samples, n_classes)</cite>;</p></li>
+<li><p>for multilabel classification, it is a 2d array of shape <cite>(n_samples,
+n_outputs)</cite>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>target_type</strong> (<em>{&quot;binary&quot;</em><em>, </em><em>&quot;multiclass&quot;</em><em>, </em><em>&quot;multilabel-indicator&quot;}</em>) – Type of the target.</p></li>
+<li><p><strong>classes</strong> (<em>ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_classes</em><em>,</em><em>) or </em><em>list</em><em> of </em><em>such arrays</em>) – Class labels as reported by <cite>estimator.classes_</cite>.</p></li>
+<li><p><strong>pos_label</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><em>bool</em><em> or </em><em>str</em>) – Only used with binary and multiclass targets.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>y_pred</strong> – Compressed predictions format as requested by the metrics.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray of shape (n_samples,), (n_samples, n_classes) or             (n_samples, n_output)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils._response_modified._get_response_values">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils._response_modified.</span></span><span class="sig-name descname"><span class="pre">_get_response_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_response_method_used</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ordinal_xai/utils/_response_modified.html#_get_response_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils._response_modified._get_response_values" title="Link to this definition"></a></dt>
+<dd><p>Compute the response values of a classifier, an outlier detector, or a regressor.</p>
+<p>The response values are predictions such that it follows the following shape:</p>
+<ul class="simple">
+<li><p>for binary classification, it is a 1d array of shape <cite>(n_samples,)</cite>;</p></li>
+<li><p>for multiclass classification, it is a 2d array of shape <cite>(n_samples, n_classes)</cite>;</p></li>
+<li><p>for multilabel classification, it is a 2d array of shape <cite>(n_samples, n_outputs)</cite>;</p></li>
+<li><p>for outlier detection, it is a 1d array of shape <cite>(n_samples,)</cite>;</p></li>
+<li><p>for regression, it is a 1d array of shape <cite>(n_samples,)</cite>.</p></li>
+</ul>
+<p>If <cite>estimator</cite> is a binary classifier, also return the label for the
+effective positive class.</p>
+<p>This utility is used primarily in the displays and the scikit-learn scorers.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.3.</span></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>estimator</strong> (<em>estimator instance</em>) – Fitted classifier, outlier detector, or regressor or a
+fitted <code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code> in which the last estimator is a
+classifier, an outlier detector, or a regressor.</p></li>
+<li><p><strong>X</strong> (<em>{array-like</em><em>, </em><em>sparse matrix}</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Input values.</p></li>
+<li><p><strong>response_method</strong> (<em>{&quot;predict_proba&quot;</em><em>, </em><em>&quot;predict_log_proba&quot;</em><em>, </em><em>&quot;decision_function&quot;</em><em>,             </em><em>&quot;predict&quot;}</em><em> or </em><em>list</em><em> of </em><em>such str</em>) – <p>Specifies the response method to use get prediction from an estimator
+(i.e. <span class="xref std std-term">predict_proba</span>, <span class="xref std std-term">predict_log_proba</span>,
+<span class="xref std std-term">decision_function</span> or <span class="xref std std-term">predict</span>). Possible choices are:</p>
+<ul>
+<li><p>if <cite>str</cite>, it corresponds to the name to the method to return;</p></li>
+<li><p>if a list of <cite>str</cite>, it provides the method names in order of
+preference. The method returned corresponds to the first method in
+the list and which is implemented by <cite>estimator</cite>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>pos_label</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><em>bool</em><em> or </em><em>str</em><em>, </em><em>default=None</em>) – The class considered as the positive class when computing
+the metrics. If <cite>None</cite> and target is ‘binary’, <cite>estimators.classes_[1]</cite> is
+considered as the positive class.</p></li>
+<li><p><strong>return_response_method_used</strong> (<em>bool</em><em>, </em><em>default=False</em>) – <p>Whether to return the response method used to compute the response
+values.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.4.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul>
+<li><p><strong>y_pred</strong> (<em>ndarray of shape (n_samples,), (n_samples, n_classes) or             (n_samples, n_outputs)</em>) – Target scores calculated from the provided <cite>response_method</cite>
+and <cite>pos_label</cite>.</p></li>
+<li><p><strong>pos_label</strong> (<em>int, float, bool, str or None</em>) – The class considered as the positive class when computing
+the metrics. Returns <cite>None</cite> if <cite>estimator</cite> is a regressor or an outlier
+detector.</p></li>
+<li><p><strong>response_method_used</strong> (<em>str</em>) – The response method used to compute the response values. Only returned
+if <cite>return_response_method_used</cite> is <cite>True</cite>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.4.</span></p>
+</div>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If <cite>pos_label</cite> is not a valid label.
+    If the shape of <cite>y_pred</cite> is not consistent for binary classifier.
+    If the response method can be applied to a classifier only and
+    <cite>estimator</cite> is a regressor.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ordinal_xai.utils._response_modified._get_response_values_binary">
+<span class="sig-prename descclassname"><span class="pre">ordinal_xai.utils._response_modified.</span></span><span class="sig-name descname"><span class="pre">_get_response_values_binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_response_method_used</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ordinal_xai/utils/_response_modified.html#_get_response_values_binary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ordinal_xai.utils._response_modified._get_response_values_binary" title="Link to this definition"></a></dt>
+<dd><p>Compute the response values of a binary classifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>estimator</strong> (<em>estimator instance</em>) – Fitted classifier or a fitted <code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code>
+in which the last estimator is a binary classifier.</p></li>
+<li><p><strong>X</strong> (<em>{array-like</em><em>, </em><em>sparse matrix}</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>, </em><em>n_features</em><em>)</em>) – Input values.</p></li>
+<li><p><strong>response_method</strong> (<em>{'auto'</em><em>, </em><em>'predict_proba'</em><em>, </em><em>'decision_function'}</em>) – Specifies whether to use <span class="xref std std-term">predict_proba</span> or
+<span class="xref std std-term">decision_function</span> as the target response. If set to ‘auto’,
+<span class="xref std std-term">predict_proba</span> is tried first and if it does not exist
+<span class="xref std std-term">decision_function</span> is tried next.</p></li>
+<li><p><strong>pos_label</strong> (<em>int</em><em>, </em><em>float</em><em>, </em><em>bool</em><em> or </em><em>str</em><em>, </em><em>default=None</em>) – The class considered as the positive class when computing
+the metrics. By default, <cite>estimators.classes_[1]</cite> is
+considered as the positive class.</p></li>
+<li><p><strong>return_response_method_used</strong> (<em>bool</em><em>, </em><em>default=False</em>) – <p>Whether to return the response method used to compute the response
+values.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.5.</span></p>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul>
+<li><p><strong>y_pred</strong> (<em>ndarray of shape (n_samples,)</em>) – Target scores calculated from the provided response_method
+and pos_label.</p></li>
+<li><p><strong>pos_label</strong> (<em>int, float, bool or str</em>) – The class considered as the positive class when computing
+the metrics.</p></li>
+<li><p><strong>response_method_used</strong> (<em>str</em>) – The response method used to compute the response values. Only returned
+if <cite>return_response_method_used</cite> is <cite>True</cite>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.5.</span></p>
+</div>
+</li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
 <p>This module contains internal utilities for response modification:
 - Helper functions for response transformation
 - Support for ordinal model predictions</p>

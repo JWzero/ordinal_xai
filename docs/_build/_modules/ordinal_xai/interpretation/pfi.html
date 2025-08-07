@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ordinal_xai.interpretation.pfi &mdash; Ordinal XAI 0.1.0 documentation</title>
+  <title>ordinal_xai.interpretation.pfi &mdash; Ordinal XAI 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
       <script src="../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -111,7 +111,7 @@
 <span class="p">)</span>
 
 <div class="viewcode-block" id="PFI">
-<a class="viewcode-back" href="../../../ordinal_xai.interpretation.html#ordinal_xai.interpretation.pfi.PFI">[docs]</a>
+<a class="viewcode-back" href="../../../interpretation/feature_importance/pfi.html#ordinal_xai.interpretation.pfi.PFI">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PFI</span><span class="p">(</span><span class="n">BaseInterpretation</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Permutation Feature Importance (PFI) interpretation method for feature importance.</span>
@@ -154,6 +154,8 @@
 <span class="sd">        If X is not a pandas DataFrame or if model predictions fail.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
+<div class="viewcode-block" id="PFI.__init__">
+<a class="viewcode-back" href="../../../interpretation/feature_importance/pfi.html#ordinal_xai.interpretation.pfi.PFI.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">n_repeats</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">show_intervals</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the Permutation Feature Importance interpretation method.</span>
@@ -202,8 +204,11 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">original_predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">original_results</span> <span class="o">=</span> <span class="n">evaluate_ordinal_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_predictions</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to get original model predictions: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to get original model predictions: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
     
+<div class="viewcode-block" id="PFI._create_scoring_func">
+<a class="viewcode-back" href="../../../interpretation/feature_importance/pfi.html#ordinal_xai.interpretation.pfi.PFI._create_scoring_func">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_scoring_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">metric_func</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a scoring function for a specific metric.</span>
@@ -255,10 +260,11 @@
                 <span class="k">return</span> <span class="n">score</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to calculate score for metric </span><span class="si">{</span><span class="n">metric_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">scoring_func</span>
+        <span class="k">return</span> <span class="n">scoring_func</span></div>
+
     
 <div class="viewcode-block" id="PFI.explain">
-<a class="viewcode-back" href="../../../ordinal_xai.interpretation.html#ordinal_xai.interpretation.pfi.PFI.explain">[docs]</a>
+<a class="viewcode-back" href="../../../interpretation/feature_importance/pfi.html#ordinal_xai.interpretation.pfi.PFI.explain">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">feature_subset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate Permutation Feature Importance explanations.</span>
@@ -271,7 +277,7 @@
 <span class="sd">        Two modes are supported:</span>
 <span class="sd">        1. Global mode (default): Evaluates feature importance across the entire dataset.</span>
 <span class="sd">        2. Local mode (when observation_idx is provided): Evaluates feature importance</span>
-<span class="sd">           for a specific instance by permuting feature values for that instance only.</span>
+<span class="sd">        for a specific instance by permuting feature values for that instance only.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -406,6 +412,8 @@
 
 
     
+<div class="viewcode-block" id="PFI._plot_feature_importance">
+<a class="viewcode-back" href="../../../interpretation/feature_importance/pfi.html#ordinal_xai.interpretation.pfi.PFI._plot_feature_importance">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">_plot_feature_importance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot feature importance scores for each metric. </span>
@@ -502,6 +510,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">h_pad</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">w_pad</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span><span class="n">left</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> </div>
+</div>
 
 </pre></div>
 

@@ -1,5 +1,7 @@
 """Utilities to get the response values of a classifier or a regressor.
 
+Modification of the existing scikit-learn module thats is compatible with ordinal regression estimators.
+
 It allows to make uniform checks and validation.
 """
 

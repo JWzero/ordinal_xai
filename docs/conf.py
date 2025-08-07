@@ -22,6 +22,16 @@ extensions = [
     'sphinx.ext.viewcode',
 ]
 
+# Configure autodoc to include private members and special members
+autodoc_default_options = {
+    'members': True,
+    'member-order': 'bysource',
+    'special-members': '__init__',
+    'undoc-members': True,
+    'exclude-members': '__weakref__',
+    'private-members': True,  # This will include members starting with _
+}
+
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 

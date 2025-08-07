@@ -94,7 +94,7 @@
 <dl class="py class">
 <dt class="sig sig-object py">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.ice.</span></span><span class="sig-name descname"><span class="pre">ICE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ordinal_xai/interpretation/ice.html#ICE"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <a class="reference internal" href="../../ordinal_xai.interpretation.html#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></p>
 <p>Individual Conditional Expectation (ICE) Plot interpretation method.</p>
 <p>ICE plots show how a model’s prediction changes as a feature value changes,
 while keeping other features constant. For ordinal regression, it shows how
@@ -144,6 +144,21 @@ during model training.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ordinal_xai/interpretation/ice.html#ICE.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Initialize the ICE Plot interpretation method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>object</em>) – The trained ordinal regression model</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Dataset used for interpretation</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em><em>, </em><em>optional</em>) – Target labels</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ordinal_xai/interpretation/ice.html#ICE.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Generate Individual Conditional Expectation Plots.</p>
 <p>This method computes and optionally visualizes how the model’s predictions
@@ -177,6 +192,11 @@ only this instance’s ICE curves will be shown along with the average (PDP).</p
 <li><p>For numerical features, a grid of values is used</p></li>
 </ul>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

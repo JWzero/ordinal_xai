@@ -94,7 +94,7 @@
 <dl class="py class">
 <dt class="sig sig-object py">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.ice_prob.</span></span><span class="sig-name descname"><span class="pre">ICEProb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ordinal_xai/interpretation/ice_prob.html#ICEProb"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <a class="reference internal" href="../../ordinal_xai.interpretation.html#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></p>
 <p>Individual Conditional Expectation (ICE) Plot interpretation method for probabilities.</p>
 <p>This class implements ICE plots specifically designed for visualizing probability
 distributions in ordinal regression models. It uses stacked area plots to show how
@@ -144,6 +144,21 @@ during model training.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ordinal_xai/interpretation/ice_prob.html#ICEProb.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Initialize the ICE Plot interpretation method for probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>object</em>) – The trained ordinal regression model</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Dataset used for interpretation</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em><em>, </em><em>optional</em>) – Target labels</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ordinal_xai/interpretation/ice_prob.html#ICEProb.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Generate Individual Conditional Expectation Plots for probabilities.</p>
 <p>This method computes and optionally visualizes how the model’s probability
@@ -178,6 +193,11 @@ the average (PDP) distribution.</p></li>
 <li><p>Automatically handles both categorical and numerical features</p></li>
 </ul>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

@@ -184,7 +184,7 @@ class LOCO(BaseInterpretation):
         changes when each feature is removed. It can operate in two modes:
         1. Global mode (default): Evaluates feature importance across the entire dataset
         2. Local mode (when observation_idx is provided): Evaluates feature importance
-           for a specific instance
+        for a specific instance
         
         Parameters
         ----------

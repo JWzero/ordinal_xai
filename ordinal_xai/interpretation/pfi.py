@@ -191,7 +191,7 @@ class PFI(BaseInterpretation):
         Two modes are supported:
         1. Global mode (default): Evaluates feature importance across the entire dataset.
         2. Local mode (when observation_idx is provided): Evaluates feature importance
-           for a specific instance by permuting feature values for that instance only.
+        for a specific instance by permuting feature values for that instance only.
 
         Parameters
         ----------

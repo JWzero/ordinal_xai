@@ -92,7 +92,7 @@
 <dl class="py class">
 <dt class="sig sig-object py">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ordinal_xai.interpretation.loco.</span></span><span class="sig-name descname"><span class="pre">LOCO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_train_test_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ordinal_xai/interpretation/loco.html#LOCO"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <a class="reference internal" href="../../ordinal_xai.interpretation.html#ordinal_xai.interpretation.base_interpretation.BaseInterpretation" title="ordinal_xai.interpretation.base_interpretation.BaseInterpretation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInterpretation</span></code></p>
 <p>Leave-One-Covariate-Out (LOCO) interpretation method for feature importance.</p>
 <p>This class implements the LOCO method for analyzing feature importance in ordinal regression
 models. It measures the impact of each feature by evaluating how model performance changes
@@ -213,15 +213,48 @@ dataset is used for both training and evaluation.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_train_test_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ordinal_xai/interpretation/loco.html#LOCO.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Initialize the LOCO interpretation method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>object</em>) – The trained ordinal regression model</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Dataset used for interpretation</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em><em>, </em><em>optional</em>) – Target labels</p></li>
+<li><p><strong>test_size</strong> (<em>float</em><em>, </em><em>default=0.2</em>) – Proportion of the dataset to include in the test split</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em>, </em><em>optional</em>) – Random state for reproducibility</p></li>
+<li><p><strong>use_train_test_split</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Whether to use train-test split for evaluation</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">_perform_train_test_split</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ordinal_xai/interpretation/loco.html#LOCO._perform_train_test_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Perform train-test split on the data and evaluate the original model.</p>
+<p>This method:
+1. Splits the data into training and test sets
+2. Creates a copy of the model for training
+3. Fits the model on the training data
+4. Makes predictions on the test set
+5. Evaluates the model using all available metrics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the model class is not suitable for refitting</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ordinal_xai/interpretation/loco.html#LOCO.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Generate LOCO feature importance scores.</p>
 <p>This method computes feature importance by measuring how model performance
 changes when each feature is removed. It can operate in two modes:
 1. Global mode (default): Evaluates feature importance across the entire dataset
-2. Local mode (when observation_idx is provided): Evaluates feature importance</p>
-<blockquote>
-<div><p>for a specific instance</p>
-</div></blockquote>
+2. Local mode (when observation_idx is provided): Evaluates feature importance
+for a specific instance</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -240,6 +273,36 @@ changes when each feature is removed. It can operate in two modes:
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">_plot_feature_importance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ordinal_xai/interpretation/loco.html#LOCO._plot_feature_importance"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Create visualizations for feature importance.</p>
+<p>This method creates bar plots showing feature importance scores for each metric.
+The plots are arranged in a grid, with one subplot per metric.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results</strong> (<em>dict</em>) – Dictionary containing all results from the LOCO analysis</p></li>
+<li><p><strong>metrics</strong> (<em>list</em><em>, </em><em>optional</em>) – List of metrics to plot (defaults to all in results)</p></li>
+<li><p><strong>title</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Whether to add a suptitle to the visualization</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Features are sorted by importance score</p></li>
+<li><p>Error metrics are shown in red with “Increase” in the title</p></li>
+<li><p>Other metrics are shown in green with “Drop” in the title</p></li>
+<li><p>Feature names are rotated 90 degrees for better readability</p></li>
+<li><p>Score values are displayed in the middle of each bar</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
