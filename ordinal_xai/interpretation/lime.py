@@ -112,7 +112,9 @@ class LIME(BaseInterpretation):
                  kernel_width: float = 0.75,
                  custom_kernel: Optional[Callable] = None,
                  sampling: str = "permute",
-                 max_samples: int = 10000) -> None:
+                 max_samples: int = 10000,
+                 random_state: int = 42,
+                 **surrogate_kwargs) -> None:
         """
         Initialize LIME interpretation.
         
@@ -159,6 +161,8 @@ class LIME(BaseInterpretation):
         self.custom_kernel = custom_kernel
         self.sampling = sampling
         self.max_samples = max_samples
+        self.random_state = random_state
+        self.surrogate_kwargs = surrogate_kwargs
         
         logger.info(f"Initialized LIME with {comparison_method} comparison method and {sampling} sampling")
     
@@ -301,17 +305,17 @@ class LIME(BaseInterpretation):
         if any(v is not None for v in [higher_fidelity_in, higher_fidelity_out, lower_fidelity_in, lower_fidelity_out]):
             parts = []
             if higher_fidelity_in is not None:
-                parts.append(f"Higher(in): {higher_fidelity_in[0]:.3f}/{higher_fidelity_in[1]:.3f}")
+                parts.append(f"Higher(in-sample): {higher_fidelity_in[0]:.3f}/{higher_fidelity_in[1]:.3f}")
             if higher_fidelity_out is not None:
-                parts.append(f"Higher(out): {higher_fidelity_out[0]:.3f}/{higher_fidelity_out[1]:.3f}")
+                parts.append(f"Higher(out-of-sample): {higher_fidelity_out[0]:.3f}/{higher_fidelity_out[1]:.3f}")
             if lower_fidelity_in is not None:
-                parts.append(f"Lower(in): {lower_fidelity_in[0]:.3f}/{lower_fidelity_in[1]:.3f}")
+                parts.append(f"Lower(in-sample): {lower_fidelity_in[0]:.3f}/{lower_fidelity_in[1]:.3f}")
             if lower_fidelity_out is not None:
-                parts.append(f"Lower(out): {lower_fidelity_out[0]:.3f}/{lower_fidelity_out[1]:.3f}")
+                parts.append(f"Lower(out-of-sample): {lower_fidelity_out[0]:.3f}/{lower_fidelity_out[1]:.3f}")
             fidelity_line = " | ".join(parts)
         obs_info = f"{obs_header}  |  {obs_values}"
         if fidelity_line:
-            obs_info = f"{obs_info}\n Fidelity: {fidelity_line}"
+            obs_info = f"{obs_info}\n Fidelity (BCE/MZE): {fidelity_line}"
 
         # CASE 1 – both coefficient vectors are present → create one stacked bar chart
         if show_higher and show_lower:
@@ -342,7 +346,8 @@ class LIME(BaseInterpretation):
             ax.set_yticklabels(ylabels, fontsize=9)
 
 
-            ax.set_xlabel("Predictor Effect Value" if is_effect else "Coefficient Value")
+            xlabel = "Predictor effect" if is_effect else "Coefficient"
+            ax.set_xlabel(xlabel)
             if self.comparison_method == "one_vs_next":
                 title = (
                     f"Surrogate Model {'Predictor Effects' if is_effect else 'Coefficients'} – Class {pred_class - 1} & {pred_class + 1}"
@@ -372,17 +377,18 @@ class LIME(BaseInterpretation):
         ax.set_yticks(y_pos)
         ax.set_yticklabels(feature_names, fontsize=10)
         title = (
-            f"Surrogate Model Coefficients for Classes > {pred_class}"
+            f"Surrogate Model {'Predictor Effects' if is_effect else 'Coefficients'} for Classes > {pred_class}"
             if show_higher
-            else f"Surrogate Model Coefficients for Classes < {pred_class}"
+            else f"Surrogate Model {'Predictor Effects' if is_effect else 'Coefficients'} for Classes < {pred_class}"
         )
         if self.comparison_method == "one_vs_next":
             if show_higher:
-                title = f"Surrogate Model Coefficients for Class {pred_class + 1}"
+                title = f"Surrogate Model {'Predictor Effects' if is_effect else 'Coefficients'} for Class {pred_class + 1}"
             else:
-                title = f"Surrogate Model Coefficients for Class {pred_class - 1}"
+                title = f"Surrogate Model {'Predictor Effects' if is_effect else 'Coefficients'} for Class {pred_class - 1}"
         ax.set_title(title, fontsize=13, pad=10)
-        ax.set_xlabel("Coefficient Value")
+        xlabel = "Predictor effect" if is_effect else "Coefficient"
+        ax.set_xlabel(xlabel)
         ax.tick_params(axis="x", labelsize=10)
         ax.tick_params(axis="y", labelsize=10)
         ax.legend()
@@ -493,6 +499,9 @@ class LIME(BaseInterpretation):
         """
         n_samples = self.max_samples
         samples = pd.DataFrame(index=range(n_samples), columns=X.columns)
+
+        #set seed for reproducibility
+        np.random.seed(self.random_state)
         
         for col in X.columns:
             if pd.api.types.is_numeric_dtype(X[col]):
@@ -528,6 +537,9 @@ class LIME(BaseInterpretation):
         """
         n_samples = self.max_samples
         samples = pd.DataFrame(index=range(n_samples), columns=X.columns)
+
+        #set seed for reproducibility
+        np.random.seed(self.random_state)
         
         for col in X.columns:
             samples[col] = np.random.choice(X[col], n_samples, replace=True)
@@ -598,18 +610,18 @@ class LIME(BaseInterpretation):
         if any(v is not None for v in [higher_fidelity_in, higher_fidelity_out, lower_fidelity_in, lower_fidelity_out]):
             parts = []
             if higher_fidelity_in is not None:
-                parts.append(f"Higher(in): {higher_fidelity_in[0]:.3f}/{higher_fidelity_in[1]:.3f}")
+                parts.append(f"Higher(in-sample): {higher_fidelity_in[0]:.3f}/{higher_fidelity_in[1]:.3f}")
             if higher_fidelity_out is not None:
-                parts.append(f"Higher(out): {higher_fidelity_out[0]:.3f}/{higher_fidelity_out[1]:.3f}")
+                parts.append(f"Higher(out-of-sample): {higher_fidelity_out[0]:.3f}/{higher_fidelity_out[1]:.3f}")
             if lower_fidelity_in is not None:
-                parts.append(f"Lower(in): {lower_fidelity_in[0]:.3f}/{lower_fidelity_in[1]:.3f}")
+                parts.append(f"Lower(in-sample): {lower_fidelity_in[0]:.3f}/{lower_fidelity_in[1]:.3f}")
             if lower_fidelity_out is not None:
-                parts.append(f"Lower(out): {lower_fidelity_out[0]:.3f}/{lower_fidelity_out[1]:.3f}")
+                parts.append(f"Lower(out-of-sample): {lower_fidelity_out[0]:.3f}/{lower_fidelity_out[1]:.3f}")
             fidelity_line = " | ".join(parts)
         suptitle = f"{obs_header}  |  {obs_values}"
         if fidelity_line:
-            suptitle = f"{suptitle}\n Fidelity: {fidelity_line}"
-        fig.suptitle(suptitle, fontsize=8)
+            suptitle = f"{suptitle}\n Fidelity (BCE/MZE): {fidelity_line}"
+        fig.suptitle(suptitle, fontsize=8, y=0.97)
         
         plot_idx = 0
         if show_higher:
@@ -634,7 +646,7 @@ class LIME(BaseInterpretation):
                 title = f'Decision Tree for Class {pred_class + 1}'
             else:
                 title = f'Decision Tree for Classes > {pred_class}'
-            ax.set_title(title, fontsize=13, pad=10)
+            ax.set_title(title, fontsize=13, y=0.94)
             plot_idx += 1
             
         if show_lower:
@@ -659,10 +671,10 @@ class LIME(BaseInterpretation):
                 title = f'Decision Tree for Class {pred_class - 1}'
             else:
                 title = f'Decision Tree for Classes < {pred_class}'
-            ax.set_title(title, fontsize=13, pad=10)
+            ax.set_title(title, fontsize=13, y=0.94)
             
         plt.tight_layout(h_pad=4)
-        plt.subplots_adjust(top=0.92)
+        plt.subplots_adjust(top=0.95)
         plt.show()
 
     def explain(self, 
@@ -780,22 +792,26 @@ class LIME(BaseInterpretation):
             
             if pred_class < n_classes - 1:
                 # Check if we have any positive samples for higher class
-                if np.any(higher_mask):
+                if np.sum(higher_mask) > 1:
                     try:
                         # Train/test split for fidelity estimation
                         idx_train, idx_test = train_test_split(np.arange(len(higher_mask)), test_size=0.2, random_state=42, stratify=higher_mask)
+                        # Ensure at least 2 samples in each split
+                        if np.sum(higher_mask[idx_train]) < 2:
+                            idx_train = np.append(idx_train, np.where(higher_mask)[0])
+                        if np.sum(higher_mask[idx_test]) < 2:
+                            idx_test = np.append(idx_test, np.where(higher_mask)[0])
                         X_train, X_test = X_transformed.iloc[idx_train], X_transformed.iloc[idx_test]
                         y_train, y_test = higher_mask[idx_train], higher_mask[idx_test]
                         w_train, w_test = weights[idx_train], weights[idx_test]
 
-                        higher_model = LogisticRegression(random_state=42, class_weight="balanced", max_iter=10000)
+                        higher_model = LogisticRegression(random_state=42, class_weight="balanced", max_iter=100000, **self.surrogate_kwargs)
                         higher_model.fit(X_train, y_train, sample_weight=w_train)
                         higher_coef = higher_model.coef_[0]
                         if not show_coefficients:
                             num_mask = ~np.isin(obs_transformed, [0, 1])
                             higher_effect = higher_coef * (obs_transformed * num_mask + (~num_mask) * 1)  # multiply only numeric
                             result['higher_effect'] = higher_effect
-                        result['higher_coef'] = higher_coef
 
                         # Fidelity (binary cross-entropy and zero-one loss) in and out of sample
                         prob_train = higher_model.predict_proba(X_train)[:, 1]
@@ -806,23 +822,41 @@ class LIME(BaseInterpretation):
                         zero_one_out = 1.0 - (higher_model.predict(X_test) == y_test).mean()
                         result['higher_fidelity_in'] = (in_BCE, zero_one_in)
                         result['higher_fidelity_out'] = (out_BCE, zero_one_out)
+
+                        # Refit surrogate on the FULL data for final explanation coefficients
+                        higher_model_full = LogisticRegression(random_state=42, class_weight="balanced", max_iter=100000, **self.surrogate_kwargs)
+                        higher_model_full.fit(X_transformed, higher_mask, sample_weight=weights)
+                        higher_coef = higher_model_full.coef_[0]
+                        if not show_coefficients:
+                            num_mask = ~np.isin(obs_transformed, [0, 1])
+                            higher_effect = higher_coef * (obs_transformed * num_mask + (~num_mask) * 1)
+                            result['higher_effect'] = higher_effect
+                        result['higher_coef'] = higher_coef
+                        result['higher_intercept'] = higher_model_full.intercept_
                     except Exception as e:
                         logger.warning(f"Failed to fit higher class model: {str(e)}")
                         result['higher_coef'] = np.zeros(X_transformed.shape[1])
+                        result['higher_intercept'] = 0
                 else:
                     logger.warning("No positive samples for higher class comparison")
                     result['higher_coef'] = np.zeros(X_transformed.shape[1])
+                    result['higher_intercept'] = 0
                 
             if pred_class > 0:
                 # Check if we have any positive samples for lower class
-                if np.any(lower_mask):
+                if np.sum(lower_mask) > 1:
                     try:
                         idx_train_l, idx_test_l = train_test_split(np.arange(len(lower_mask)), test_size=0.2, random_state=42, stratify=lower_mask)
+                        # Ensure at least 2 samples in each split
+                        if np.sum(lower_mask[idx_train_l]) < 2:
+                            idx_train_l = np.append(idx_train_l, np.where(lower_mask)[0])
+                        if np.sum(lower_mask[idx_test_l]) < 2:
+                            idx_test_l = np.append(idx_test_l, np.where(lower_mask)[0])
                         X_train_l, X_test_l = X_transformed.iloc[idx_train_l], X_transformed.iloc[idx_test_l]
                         y_train_l, y_test_l = lower_mask[idx_train_l], lower_mask[idx_test_l]
                         w_train_l, w_test_l = weights[idx_train_l], weights[idx_test_l]
 
-                        lower_model = LogisticRegression(random_state=42, class_weight="balanced", max_iter=10000)
+                        lower_model = LogisticRegression(random_state=42, class_weight="balanced", max_iter=100000, **self.surrogate_kwargs)
                         lower_model.fit(X_train_l, y_train_l, sample_weight=w_train_l)
                         lower_coef = lower_model.coef_[0]
                         if not show_coefficients:
@@ -838,12 +872,25 @@ class LIME(BaseInterpretation):
                         zero_one_out_l = 1.0 - (lower_model.predict(X_test_l) == y_test_l).mean()
                         result['lower_fidelity_in'] = (in_BCE_l, zero_one_in_l)
                         result['lower_fidelity_out'] = (out_BCE_l, zero_one_out_l)
+
+                        # Refit surrogate on the FULL data for final explanation coefficients
+                        lower_model_full = LogisticRegression(random_state=42, class_weight="balanced", max_iter=100000, **self.surrogate_kwargs)
+                        lower_model_full.fit(X_transformed, lower_mask, sample_weight=weights)
+                        lower_coef = lower_model_full.coef_[0]
+                        if not show_coefficients:
+                            num_mask = ~np.isin(obs_transformed, [0, 1])
+                            lower_effect = lower_coef * (obs_transformed * num_mask + (~num_mask) * 1)
+                            result['lower_effect'] = lower_effect
+                        result['lower_coef'] = lower_coef
+                        result['lower_intercept'] = lower_model_full.intercept_
                     except Exception as e:
                         logger.warning(f"Failed to fit lower class model: {str(e)}")
                         result['lower_coef'] = np.zeros(X_transformed.shape[1])
+                        result['lower_intercept'] = 0
                 else:
                     logger.warning("No positive samples for lower class comparison")
                     result['lower_coef'] = np.zeros(X_transformed.shape[1])
+                    result['lower_intercept'] = 0
                 
             # Aggregate in- and out-of-sample BCE losses
             losses_in = []
@@ -865,16 +912,18 @@ class LIME(BaseInterpretation):
                 self._plot_coefficients(
                     plot_high,
                     plot_low,
-                    feature_names,
-                    observation_idx,
-                    observation,
-                    pred_class,
+                    feature_names=result.get('features'),
+                    observation_idx=observation_idx,
+                    observation=observation,
+                    pred_class=pred_class,
                     higher_fidelity_in=result.get('higher_fidelity_in'),
                     higher_fidelity_out=result.get('higher_fidelity_out'),
                     lower_fidelity_in=result.get('lower_fidelity_in'),
                     lower_fidelity_out=result.get('lower_fidelity_out'),
                     is_effect=not show_coefficients,
                 )
+
+                print(result)
                                      
         elif self.model_type == "decision_tree":
             higher_model = None
@@ -882,14 +931,21 @@ class LIME(BaseInterpretation):
             
             if pred_class < n_classes - 1:
                 # Check if we have any positive samples for higher class
-                if np.any(higher_mask):
+                if np.sum(higher_mask) > 1:
                     try:
                         idx_train_h, idx_test_h = train_test_split(np.arange(len(higher_mask)), test_size=0.2, random_state=42, stratify=higher_mask)
+                        # Ensure at least 2 samples in each split
+                        if np.sum(higher_mask[idx_train_h]) < 2:
+                            idx_train_h = np.append(idx_train_h, np.where(higher_mask)[0])
+                        if np.sum(higher_mask[idx_test_h]) < 2:
+                            idx_test_h = np.append(idx_test_h, np.where(higher_mask)[0])
                         X_train_h, X_test_h = X_transformed.iloc[idx_train_h], X_transformed.iloc[idx_test_h]
                         y_train_h, y_test_h = higher_mask[idx_train_h], higher_mask[idx_test_h]
                         w_train_h, w_test_h = weights[idx_train_h], weights[idx_test_h]
 
-                        higher_model = DecisionTreeClassifier(random_state=42, max_depth=3,class_weight='balanced')
+                        tree_kwargs = {'random_state': 42, 'class_weight': 'balanced', **self.surrogate_kwargs}
+                        tree_kwargs.setdefault('max_depth', 3)
+                        higher_model = DecisionTreeClassifier(**tree_kwargs)
                         higher_model.fit(X_train_h, y_train_h, sample_weight=w_train_h)
                         result['higher_model'] = higher_model
                         prob_train_h = higher_model.predict_proba(X_train_h)[:, 1]
@@ -900,6 +956,13 @@ class LIME(BaseInterpretation):
                         zero_one_out_h = 1.0 - (higher_model.predict(X_test_h) == y_test_h).mean()
                         result['higher_fidelity_in'] = (BCE_in_h, zero_one_in_h)
                         result['higher_fidelity_out'] = (BCE_out_h, zero_one_out_h)
+
+                        # Refit decision tree on the FULL data for final explanation
+                        tree_kwargs = {'random_state': 42, 'class_weight': 'balanced', **self.surrogate_kwargs}
+                        tree_kwargs.setdefault('max_depth', 3)
+                        higher_model = DecisionTreeClassifier(**tree_kwargs)
+                        higher_model.fit(X_transformed, higher_mask, sample_weight=weights)
+                        result['higher_model'] = higher_model
                     except Exception as e:
                         logger.warning(f"Failed to fit higher class model: {str(e)}")
                 else:
@@ -907,14 +970,21 @@ class LIME(BaseInterpretation):
                 
             if pred_class > 0:
                 # Check if we have any positive samples for lower class
-                if np.any(lower_mask):
+                if np.sum(lower_mask) > 1:
                     try:
                         idx_train_l, idx_test_l = train_test_split(np.arange(len(lower_mask)), test_size=0.2, random_state=42, stratify=lower_mask)
+                        # Ensure at least 2 samples in each split
+                        if np.sum(lower_mask[idx_train_l]) < 2:
+                            idx_train_l = np.append(idx_train_l, np.where(lower_mask)[0])
+                        if np.sum(lower_mask[idx_test_l]) < 2:
+                            idx_test_l = np.append(idx_test_l, np.where(lower_mask)[0])
                         X_train_l, X_test_l = X_transformed.iloc[idx_train_l], X_transformed.iloc[idx_test_l]
                         y_train_l, y_test_l = lower_mask[idx_train_l], lower_mask[idx_test_l]
                         w_train_l, w_test_l = weights[idx_train_l], weights[idx_test_l]
 
-                        lower_model = DecisionTreeClassifier(random_state=42, max_depth=3, class_weight='balanced')
+                        tree_kwargs = {'random_state': 42, 'class_weight': 'balanced', **self.surrogate_kwargs}
+                        tree_kwargs.setdefault('max_depth', 3)
+                        lower_model = DecisionTreeClassifier(**tree_kwargs)
                         lower_model.fit(X_train_l, y_train_l, sample_weight=w_train_l)
                         result['lower_model'] = lower_model
                         prob_train_l = lower_model.predict_proba(X_train_l)[:, 1]
@@ -925,6 +995,13 @@ class LIME(BaseInterpretation):
                         zero_one_out_l = 1.0 - (lower_model.predict(X_test_l) == y_test_l).mean()
                         result['lower_fidelity_in'] = (BCE_in_l, zero_one_in_l)
                         result['lower_fidelity_out'] = (BCE_out_l, zero_one_out_l)
+
+                        # Refit decision tree on the FULL data for final explanation
+                        tree_kwargs = {'random_state': 42, 'class_weight': 'balanced', **self.surrogate_kwargs}
+                        tree_kwargs.setdefault('max_depth', 3)
+                        lower_model = DecisionTreeClassifier(**tree_kwargs)
+                        lower_model.fit(X_transformed, lower_mask, sample_weight=weights)
+                        result['lower_model'] = lower_model
                     except Exception as e:
                         logger.warning(f"Failed to fit lower class model: {str(e)}")
                 else:

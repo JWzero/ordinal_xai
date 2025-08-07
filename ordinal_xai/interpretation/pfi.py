@@ -106,8 +106,8 @@ class PFI(BaseInterpretation):
             'mae': mae,
             'mse': mse,
             'adjacent_accuracy': adjacent_accuracy,
-            'quadratic_weighted_kappa': lambda yt, yp: weighted_kappa(yt, yp, weights='quadratic'),
-            'linear_weighted_kappa': lambda yt, yp: weighted_kappa(yt, yp, weights='linear'),
+            'weighted_kappa_quadratic': lambda yt, yp: weighted_kappa(yt, yp, weights='quadratic'),
+            'weighted_kappa_linear': lambda yt, yp: weighted_kappa(yt, yp, weights='linear'),
             'cem': cem,
             'spearman_correlation': spearman_correlation,
             'kendall_tau': kendall_tau,
@@ -237,7 +237,7 @@ class PFI(BaseInterpretation):
         if observation_idx is not None:
             # Local (instance-level) PFI
             # Exclude metrics not suitable for single-instance explanation
-            metrics_to_exclude = ['spearman_correlation', 'kendall_tau', 'quadratic_weighted_kappa', 'linear_weighted_kappa']
+            metrics_to_exclude = ['spearman_correlation', 'kendall_tau', 'weighted_kappa_quadratic', 'weighted_kappa_linear']
             metrics_to_use = [m for m in metrics_to_use if m not in metrics_to_exclude]
 
             from ..utils.evaluation_metrics import _get_class_counts
